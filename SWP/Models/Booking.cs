@@ -1,0 +1,29 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace SWP.Models;
+
+public partial class Booking
+{
+    public int BookingId { get; set; }
+
+    public int? CusId { get; set; }
+
+    public int? DocId { get; set; }
+
+    public int? DsId { get; set; }
+
+    public string? Status { get; set; }
+
+    public DateTime? CreateAt { get; set; }
+
+    public string? Note { get; set; }
+
+    public virtual Customer? Cus { get; set; }
+
+    public virtual Doctor? Doc { get; set; }
+
+    public virtual DoctorSchedule? Ds { get; set; }
+
+    public virtual ICollection<PaymentBooking> PaymentBookings { get; set; } = new List<PaymentBooking>();
+}

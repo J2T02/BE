@@ -1,0 +1,23 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace SWP.Models;
+
+public partial class Blog
+{
+    public int BlogId { get; set; }
+
+    public int? AuthorId { get; set; }
+
+    public string? Title { get; set; }
+
+    public string? Img { get; set; }
+
+    public string? Content { get; set; }
+
+    public DateOnly? PostDate { get; set; }
+
+    public bool? IsActive { get; set; }
+
+    public virtual Account? Author { get; set; }
+}

@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace SWP.Models;
+
+public partial class StatusPayment
+{
+    public int StatusId { get; set; }
+
+    public string StatusName { get; set; } = null!;
+
+    public virtual ICollection<PaymentBooking> PaymentBookings { get; set; } = new List<PaymentBooking>();
+
+    public virtual ICollection<PaymentTreatment> PaymentTreatments { get; set; } = new List<PaymentTreatment>();
+}

@@ -1,0 +1,29 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace SWP.Models;
+
+public partial class Test
+{
+    public int TestId { get; set; }
+
+    public int? CusId { get; set; }
+
+    public int? DocId { get; set; }
+
+    public string? HusTest { get; set; }
+
+    public string? WifeTest { get; set; }
+
+    public DateOnly? HusTestDate { get; set; }
+
+    public DateOnly? WifeTestDate { get; set; }
+
+    public string? HusTestResult { get; set; }
+
+    public string? WifeTestResult { get; set; }
+
+    public virtual Customer? Cus { get; set; }
+
+    public virtual Doctor? Doc { get; set; }
+}

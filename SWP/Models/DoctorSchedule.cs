@@ -1,0 +1,27 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace SWP.Models;
+
+public partial class DoctorSchedule
+{
+    public int DsId { get; set; }
+
+    public int? DocId { get; set; }
+
+    public DateOnly? WorkDate { get; set; }
+
+    public int? SlotId { get; set; }
+
+    public bool? IsAvailable { get; set; }
+
+    public int? RoomId { get; set; }
+
+    public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+
+    public virtual Doctor? Doc { get; set; }
+
+    public virtual Room? Room { get; set; }
+
+    public virtual SlotSchedule? Slot { get; set; }
+}
