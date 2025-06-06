@@ -32,12 +32,12 @@ namespace SWP.Controllers
             {
                 if (await _context.Accounts.AnyAsync(a => a.AccName == registerDto.AccName))
                 {
-                    return BadRequest("Username is already taken.");
+                    return BadRequest("Tên tài khoản đã tồn tại vui lòng thử lại.");
                 }
 
                 if (await _context.Customers.AnyAsync(c => c.Mail == registerDto.Mail))
                 {
-                    return BadRequest("Mail is already registered.");
+                    return BadRequest("Mail đã tồn tại vui lòng thử lại.");
                 }
 
 
