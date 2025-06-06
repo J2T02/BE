@@ -27,8 +27,11 @@
 
   <ItemGroup>
     <Folder Include="Mapper\" />
-    <Folder Include="Service\" />
     <Folder Include="Repository\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="efpt.config.json.user" />
   </ItemGroup>
 
 </Project>
