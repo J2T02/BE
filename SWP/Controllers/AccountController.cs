@@ -81,10 +81,6 @@ namespace SWP.Controllers
             }
         }
 
-        [HttpGet("get-account")]
-        public async Task<IActionResult> GetAccount(int accId)
-        {
-            return Ok(await _context.Accounts.AnyAsync(a => a.AccId == accId));
-        }
+        
     }
 }
