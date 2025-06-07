@@ -1,0 +1,37 @@
+﻿using SWP.Models;
+
+namespace SWP.Dtos.Doctor
+{
+    public class DoctorDto
+    {
+        public int DocId { get; set; }
+
+        public int? AccId { get; set; }
+
+        public string DocName { get; set; }
+
+        public string Gender { get; set; }
+
+        public DateOnly? Yob { get; set; }
+
+        public string Mail { get; set; }
+
+        public string Phone { get; set; }
+
+        public int? Experience { get; set; }
+
+        public string Certification { get; set; }
+
+        public virtual Models.Account Acc { get; set; }
+
+        public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+
+        public virtual ICollection<DoctorSchedule> DoctorSchedules { get; set; } = new List<DoctorSchedule>();
+
+        public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+
+        public virtual ICollection<Test> Tests { get; set; } = new List<Test>();
+
+        public virtual ICollection<TreatmentPlan> TreatmentPlans { get; set; } = new List<TreatmentPlan>();
+    }
+}

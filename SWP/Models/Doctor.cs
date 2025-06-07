@@ -23,8 +23,6 @@ public partial class Doctor
 
     public int? Experience { get; set; }
 
-    public string Specialized { get; set; }
-
     public string Certification { get; set; }
 
     public virtual Account Acc { get; set; }
