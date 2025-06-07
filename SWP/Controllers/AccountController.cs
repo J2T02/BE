@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using SWP.Dtos.Account;
 using SWP.Interfaces;
 using SWP.Models;
+using System.Data;
 
 namespace SWP.Controllers
 {
@@ -55,7 +56,7 @@ namespace SWP.Controllers
                 var customer = new Customer
                 {
                     AccId = account.AccId,
-                   
+
                     Phone = registerDto.Phone,
                     Mail = registerDto.Mail
                 };
@@ -81,6 +82,37 @@ namespace SWP.Controllers
             }
         }
 
-        
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+        {
+            try
+            {
+                var account = await _context.Accounts.Include(a => a.Role).FirstOrDefaultAsync(a => a.AccName == loginDto.UserName);
+                if (account == null)
+                    return BadRequest("Tên tài khoản hoặc mật khẩu không đúng");
+
+                //Xác thực mật khẩu:
+                var passwordVerifi = _passwordHasher.VerifyHashedPassword(account, account.Password, loginDto.Password);
+                if (passwordVerifi == PasswordVerificationResult.Failed)
+                    return BadRequest("Tên tài khoản hoặc mật khẩu không đúng");
+
+                var role = await _context.Roles.FindAsync(account.RoleId);
+                var token = _tokenService.CreateToken(account.AccName!, account.AccId, role?.RoleName ?? "Customer");
+                return Ok(new NewUserDto
+                {
+                    Token = token,
+                    UserName = account.AccName!,
+                    Role = account.Role?.RoleName ?? "Customer",
+                });
+            }
+            catch (Exception e)
+            {
+
+                return StatusCode(500, e);
+            }
+
+        }
+
+
     }
 }
