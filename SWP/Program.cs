@@ -89,6 +89,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IDoctor, DoctorRepository>();
+builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 
 
 
