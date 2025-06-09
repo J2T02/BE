@@ -23,8 +23,18 @@ namespace SWP.Controllers
         public async Task<IActionResult> GetAllDoctors()
         {
             var doctors = await _doctorRepo.GetAllDoctorsAsync();
-            var doctor = doctors.Select(x => x.ToDoctorDto());
-            return Ok(doctors);
+            var doctor = doctors.Select(x => new DoctorDto
+            {
+                DocId = x.DocId,
+                DocName = x.DocName,
+                Gender = x.Gender,
+                Yob = x.Yob,
+                Mail = x.Mail,
+                Phone = x.Phone,
+                Experience = x.Experience,
+                Certification = x.Certification,
+            }).ToList();
+            return Ok(doctor);
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDoctorById(int id)
