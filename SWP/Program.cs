@@ -6,6 +6,7 @@ using Microsoft.OpenApi.Models;
 //using SWP.Data;
 using SWP.Interfaces;
 using SWP.Models;
+using SWP.Repository;
 using SWP.Service;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -87,7 +88,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddScoped<ITokenService, TokenService>();
-
+builder.Services.AddScoped<IDoctor, DoctorRepository>();
 
 
 
