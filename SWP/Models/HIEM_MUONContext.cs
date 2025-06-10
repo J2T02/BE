@@ -228,9 +228,6 @@ public partial class HIEM_MUONContext : DbContext
             entity.Property(e => e.Phone)
                 .HasMaxLength(15)
                 .IsUnicode(false);
-            entity.Property(e => e.Specialized)
-                .HasMaxLength(1)
-                .IsUnicode(false);
             entity.Property(e => e.Yob).HasColumnName("YOB");
 
             entity.HasOne(d => d.Acc).WithMany(p => p.Doctors)
