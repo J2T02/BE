@@ -17,5 +17,7 @@
         public string Phone { get; set; }
 
         public string Mail { get; set; }
+
+        //Quang Yeu Nhi
     }
 }
