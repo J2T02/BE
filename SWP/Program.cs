@@ -1,8 +1,12 @@
+using System.Net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using SWP.Data;
+
 //using SWP.Data;
 using SWP.Interfaces;
 using SWP.Models;
@@ -48,6 +52,34 @@ builder.Services.AddSwaggerGen(option =>
             new string[]{}
         }
     });
+});
+
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    // T?t automatic model state validation
+    options.SuppressModelStateInvalidFilter = true;
+});
+
+// Ho?c n?u b?n mu?n custom response cho toàn b? app
+builder.Services.Configure<ApiBehaviorOptions>(options =>
+{
+    options.InvalidModelStateResponseFactory = context =>
+    {
+        var errors = context.ModelState
+            .Where(x => x.Value.Errors.Count > 0)
+            .ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+            );
+
+        var firstError = context.ModelState.Values
+            .SelectMany(v => v.Errors)
+            .FirstOrDefault()?.ErrorMessage ?? "D? li?u không h?p l?";
+
+        var response = new BaseRespone<object>(HttpStatusCode.BadRequest, firstError, errors);
+
+        return new BadRequestObjectResult(response);
+    };
 });
 
 
