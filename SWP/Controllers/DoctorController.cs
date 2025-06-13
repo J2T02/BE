@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SWP.Dtos.Doctor;
 using SWP.Interfaces;
@@ -19,6 +20,8 @@ namespace SWP.Controllers
             _context = context;
             _doctorRepo = doctorRepo;
         }
+
+        [Authorize(Roles = "Admin,Doctor")]
         [HttpGet]
         public async Task<IActionResult> GetAllDoctors()
         {
