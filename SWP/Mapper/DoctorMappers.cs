@@ -5,9 +5,9 @@ namespace SWP.Mapper
 {
     public static class DoctorMappers
     {
-        public static Doctor ToDoctorDto(this Doctor doctor)
+        public static DoctorDto ToDoctorDto(this Doctor doctor)
         {
-            return new Doctor
+            return new DoctorDto
             {
                 DocId = doctor.DocId,
                 AccId = doctor.AccId,
