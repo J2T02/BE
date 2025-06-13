@@ -6,7 +6,9 @@ using SWP.Interfaces;
 using SWP.Mapper;
 using SWP.Models;
 using SWP.Repository;
-
+using SWP.Data;
+using System.Net;
+using SWP.Dtos.Account;
 namespace SWP.Controllers
 {
     [Route("api/[controller]")]
@@ -21,11 +23,17 @@ namespace SWP.Controllers
             _doctorRepo = doctorRepo;
         }
 
-        [Authorize(Roles = "Admin,Doctor")]
+        [Authorize(Roles = "Admin,Manager")]
         [HttpGet]
         public async Task<IActionResult> GetAllDoctors()
         {
+            
             var doctors = await _doctorRepo.GetAllDoctorsAsync();
+            if(doctors == null || !doctors.Any())
+            {
+                var error = BaseRespone<List<DoctorDto>>.ErrorResponse( "Không tìm thấy bác sĩ nào.", HttpStatusCode.NotFound);
+                return NotFound(error);
+            }
             var doctor = doctors.Select(x => new DoctorDto
             {
                 DocId = x.DocId,
@@ -37,67 +45,123 @@ namespace SWP.Controllers
                 Experience = x.Experience,
                 Certification = x.Certification,
             }).ToList();
-            return Ok(doctor);
+            var response = BaseRespone<List<DoctorDto>>.SuccessResponse(doctor, "Lấy danh sách thành công");
+            return Ok(response);
         }
+        [Authorize(Roles = "Admin,Manager")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDoctorById(int id)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                var errors = ModelState
+            .Where(x => x.Value.Errors.Count > 0)
+            .ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+            );
+
+                var firstError = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .FirstOrDefault()?.ErrorMessage ?? "Dữ liệu không hợp lệ";
+                var error = new BaseRespone<DoctorDto>(HttpStatusCode.BadRequest,firstError);
+                return BadRequest(error);
             }
             var doctor = await _doctorRepo.GetDoctorByIdAsync(id);
             if (doctor == null)
             {
-                return NotFound();
+                var error = BaseRespone<DoctorDto>.ErrorResponse("Không tìm thấy bác sĩ nào.", HttpStatusCode.NotFound);
+                return NotFound(error);
             }
-            return Ok(doctor.ToDoctorDto());
+            var response = BaseRespone<DoctorDto>.SuccessResponse(doctor.ToDoctorDto(), "Lấy thông tin bác sĩ thành công");
+            return Ok(response);
         }
-
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPost]
         public async Task<IActionResult> CreateDoctor([FromBody] CreateDocotorRequestDto doctor)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                var errors = ModelState
+            .Where(x => x.Value.Errors.Count > 0)
+            .ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+            );
+
+                var firstError = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .FirstOrDefault()?.ErrorMessage ?? "Dữ liệu không hợp lệ";
+                var error = new BaseRespone<DoctorDto>(HttpStatusCode.BadRequest, firstError);
+                return BadRequest(error);
             }
-            if (doctor == null)
-            {
-                return BadRequest();
-            }
+            
+            
             var doctorModel = doctor.ToDoctorFromCreateDTO();
             await _doctorRepo.CreateDoctorAsync(doctorModel);
-            return CreatedAtAction(nameof(CreateDoctor), new { id = doctorModel.DocId }, doctorModel.ToDoctorDto());
+            // Trả về thông tin bác sĩ mới được tạo
+            var response = BaseRespone<DoctorDto>.SuccessResponse(doctorModel.ToDoctorDto(), "Tạo bác sĩ thành công");
+            return CreatedAtAction(nameof(GetDoctorById), new { id = doctorModel.DocId }, response);
+            //return CreatedAtAction(nameof(CreateDoctor), new { id = doctorModel.DocId }, doctorModel.ToDoctorDto());
         }
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPut]
         [Route("{id}")]
         public async Task<IActionResult> UpdateDoctor([FromRoute] int id,[FromBody] UpdateDoctorRequestDto doctor)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(ModelState);
+                var errors = ModelState
+            .Where(x => x.Value.Errors.Count > 0)
+            .ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+            );
+
+                var firstError = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .FirstOrDefault()?.ErrorMessage ?? "Dữ liệu không hợp lệ";
+                var error = new BaseRespone<DoctorDto>(HttpStatusCode.BadRequest, firstError);
+                return BadRequest(error);
+            }
+            var existingDoctor = await _doctorRepo.GetDoctorByIdAsync(id);
+            if(existingDoctor == null)
+            {
+                var error = BaseRespone<DoctorDto>.ErrorResponse("Không tìm thấy bác sĩ nào để cập nhật.", HttpStatusCode.NotFound);
+                return NotFound(error);
             }
             var updatedDoctor = await _doctorRepo.UpdateDoctorAsync(id, doctor);
-            if(updatedDoctor == null)
-            {
-                return NotFound();
-            }
-            return Ok(updatedDoctor.ToDoctorDto());
+            var response = BaseRespone<DoctorDto>.SuccessResponse(updatedDoctor.ToDoctorDto(), "Cập nhật thông tin bác sĩ thành công");
+            return Ok(response);
         }
+        [Authorize(Roles = "Admin,Manager")]
         [HttpDelete]
         [Route("{id}")]
         public async Task<IActionResult> DeleteDoctor([FromRoute] int id)
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest();
+                var errors = ModelState
+            .Where(x => x.Value.Errors.Count > 0)
+            .ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+            );
+
+                var firstError = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .FirstOrDefault()?.ErrorMessage ?? "Dữ liệu không hợp lệ";
+                var error = new BaseRespone<DoctorDto>(HttpStatusCode.BadRequest, firstError);
+                return BadRequest(error);
             }
             var doctor = await _doctorRepo.DeleteDoctorAsync(id);
-            if(doctor == null)
+            if (doctor == null)
             {
+                var error = BaseRespone<DoctorDto>.ErrorResponse("Không tìm thấy bác sĩ nào để xóa.", HttpStatusCode.NotFound);
                 return NotFound();
             }
-            return NoContent();
+            var response = BaseRespone<DoctorDto>.SuccessResponse(doctor.ToDoctorDto(), "Xóa bác sĩ thành công");
+            return Ok(response);
         }
     }
 }
