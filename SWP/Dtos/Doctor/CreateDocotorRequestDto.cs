@@ -4,6 +4,24 @@ namespace SWP.Dtos.Doctor
 {
     public class CreateDocotorRequestDto
     {
+
+        [Required]
+        [MinLength(5, ErrorMessage = "Tên đăng nhập phải từ 5 kí tự trở lên.")]
+        public string AccName { get; set; } = string.Empty;
+
+        [Required]
+        [MinLength(8, ErrorMessage = "Mật khẩu cần từ 8 ký tự trở lên.")]
+        [RegularExpression(@"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$",
+        ErrorMessage = "Mật khẩu phải chứa ít nhất 8 ký tự, bao gồm cả chữ và số.")]
+        public string Password { get; set; } = string.Empty;
+
+        [Required]
+        [RegularExpression(@"^(0[3|5|7|8|9])[0-9]{8}$", ErrorMessage = "Sai số điện thoại")]
+        public string Phone { get; set; } = string.Empty;
+
+        [EmailAddress(ErrorMessage = "Sai email.")]
+        public string Mail { get; set; } = string.Empty;
+
         [Required]
         [MaxLength(50, ErrorMessage = "Tên không được vượt quá 50 kí tự")]
         public string DocName { get; set; }
@@ -17,15 +35,6 @@ namespace SWP.Dtos.Doctor
         [PastDate(ErrorMessage = "Ngày sinh phải là ngày trong quá khứ")]
         [MinAge(18, ErrorMessage = "Bạn phải ít nhất 18 tuổi trở lên.")]
         public DateOnly? Yob { get; set; }
-
-        [Required]
-        [EmailAddress(ErrorMessage ="Định dạng Mail không hợp lệ")]
-        public string Mail { get; set; }
-
-        [Required(ErrorMessage = "Số điện thoại là thông tin bắt buộc.")]
-        [StringLength(10, MinimumLength = 10, ErrorMessage = "Số điện thoại yêu cầu 10 số")]
-        [RegularExpression(@"^(0[3|5|7|8|9])[0-9]{8}$", ErrorMessage = "Số điện thoại không hợp lệ.")]
-        public string Phone { get; set; }
 
         [Required]
         [Range(0,60, ErrorMessage ="Kinh nghiệm làm việc không vượt quá 60 năm")]

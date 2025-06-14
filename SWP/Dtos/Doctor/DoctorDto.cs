@@ -4,9 +4,9 @@ namespace SWP.Dtos.Doctor
 {
     public class DoctorDto
     {
-        public int DocId { get; set; }
+        //public int DocId { get; set; }
 
-        public int? AccId { get; set; }
+        //public int? AccId { get; set; }
 
         public string DocName { get; set; }
 

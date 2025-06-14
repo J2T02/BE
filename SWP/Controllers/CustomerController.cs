@@ -46,8 +46,6 @@ namespace SWP.Controllers
 
                 var customerDto = new CustomerDto
                 {
-                    CusId = customer.CusId,
-                    AccId = customer.AccId,
                     HusName = customer.HusName,
                     HusYob = customer.HusYob,
                     WifeName = customer.WifeName,
