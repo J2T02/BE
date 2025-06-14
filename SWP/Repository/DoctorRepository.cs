@@ -60,6 +60,5 @@ namespace SWP.Repository
             return doctor;
 
         }
-
     }
 }
