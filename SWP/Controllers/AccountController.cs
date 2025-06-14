@@ -3,11 +3,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SWP.Data;
+
 //using SWP.Data;
 using SWP.Dtos.Account;
 using SWP.Interfaces;
 using SWP.Models;
 using System.Data;
+using System.Net;
 
 namespace SWP.Controllers
 {
@@ -27,18 +30,40 @@ namespace SWP.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+        public async Task<BaseRespone<NewUserDto>> Register([FromBody] RegisterDto registerDto)
         {
             try
             {
+                // Kiểm tra validation từ DataAnnotations
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState
+                .Where(x => x.Value.Errors.Count > 0)
+                .ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                );
+
+                    var firstError = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .FirstOrDefault()?.ErrorMessage ?? "Dữ liệu không hợp lệ";
+
+                    return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, firstError);
+                }
+
                 if (await _context.Accounts.AnyAsync(a => a.AccName == registerDto.AccName))
                 {
-                    return BadRequest("Tên tài khoản đã tồn tại vui lòng thử lại.");
+                    return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, "Tên tài khoản đã tồn tại vui lòng thử lại.");
                 }
 
                 if (await _context.Customers.AnyAsync(c => c.Mail == registerDto.Mail))
                 {
-                    return BadRequest("Mail đã tồn tại vui lòng thử lại.");
+                    return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, "Số điện thoại hoặc Email đã tồn tại vui lòng thử lại");
+                }
+
+                if (await _context.Customers.AnyAsync(c => c.Phone == registerDto.Phone))
+                {
+                    return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, "Số điện thoại hoặc Email đã tồn tại vui lòng thử lại");
                 }
 
 
@@ -66,18 +91,21 @@ namespace SWP.Controllers
                 var role = await _context.Roles.FindAsync(account.RoleId);
 
                 var token = _tokenService.CreateToken(account.AccName!, account.AccId, role?.RoleName ?? "Customer");
-
-                return Ok(new NewUserDto
+                
+                var newUser = new NewUserDto
                 {
                     Token = token,
                     UserName = account.AccName!,
                     Role = role?.RoleName ?? "Customer",
-                });
+                };
+
+                return new BaseRespone<NewUserDto>(newUser, "Đăng ký thành công", HttpStatusCode.OK);
+
 
             }
             catch (Exception e)
             {
-                return StatusCode(500, e);
+                return new BaseRespone<NewUserDto>(HttpStatusCode.InternalServerError, $"Lỗi hệ thống: {e.Message}");
 
             }
         }
@@ -87,7 +115,7 @@ namespace SWP.Controllers
         {
             try
             {
-                var account = await _context.Accounts.Include(a => a.Role).FirstOrDefaultAsync(a => a.AccName == loginDto.UserName);
+                var account = await _context.Accounts.Include(a => a.Role).FirstOrDefaultAsync(a => a.AccName == loginDto.UserName );
                 if (account == null)
                     return BadRequest("Tên tài khoản hoặc mật khẩu không đúng");
 
