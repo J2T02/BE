@@ -111,34 +111,76 @@ namespace SWP.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
+        public async Task<BaseRespone<NewUserDto>> Login([FromBody] LoginDto loginDto)
         {
             try
             {
                 var account = await _context.Accounts.Include(a => a.Role).FirstOrDefaultAsync(a => a.AccName == loginDto.UserName );
                 if (account == null)
-                    return BadRequest("Tên tài khoản hoặc mật khẩu không đúng");
+                    return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, "Tên tài khoản hoặc mật khẩu không đúng");
 
                 //Xác thực mật khẩu:
                 var passwordVerifi = _passwordHasher.VerifyHashedPassword(account, account.Password, loginDto.Password);
                 if (passwordVerifi == PasswordVerificationResult.Failed)
-                    return BadRequest("Tên tài khoản hoặc mật khẩu không đúng");
+                    return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, "Tên tài khoản hoặc mật khẩu không đúng");
 
                 var role = await _context.Roles.FindAsync(account.RoleId);
                 var token = _tokenService.CreateToken(account.AccName!, account.AccId, role?.RoleName ?? "Customer");
-                return Ok(new NewUserDto
+                var newUser = new NewUserDto
                 {
                     Token = token,
                     UserName = account.AccName!,
-                    Role = account.Role?.RoleName ?? "Customer",
-                });
+                    Role = role?.RoleName ?? "Customer",
+                };
+                return new BaseRespone<NewUserDto>(newUser, "Đăng nhập thành công", HttpStatusCode.OK);
             }
             catch (Exception e)
             {
 
-                return StatusCode(500, e);
+                return new BaseRespone<NewUserDto>(HttpStatusCode.InternalServerError, $"Lỗi hệ thống: {e.Message}");
             }
 
+        }
+
+        [HttpPost("loginDoctor")]
+        public async Task<BaseRespone<NewUserDto>> LoginDoctor([FromBody] LoginDto loginDto)
+        {
+            try
+            {
+                // 1. Kiểm tra tài khoản
+                var account = await _context.Accounts
+                    .Include(a => a.Role)
+                    .FirstOrDefaultAsync(a => a.AccName == loginDto.UserName);
+
+                if (account == null || account.Role?.RoleName != "Doctor")
+                    return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, "Tên tài khoản hoặc mật khẩu không đúng");
+
+                // 2. Kiểm tra mật khẩu
+                var passwordVerified = _passwordHasher.VerifyHashedPassword(account, account.Password, loginDto.Password);
+                if (passwordVerified == PasswordVerificationResult.Failed)
+                    return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, "Tên tài khoản hoặc mật khẩu không đúng");
+
+                // 3. Lấy role (phòng trường hợp Role null)
+                var role = await _context.Roles.FindAsync(account.RoleId);
+                var roleName = role?.RoleName ?? "Doctor";
+
+                // 4. Tạo token
+                var token = _tokenService.CreateToken(account.AccName!, account.AccId, roleName);
+
+                // 5. Trả về DTO
+                var newUser = new NewUserDto
+                {
+                    Token = token,
+                    UserName = account.AccName!,
+                    Role = roleName
+                };
+
+                return new BaseRespone<NewUserDto>(newUser, "Đăng nhập thành công", HttpStatusCode.OK);
+            }
+            catch (Exception ex)
+            {
+                return new BaseRespone<NewUserDto>(HttpStatusCode.InternalServerError, $"Lỗi hệ thống: {ex.Message}");
+            }
         }
 
 
