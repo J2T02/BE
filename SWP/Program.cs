@@ -15,6 +15,17 @@ using SWP.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigin",
+    builder =>
+    {
+        builder.AllowAnyOrigin()  // Allow any Origins
+    .AllowAnyHeader()  // Allow any headers (like Content-Type)
+    .AllowAnyMethod(); // Allow any HTTP methods (GET, POST, etc.)
+    });
+});
+
 // Add services to the container.
 
 builder.Services.AddControllers()
@@ -122,10 +133,13 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IDoctor, DoctorRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+builder.Services.AddScoped<IHistoryBookingRepository, HistoryBookingRepository>();
 
 
 
 var app = builder.Build();
+//Apply CORS Globally
+app.UseCors("AllowAllOrigin");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
