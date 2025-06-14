@@ -33,6 +33,14 @@ namespace SWP.Data
             Error = error;
         }
 
+        public static BaseRespone<T> SuccessResponse(T data, string message = "", HttpStatusCode statusCode = HttpStatusCode.OK)
+        {
+            return new BaseRespone<T>(data, message, statusCode);
+        }
+        public static BaseRespone<T> ErrorResponse( string message, object error = null, HttpStatusCode statusCode = HttpStatusCode.BadRequest)
+        {
+            return new BaseRespone<T>(statusCode, message, error);
 
+        }
     }
 }

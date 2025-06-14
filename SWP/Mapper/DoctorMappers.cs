@@ -5,9 +5,9 @@ namespace SWP.Mapper
 {
     public static class DoctorMappers
     {
-        public static Doctor ToDoctorDto(this Doctor doctor)
+        public static DoctorDto ToDoctorDto(this Doctor doctor)
         {
-            return new Doctor
+            return new DoctorDto
             {
                 DocId = doctor.DocId,
                 AccId = doctor.AccId,
@@ -31,6 +31,26 @@ namespace SWP.Mapper
                 Phone = doctorDto.Phone,
                 Experience = doctorDto.Experience,
                 Certification = doctorDto.Certification,
+            };
+        }
+        public static DoctorScheduleDto ToDoctorScheduleDto(this DoctorSchedule doctorSchedule)
+        {
+            return new DoctorScheduleDto
+            {
+                DsId = doctorSchedule.DsId,
+                DocId = doctorSchedule.DocId,
+                WorkDate = doctorSchedule.WorkDate,
+                SlotId = doctorSchedule.SlotId,
+                IsAvailable = doctorSchedule.IsAvailable,
+            };
+        }
+        public static DoctorSchedule ToDoctorScheduleFromCreateDTO(this CreateDoctorScheduleDto doctorScheduleDto)
+        {
+            return new DoctorSchedule
+            {
+                DocId = doctorScheduleDto.DocId,
+                WorkDate = doctorScheduleDto.WorkDate,
+                SlotId = doctorScheduleDto.SlotId,
             };
         }
     }
