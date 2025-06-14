@@ -125,12 +125,18 @@ namespace SWP.Controllers
                     return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, "Tên tài khoản hoặc mật khẩu không đúng");
 
                 var role = await _context.Roles.FindAsync(account.RoleId);
+
                 var token = _tokenService.CreateToken(account.AccName!, account.AccId, role?.RoleName ?? "Customer");
+
+                // Truy vấn Customer theo AccountId
+                var customer = await _context.Customers.FirstOrDefaultAsync(c => c.AccId == account.AccId);
+
                 var newUser = new NewUserDto
                 {
                     Token = token,
                     UserName = account.AccName!,
                     Role = role?.RoleName ?? "Customer",
+                    UserId = customer?.CusId ?? 0 // Lấy CusId từ Customer nếu có, nếu không thì 0
                 };
                 return new BaseRespone<NewUserDto>(newUser, "Đăng nhập thành công", HttpStatusCode.OK);
             }
