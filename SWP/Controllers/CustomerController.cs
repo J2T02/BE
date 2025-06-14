@@ -32,7 +32,7 @@ namespace SWP.Controllers
              return Ok(customers);
         }
 
-        [HttpGet("GetCusDetail/{id}")]
+        [HttpGet("{id}")]
         public async Task<BaseRespone<CustomerDto>> GetCustomerDetail(int id)
         {
             try

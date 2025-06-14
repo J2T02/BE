@@ -10,11 +10,11 @@ namespace SWP.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class BookingController : ControllerBase
+    public class BookingDetailController : ControllerBase
     {
         private readonly HIEM_MUONContext _context;
 
-        public BookingController(HIEM_MUONContext context)
+        public BookingDetailController(HIEM_MUONContext context)
         {
             _context = context;
         }
