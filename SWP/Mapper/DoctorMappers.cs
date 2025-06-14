@@ -33,25 +33,5 @@ namespace SWP.Mapper
                 Certification = doctorDto.Certification,
             };
         }
-        public static DoctorScheduleDto ToDoctorScheduleDto(this DoctorSchedule doctorSchedule)
-        {
-            return new DoctorScheduleDto
-            {
-                DsId = doctorSchedule.DsId,
-                DocId = doctorSchedule.DocId,
-                WorkDate = doctorSchedule.WorkDate,
-                SlotId = doctorSchedule.SlotId,
-                IsAvailable = doctorSchedule.IsAvailable,
-            };
-        }
-        public static DoctorSchedule ToDoctorScheduleFromCreateDTO(this CreateDoctorScheduleDto doctorScheduleDto)
-        {
-            return new DoctorSchedule
-            {
-                DocId = doctorScheduleDto.DocId,
-                WorkDate = doctorScheduleDto.WorkDate,
-                SlotId = doctorScheduleDto.SlotId,
-            };
-        }
     }
 }

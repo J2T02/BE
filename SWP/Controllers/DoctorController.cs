@@ -23,7 +23,7 @@ namespace SWP.Controllers
             _doctorRepo = doctorRepo;
         }
 
-        //[Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Manager")]
         [HttpGet]
         public async Task<IActionResult> GetAllDoctors()
         {
@@ -161,33 +161,6 @@ namespace SWP.Controllers
                 return NotFound();
             }
             var response = BaseRespone<DoctorDto>.SuccessResponse(doctor.ToDoctorDto(), "Xóa bác sĩ thành công");
-            return Ok(response);
-        }
-        [Authorize(Roles = "Doctor")]
-        [HttpPost("RegisterSchedule")]
-        public async Task<IActionResult> RegisterSchedule([FromBody] CreateDoctorScheduleDto doctorScheduleDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-            var doctor = await _context.Doctors.FirstOrDefaultAsync(x => x.DocId == doctorScheduleDto.DocId);
-            if(doctor == null)
-            {
-                var error = BaseRespone<DoctorDto>.ErrorResponse("Bác sĩ không tồn tại", HttpStatusCode.NotFound);
-                return NotFound(error);
-            }
-            var schedule = doctorScheduleDto.ToDoctorScheduleFromCreateDTO();
-
-            var existingSchedule = await _context.DoctorSchedules.FirstOrDefaultAsync(s => s.DocId == doctorScheduleDto.DocId && s.WorkDate == doctorScheduleDto.WorkDate && s.SlotId == doctorScheduleDto.SlotId);
-            if(existingSchedule != null)
-            {
-                var error = BaseRespone<DoctorScheduleDto>.ErrorResponse("Bác sĩ đã đăng ký lịch làm việc cho ngày và khung giờ này.", HttpStatusCode.Conflict);
-                return Conflict(error);
-            }
-            _context.DoctorSchedules.Add(schedule);
-            await _context.SaveChangesAsync();
-            var response = BaseRespone<DoctorScheduleDto>.SuccessResponse(schedule.ToDoctorScheduleDto(), "Đăng ký lịch làm việc thành công");
             return Ok(response);
         }
     }
