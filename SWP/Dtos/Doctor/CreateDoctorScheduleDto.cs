@@ -37,5 +37,6 @@ namespace SWP.Dtos.Doctor
             return ValidationResult.Success;
         }
     }
+    
 
-}
+    }
