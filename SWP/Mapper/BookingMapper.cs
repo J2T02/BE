@@ -20,6 +20,8 @@ namespace SWP.Mapper
                 {
                     HusName = booking.Cus?.HusName,
                     WifeName = booking.Cus?.WifeName,
+                    HusYob = booking.Cus?.HusYob,
+                    WifeYob = booking.Cus?.WifeYob,
                     Phone = booking.Cus?.Phone,
                     Mail = booking.Cus?.Mail
                 },
@@ -29,15 +31,20 @@ namespace SWP.Mapper
                     DocName = booking.Doc?.DocName,
                     Phone = booking.Doc?.Phone,
                     Mail = booking.Doc?.Mail,
+                    Gender = booking.Doc?.Gender,
+                    Yob = booking.Doc?.Yob,
+                    Certification = booking.Doc?.Certification,
+                    Experience = booking.Doc?.Experience,
                     //Specialized = booking.Doc?.Specialized
                 },
 
-                Schedule = new DocScheduleDto
+                Schedule = new DoctorScheduleDto
                 {
-                    Date = booking.Ds?.WorkDate,
-                    Start = booking.Ds?.Slot?.SlotStart,
-                    End = booking.Ds?.Slot?.SlotEnd,
-                    Room = booking.Ds?.Room?.RoomNumber
+                    DocName = booking.Doc?.DocName,
+                    WorkDate = booking.Ds?.WorkDate,
+                    SlotId = booking.Ds?.SlotId,
+                    IsAvailable = booking.Ds?.IsAvailable,
+                    //Room = booking.Ds?.Room?.RoomNumber
                 }
             };
         }

@@ -9,8 +9,7 @@ namespace SWP.Mapper
         {
             return new DoctorDto
             {
-                DocId = doctor.DocId,
-                AccId = doctor.AccId,
+
                 DocName = doctor.DocName,
                 Gender = doctor.Gender,
                 Yob = doctor.Yob,
@@ -37,20 +36,19 @@ namespace SWP.Mapper
         {
             return new DoctorScheduleDto
             {
-                DsId = doctorSchedule.DsId,
-                DocId = doctorSchedule.DocId,
+                DocName = doctorSchedule.Doc?.DocName,
                 WorkDate = doctorSchedule.WorkDate,
                 SlotId = doctorSchedule.SlotId,
                 IsAvailable = doctorSchedule.IsAvailable,
             };
         }
-        public static DoctorSchedule ToDoctorScheduleFromCreateDTO(this CreateDoctorScheduleDto doctorScheduleDto)
+        public static DoctorSchedule ToDoctorScheduleFromCreateDTO(this CreateDoctorScheduleDto doctorSchedule)
         {
             return new DoctorSchedule
             {
-                DocId = doctorScheduleDto.DocId,
-                WorkDate = doctorScheduleDto.WorkDate,
-                SlotId = doctorScheduleDto.SlotId,
+                DocId = doctorSchedule.DocId,
+                WorkDate = doctorSchedule?.WorkDate,
+                SlotId = doctorSchedule.SlotId
             };
         }
     }

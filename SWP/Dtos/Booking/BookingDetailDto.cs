@@ -14,6 +14,6 @@ namespace SWP.Dtos.Booking
         public string Note { get; set; }
         public CustomerDto Cus { get; set; }
         public DoctorDto Doc { get; set; }
-        public DocScheduleDto Schedule { get; set; } // Added this property to fix CS0117  
+        public DoctorScheduleDto Schedule { get; set; } // Added this property to fix CS0117  
     }
 }

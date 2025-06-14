@@ -2,9 +2,9 @@
 {
     public class CustomerDto
     {
-        public int CusId { get; set; }
+        //public int CusId { get; set; }
 
-        public int? AccId { get; set; }
+        //public int? AccId { get; set; }
 
         public string HusName { get; set; }
 
