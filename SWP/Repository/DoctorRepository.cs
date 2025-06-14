@@ -61,5 +61,16 @@ namespace SWP.Repository
 
         }
 
+        public async Task<bool> GetDoctorScheduleByIdAsync(DoctorSchedule doctorSchedule)
+        {
+            return await _context.DoctorSchedules.AnyAsync(x => x.DocId == doctorSchedule.DocId && x.WorkDate == doctorSchedule.WorkDate && x.SlotId == doctorSchedule.SlotId);
+        }
+
+        public async Task<DoctorSchedule> RegisterDoctorSchedule(DoctorSchedule doctorSchedule)
+        {
+            _context.DoctorSchedules.Add(doctorSchedule);
+            await _context.SaveChangesAsync();
+            return doctorSchedule;
+        }
     }
 }
