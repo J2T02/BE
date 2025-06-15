@@ -2,6 +2,7 @@
 using SWP.Dtos.Customer;
 using SWP.Dtos.Doctor;
 using SWP.Models;
+using SWP.Dtos.Account;
 
 namespace SWP.Mapper
 {
@@ -18,6 +19,8 @@ namespace SWP.Mapper
 
                 Cus = new CustomerDto
                 {
+                    AccId = booking.Cus?.AccId,
+                    //AccName = booking.Cus?.Acc?.AccName,
                     HusName = booking.Cus?.HusName,
                     WifeName = booking.Cus?.WifeName,
                     HusYob = booking.Cus?.HusYob,
