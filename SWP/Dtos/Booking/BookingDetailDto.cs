@@ -1,6 +1,7 @@
 ﻿using SWP.Dtos.Customer;
 using SWP.Dtos.Doctor;
 using SWP.Dtos.Payment;
+using SWP.Dtos.Account;
 
 namespace SWP.Dtos.Booking
 
@@ -12,8 +13,9 @@ namespace SWP.Dtos.Booking
         public DateTime? CreateAt { get; set; }
         public string Status { get; set; }
         public string Note { get; set; }
+        //public String AccName { get; set; }
         public CustomerDto Cus { get; set; }
         public DoctorDto Doc { get; set; }
-        public DoctorScheduleDto Schedule { get; set; } // Added this property to fix CS0117  
+        public DoctorScheduleDto Schedule { get; set; }
     }
 }
