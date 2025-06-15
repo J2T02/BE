@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SWP.Data;
 using SWP.Dtos.Booking;
+using SWP.Interfaces;
 using SWP.Mapper;
 using SWP.Models;
 using System.Net;
@@ -12,50 +13,17 @@ namespace SWP.Controllers
     [ApiController]
     public class BookingDetailController : ControllerBase
     {
-        private readonly HIEM_MUONContext _context;
+        private readonly IBookingDetail _bookingDetailRepo;
 
-        public BookingDetailController(HIEM_MUONContext context)
+        public BookingDetailController(IBookingDetail bookingDetailRepo)
         {
-            _context = context;
+            _bookingDetailRepo = bookingDetailRepo;
         }
 
         [HttpGet("GetBookingDetail/{id}")]
         public async Task<BaseRespone<BookingDetailDto>> GetBookingDetail(int id)
         {
-            try
-            {
-                var booking = await _context.Bookings
-                    .Include(b => b.Cus)
-                    .Include(b => b.Doc)
-                    .Include(b => b.Ds)
-                        .ThenInclude(ds => ds.Slot)
-                    .Include(b => b.Ds)
-                        .ThenInclude(ds => ds.Room)
-                    .FirstOrDefaultAsync(b => b.BookingId == id);
-
-                if (booking == null)
-                {
-                    return new BaseRespone<BookingDetailDto>(
-                        statusCode: HttpStatusCode.NotFound,
-                        message: "Không tìm thấy booking"
-                    );
-                }
-
-                var bookingDto = booking.ToBookingDetailDto();
-
-                return new BaseRespone<BookingDetailDto>(
-                    data: bookingDto,
-                    message: "Lấy dữ liệu thành công",
-                    statusCode: HttpStatusCode.OK
-                );
-            }
-            catch (Exception ex)
-            {
-                return new BaseRespone<BookingDetailDto>(
-                    statusCode: HttpStatusCode.InternalServerError,
-                    message: "Lỗi: " + ex.Message
-                );
-            }
+            return await _bookingDetailRepo.GetBookingDetailAsync(id);
         }
     }
 }
