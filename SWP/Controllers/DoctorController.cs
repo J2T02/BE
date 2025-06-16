@@ -67,7 +67,7 @@ namespace SWP.Controllers
             return Ok(response);
         }
 
-        [Authorize(Roles = "Admin,Manager")]
+        //[Authorize(Roles = "Admin,Manager")]
         [HttpPost]
         public async Task<IActionResult> CreateDoctor([FromBody] CreateDocotorRequestDto doctor)
         {
