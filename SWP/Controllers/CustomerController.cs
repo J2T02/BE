@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using SWP.Data;
 using SWP.Dtos.Customer;
 using SWP.Interfaces;
@@ -37,7 +39,10 @@ namespace SWP.Controllers
         {
             try
             {
-                var customer = await _context.Customers.FindAsync(id);
+                var customer = await _context.Customers
+           .Include(c => c.Acc).FirstOrDefaultAsync(c => c.CusId == id);
+
+                //var customer = await _context.Customers.FindAsync(id);   //
 
                 if (customer == null)
                 {
@@ -46,6 +51,8 @@ namespace SWP.Controllers
 
                 var customerDto = new CustomerDto
                 {
+                    AccId = customer.AccId,
+                    AccName = customer.Acc.AccName,
                     HusName = customer.HusName,
                     HusYob = customer.HusYob,
                     WifeName = customer.WifeName,

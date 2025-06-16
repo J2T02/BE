@@ -81,7 +81,10 @@ namespace SWP.Controllers
                 var customer = new Customer
                 {
                     AccId = account.AccId,
-
+                    HusName = registerDto.HusName,
+                    HusYob = registerDto.HusYob,
+                    WifeName = registerDto.WifeName,
+                    WifeYob = registerDto.WifeYob,
                     Phone = registerDto.Phone,
                     Mail = registerDto.Mail
                 };
@@ -173,12 +176,16 @@ namespace SWP.Controllers
                 // 4. Tạo token
                 var token = _tokenService.CreateToken(account.AccName!, account.AccId, roleName);
 
+                var doctor = await _context.Doctors
+                    .FirstOrDefaultAsync(d => d.AccId == account.AccId);
+
                 // 5. Trả về DTO
                 var newUser = new NewUserDto
                 {
                     Token = token,
                     UserName = account.AccName!,
-                    Role = roleName
+                    Role = roleName,
+                    UserId = doctor?.DocId ?? 0 // Lấy DocId từ Doctor nếu có, nếu không thì 0
                 };
 
                 return new BaseRespone<NewUserDto>(newUser, "Đăng nhập thành công", HttpStatusCode.OK);
