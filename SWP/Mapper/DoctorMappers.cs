@@ -26,6 +26,8 @@ namespace SWP.Mapper
             return new Doctor
             {
                 DocName = doctorDto.DocName,
+                Phone = doctorDto.Phone,
+                Mail = doctorDto.Mail,
                 Gender = doctorDto.Gender,
                 Yob = doctorDto.Yob,
                 Experience = doctorDto.Experience,
