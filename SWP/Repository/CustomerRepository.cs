@@ -14,14 +14,14 @@ namespace SWP.Repository
 
         public async Task<List<Customer>> GetAllCustomersAsync()
         {
-           return await _context.Customers.ToListAsync();
+           return await _context.Customers.Include(c => c.Acc).ToListAsync();
         }
 
         public async Task<Customer?> GetCustomerByIdAsync(int id)
         {
             return await _context.Customers.FirstOrDefaultAsync(c => c.CusId == id);
         }
-        // Implement methods for customer repository here\
+
 
     }
     

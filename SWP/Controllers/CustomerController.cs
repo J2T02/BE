@@ -30,8 +30,10 @@ namespace SWP.Controllers
                 return BadRequest(ModelState);
             }
             var customers = await _customerRepository.GetAllCustomersAsync();
-            var customerDto = customers.Select(c => c.ToCustomerDto());
-             return Ok(customers);
+
+            //var customerDto = customers.Select(c => c.ToCustomerDto());
+            var customerDtos = customers.Select(x => x.ToCustomerDto()).ToList();
+            return Ok( BaseRespone<List<CustomerDto>>.SuccessResponse(customerDtos,"Lấy dữ liệu thành công",HttpStatusCode.OK));
         }
 
         [HttpGet("{id}")]
@@ -51,7 +53,6 @@ namespace SWP.Controllers
 
                 var customerDto = new CustomerDto
                 {
-                    AccId = customer.AccId,
                     AccName = customer.Acc.AccName,
                     HusName = customer.HusName,
                     HusYob = customer.HusYob,
