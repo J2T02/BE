@@ -3,7 +3,7 @@
     public class CustomerDto
     {
         //public int CusId { get; set; }
-        public int? AccId { get; set; }
+        //public int? AccId { get; set; }
 
         public string AccName { get; set; }
 

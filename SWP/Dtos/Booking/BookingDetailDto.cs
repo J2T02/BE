@@ -13,9 +13,7 @@ namespace SWP.Dtos.Booking
         public DateTime? CreateAt { get; set; }
         public string Status { get; set; }
         public string Note { get; set; }
-        //public String AccName { get; set; }
-        //public CustomerDto Cus { get; set; }
-        public DoctorDto Doc { get; set; }
-        public DoctorScheduleDto Schedule { get; set; }
+        public DocDto Doc { get; set; }
+        public DocScheduleDto Schedule { get; set; }
     }
 }

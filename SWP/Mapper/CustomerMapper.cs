@@ -10,6 +10,7 @@ namespace SWP.Mapper
         {    
             return new CustomerDto
             {
+                
                 AccName= customer.Acc?.AccName,
                 HusName = customer.HusName, 
                 HusYob = customer.HusYob,

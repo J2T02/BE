@@ -15,39 +15,18 @@ namespace SWP.Repository
         {
             _context = context;
         }
-        public async Task<BaseRespone<BookingDetailDto>> GetBookingDetailAsync(int id)
+        public async Task<Booking?> GetBookingDetailAsync(int id)
         {
-            try
-            {
-                var booking = await _context.Bookings
-                    .Include(b => b.Cus)
-                    .Include(b => b.Doc)
-                    .Include(b => b.Ds)
-                        .ThenInclude(ds => ds.Slot)
-                    .Include(b => b.Ds)
-                        .ThenInclude(ds => ds.Room)
-                    .FirstOrDefaultAsync(b => b.BookingId == id);
-                if (booking == null)
-                {
-                    return new BaseRespone<BookingDetailDto>(
-                        statusCode: HttpStatusCode.NotFound,
-                        message: "Không tìm thấy booking"
-                    );
-                }
-                var bookingDto = booking.ToBookingDetailDto();
-                return new BaseRespone<BookingDetailDto>(
-                    data: bookingDto,
-                    message: "Lấy dữ liệu thành công",
-                    statusCode: HttpStatusCode.OK
-                );
-            }
-            catch (Exception ex)
-            {
-                return new BaseRespone<BookingDetailDto>(
-                    statusCode: HttpStatusCode.InternalServerError,
-                    message: "Lỗi: " + ex.Message
-                );
-            }
+            var booking = await _context.Bookings
+                .Include(b => b.Cus)
+                .Include(b => b.Doc)
+                .Include(b => b.Ds)
+                    .ThenInclude(ds => ds.Slot)
+                .Include(b => b.Ds)
+                    .ThenInclude(ds => ds.Room)
+                .FirstOrDefaultAsync(b => b.BookingId == id);
+
+            return booking; // Trả về null nếu không tìm thấy
         }
     }
 
