@@ -67,7 +67,7 @@ namespace SWP.Controllers
             return Ok(response);
         }
 
-        //[Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPost]
         public async Task<IActionResult> CreateDoctor([FromBody] CreateDocotorRequestDto doctor)
         {
@@ -116,7 +116,7 @@ namespace SWP.Controllers
             return CreatedAtAction(nameof(GetDoctorById), new { id = loadedDoctor.DocId }, response);
         }
 
-        [Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Manager,Doctor")]
         [HttpPut]
         [Route("{id}")]
         public async Task<IActionResult> UpdateDoctor([FromRoute] int id, [FromBody] UpdateDoctorRequestDto doctor)
