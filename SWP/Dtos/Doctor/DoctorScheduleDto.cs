@@ -2,9 +2,9 @@
 {
     public class DoctorScheduleDto
     {
-        //public int DsId { get; set; }
+        public int DsId { get; set; }
 
-        //public int? DocId { get; set; }
+        public int? DocId { get; set; }
         public string DocName { get; set; }
 
         public DateOnly? WorkDate { get; set; }

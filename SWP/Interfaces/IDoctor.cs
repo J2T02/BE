@@ -9,8 +9,8 @@ namespace SWP.Interfaces
         Task<Doctor> GetDoctorByIdAsync(int id);
         Task<Doctor> CreateDoctorAsync(Doctor doctor);
         Task<Doctor> UpdateDoctorAsync(int id, UpdateDoctorRequestDto doctor);
-        Task<Doctor> DeleteDoctorAsync(int id);
-        Task<bool> GetDoctorScheduleByIdAsync(DoctorSchedule doctorSchedule);
+        Task<string> DeleteDoctorAsync(int id);
+        Task<DoctorSchedule> GetDoctorScheduleByIdAsync(DoctorSchedule doctorSchedule);
         Task<DoctorSchedule> RegisterDoctorSchedule(DoctorSchedule doctorSchedule);
     }
 }
