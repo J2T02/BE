@@ -6,8 +6,6 @@ namespace SWP.Dtos.Doctor
     {
         public int AccId { get; set; }
         public string AccName { get; set; }
-
-        public int? AccId { get; set; }
         public string DocName { get; set; }
 
         public string Gender { get; set; }
