@@ -21,8 +21,6 @@ public partial class Customer
 
     public virtual Account Acc { get; set; }
 
-    public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
-
     public virtual ICollection<Test> Tests { get; set; } = new List<Test>();
 
     public virtual ICollection<TreatmentPlan> TreatmentPlans { get; set; } = new List<TreatmentPlan>();

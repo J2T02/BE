@@ -5,11 +5,15 @@ using System.Collections.Generic;
 
 namespace SWP.Models;
 
-public partial class Certificate
+public partial class DocCertificate
 {
+    public int DocId { get; set; }
+
     public int CerId { get; set; }
 
-    public string CerName { get; set; }
+    public string FilePath { get; set; }
 
-    public virtual ICollection<DocCertificate> DocCertificates { get; set; } = new List<DocCertificate>();
+    public virtual Certificate Cer { get; set; }
+
+    public virtual Doctor Doc { get; set; }
 }

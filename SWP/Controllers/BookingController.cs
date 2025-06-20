@@ -34,11 +34,11 @@ namespace SWP.Controllers
                 // ✅ Kiểm tra trước: Khách đã đặt trong slot chưa
                 var alreadyBooked = await _context.Bookings
                 .Include(b => b.Ds)
-                .Where(b => b.CusId == bookingRequest.CustomerId &&
+                .Where(b => b.AccId == bookingRequest.CustomerId &&
                         b.Ds.WorkDate == bookingRequest.WorkDate &&  
                         b.Ds.SlotId == bookingRequest.SlotId ).AnyAsync();
 
-                var booked = await _context.Bookings.Where(b => b.CusId == bookingRequest.CustomerId &&
+                var booked = await _context.Bookings.Where(b => b.AccId == bookingRequest.CustomerId &&
                         b.Status <4).AnyAsync();
 
 

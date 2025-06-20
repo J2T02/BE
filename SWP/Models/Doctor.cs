@@ -19,15 +19,13 @@ public partial class Doctor
 
     public int? Experience { get; set; }
 
-    public int? CerId { get; set; }
-
     public int? Status { get; set; }
 
     public virtual Account Acc { get; set; }
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
-    public virtual Certificate Cer { get; set; }
+    public virtual ICollection<DocCertificate> DocCertificates { get; set; } = new List<DocCertificate>();
 
     public virtual ICollection<DoctorSchedule> DoctorSchedules { get; set; } = new List<DoctorSchedule>();
 
