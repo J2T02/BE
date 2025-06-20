@@ -23,6 +23,8 @@ public partial class HIEM_MUONContext : DbContext
 
     public virtual DbSet<Booking> Bookings { get; set; }
 
+    public virtual DbSet<Certificate> Certificates { get; set; }
+
     public virtual DbSet<Customer> Customers { get; set; }
 
     public virtual DbSet<Doctor> Doctors { get; set; }
@@ -33,17 +35,19 @@ public partial class HIEM_MUONContext : DbContext
 
     public virtual DbSet<MethodPayment> MethodPayments { get; set; }
 
-    public virtual DbSet<PaymentBooking> PaymentBookings { get; set; }
+    public virtual DbSet<Payment> Payments { get; set; }
 
-    public virtual DbSet<PaymentTreatment> PaymentTreatments { get; set; }
+    public virtual DbSet<PaymentType> PaymentTypes { get; set; }
+
+    public virtual DbSet<Remind> Reminds { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
-
-    public virtual DbSet<Room> Rooms { get; set; }
 
     public virtual DbSet<Service> Services { get; set; }
 
     public virtual DbSet<SlotSchedule> SlotSchedules { get; set; }
+
+    public virtual DbSet<Status> Statuses { get; set; }
 
     public virtual DbSet<StatusPayment> StatusPayments { get; set; }
 
@@ -51,86 +55,82 @@ public partial class HIEM_MUONContext : DbContext
 
     public virtual DbSet<Test> Tests { get; set; }
 
+    public virtual DbSet<TestType> TestTypes { get; set; }
+
     public virtual DbSet<TreatmentPlan> TreatmentPlans { get; set; }
 
     public virtual DbSet<TreatmentStep> TreatmentSteps { get; set; }
-
-//        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-//    => optionsBuilder.UseSqlServer("Data Source=MSI\\DBAO;Initial Catalog=HIEM_MUON;User ID=sa;Password=12345;Encrypt=True;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Account>(entity =>
         {
-            entity.HasKey(e => e.AccId).HasName("PK__Account__49ACB9A464902E1F");
+            entity.HasKey(e => e.AccId).HasName("PK__Account__49ACB9A47D73159D");
 
             entity.ToTable("Account");
 
             entity.Property(e => e.AccId).HasColumnName("Acc_ID");
-            entity.Property(e => e.AccName)
+            entity.Property(e => e.CreateAt).HasColumnType("datetime");
+            entity.Property(e => e.FullName)
                 .HasMaxLength(100)
-                .IsUnicode(false)
-                .HasColumnName("Acc_Name");
+                .HasColumnName("Full_Name");
+            entity.Property(e => e.Img).HasColumnType("text");
+            entity.Property(e => e.Mail)
+                .HasMaxLength(100)
+                .IsUnicode(false);
             entity.Property(e => e.Password)
                 .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.Phone)
+                .HasMaxLength(15)
                 .IsUnicode(false);
             entity.Property(e => e.RoleId).HasColumnName("Role_ID");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Accounts)
                 .HasForeignKey(d => d.RoleId)
-                .HasConstraintName("FK__Account__Passwor__38996AB5");
+                .HasConstraintName("FK__Account__Role_ID__37A5467C");
         });
 
         modelBuilder.Entity<BioSample>(entity =>
         {
-            entity.HasKey(e => e.BsId).HasName("PK__BioSampl__B5A8B2658D6AEF87");
+            entity.HasKey(e => e.BsId).HasName("PK__BioSampl__B5A8B265E4F2E85B");
 
             entity.ToTable("BioSample");
 
             entity.Property(e => e.BsId).HasColumnName("BS_ID");
             entity.Property(e => e.BsName)
                 .HasMaxLength(100)
-                .IsUnicode(false)
                 .HasColumnName("BS_Name");
             entity.Property(e => e.BtId).HasColumnName("BT_ID");
             entity.Property(e => e.Note).HasColumnType("text");
-            entity.Property(e => e.Quality)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.Status)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-            entity.Property(e => e.StorageLocation)
-                .HasMaxLength(100)
-                .IsUnicode(false);
+            entity.Property(e => e.Quality).HasMaxLength(50);
+            entity.Property(e => e.StorageLocation).HasMaxLength(100);
             entity.Property(e => e.TpId).HasColumnName("TP_ID");
 
             entity.HasOne(d => d.Bt).WithMany(p => p.BioSamples)
                 .HasForeignKey(d => d.BtId)
-                .HasConstraintName("FK__BioSample__BT_ID__66603565");
+                .HasConstraintName("FK__BioSample__BT_ID__656C112C");
 
             entity.HasOne(d => d.Tp).WithMany(p => p.BioSamples)
                 .HasForeignKey(d => d.TpId)
-                .HasConstraintName("FK__BioSample__Note__656C112C");
+                .HasConstraintName("FK__BioSample__TP_ID__6477ECF3");
         });
 
         modelBuilder.Entity<BioType>(entity =>
         {
-            entity.HasKey(e => e.BtId).HasName("PK__BioType__9C28A3C28027A111");
+            entity.HasKey(e => e.BtId).HasName("PK__BioType__9C28A3C2CE779878");
 
             entity.ToTable("BioType");
 
             entity.Property(e => e.BtId).HasColumnName("BT_ID");
             entity.Property(e => e.BtName)
                 .HasMaxLength(100)
-                .IsUnicode(false)
                 .HasColumnName("BT_Name");
         });
 
         modelBuilder.Entity<Blog>(entity =>
         {
-            entity.HasKey(e => e.BlogId).HasName("PK__Blog__C164D01802E7D982");
+            entity.HasKey(e => e.BlogId).HasName("PK__Blog__C164D0188EC4BCD4");
 
             entity.ToTable("Blog");
 
@@ -139,18 +139,16 @@ public partial class HIEM_MUONContext : DbContext
             entity.Property(e => e.Content).HasColumnType("text");
             entity.Property(e => e.Img).HasColumnType("text");
             entity.Property(e => e.IsActive).HasColumnName("isActive");
-            entity.Property(e => e.Title)
-                .HasMaxLength(255)
-                .IsUnicode(false);
+            entity.Property(e => e.Title).HasMaxLength(255);
 
             entity.HasOne(d => d.Author).WithMany(p => p.Blogs)
                 .HasForeignKey(d => d.AuthorId)
-                .HasConstraintName("FK__Blog__isActive__693CA210");
+                .HasConstraintName("FK__Blog__Author_ID__412EB0B6");
         });
 
         modelBuilder.Entity<Booking>(entity =>
         {
-            entity.HasKey(e => e.BookingId).HasName("PK__Booking__35ABFDE0590FB2A1");
+            entity.HasKey(e => e.BookingId).HasName("PK__Booking__35ABFDE09B1B00B6");
 
             entity.ToTable("Booking");
 
@@ -162,26 +160,37 @@ public partial class HIEM_MUONContext : DbContext
             entity.Property(e => e.DocId).HasColumnName("Doc_ID");
             entity.Property(e => e.DsId).HasColumnName("DS_ID");
             entity.Property(e => e.Note).HasColumnType("text");
-            entity.Property(e => e.Status)
-                .HasMaxLength(50)
-                .IsUnicode(false);
 
             entity.HasOne(d => d.Cus).WithMany(p => p.Bookings)
                 .HasForeignKey(d => d.CusId)
-                .HasConstraintName("FK__Booking__Note__49C3F6B7");
+                .HasConstraintName("FK__Booking__Cus_ID__47DBAE45");
 
             entity.HasOne(d => d.Doc).WithMany(p => p.Bookings)
                 .HasForeignKey(d => d.DocId)
-                .HasConstraintName("FK__Booking__Doc_ID__4AB81AF0");
+                .HasConstraintName("FK__Booking__Doc_ID__48CFD27E");
 
             entity.HasOne(d => d.Ds).WithMany(p => p.Bookings)
                 .HasForeignKey(d => d.DsId)
-                .HasConstraintName("FK__Booking__DS_ID__4BAC3F29");
+                .HasConstraintName("FK__Booking__DS_ID__49C3F6B7");
+        });
+
+        modelBuilder.Entity<Certificate>(entity =>
+        {
+            entity.HasKey(e => e.CerId).HasName("PK__Certific__C5D9F2E337D84469");
+
+            entity.ToTable("Certificate");
+
+            entity.Property(e => e.CerId)
+                .ValueGeneratedNever()
+                .HasColumnName("Cer_ID");
+            entity.Property(e => e.CerName)
+                .HasMaxLength(100)
+                .HasColumnName("Cer_Name");
         });
 
         modelBuilder.Entity<Customer>(entity =>
         {
-            entity.HasKey(e => e.CusId).HasName("PK__Customer__0AD16557A2FDF215");
+            entity.HasKey(e => e.CusId).HasName("PK__Customer__0AD1655799977DE1");
 
             entity.ToTable("Customer");
 
@@ -191,12 +200,6 @@ public partial class HIEM_MUONContext : DbContext
                 .HasMaxLength(100)
                 .HasColumnName("Hus_Name");
             entity.Property(e => e.HusYob).HasColumnName("Hus_YOB");
-            entity.Property(e => e.Mail)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.Phone)
-                .HasMaxLength(15)
-                .IsUnicode(false);
             entity.Property(e => e.WifeName)
                 .HasMaxLength(100)
                 .HasColumnName("Wife_Name");
@@ -204,65 +207,56 @@ public partial class HIEM_MUONContext : DbContext
 
             entity.HasOne(d => d.Acc).WithMany(p => p.Customers)
                 .HasForeignKey(d => d.AccId)
-                .HasConstraintName("FK__Customer__Mail__3B75D760");
+                .HasConstraintName("FK__Customer__Acc_ID__3A81B327");
         });
 
         modelBuilder.Entity<Doctor>(entity =>
         {
-            entity.HasKey(e => e.DocId).HasName("PK__Doctor__4647382192C33FA5");
+            entity.HasKey(e => e.DocId).HasName("PK__Doctor__4647382125CF261B");
 
             entity.ToTable("Doctor");
 
             entity.Property(e => e.DocId).HasColumnName("Doc_ID");
             entity.Property(e => e.AccId).HasColumnName("Acc_ID");
-            entity.Property(e => e.Certification).HasColumnType("text");
+            entity.Property(e => e.CerId).HasColumnName("Cer_ID");
             entity.Property(e => e.DocName)
                 .HasMaxLength(100)
                 .HasColumnName("Doc_Name");
-            entity.Property(e => e.Gender)
-                .HasMaxLength(10)
-                .IsUnicode(false);
-            entity.Property(e => e.Mail)
-                .HasMaxLength(100)
-                .IsUnicode(false);
-            entity.Property(e => e.Phone)
-                .HasMaxLength(15)
-                .IsUnicode(false);
+            entity.Property(e => e.Gender).HasMaxLength(10);
             entity.Property(e => e.Yob).HasColumnName("YOB");
 
             entity.HasOne(d => d.Acc).WithMany(p => p.Doctors)
                 .HasForeignKey(d => d.AccId)
-                .HasConstraintName("FK__Doctor__Certific__3E52440B");
+                .HasConstraintName("FK__Doctor__Acc_ID__3D5E1FD2");
+
+            entity.HasOne(d => d.Cer).WithMany(p => p.Doctors)
+                .HasForeignKey(d => d.CerId)
+                .HasConstraintName("FK__Doctor__Cer_ID__3E52440B");
         });
 
         modelBuilder.Entity<DoctorSchedule>(entity =>
         {
-            entity.HasKey(e => e.DsId).HasName("PK__DoctorSc__EFC56BC651FEB484");
+            entity.HasKey(e => e.DsId).HasName("PK__DoctorSc__EFC56BC6F9F19757");
 
             entity.ToTable("DoctorSchedule");
 
             entity.Property(e => e.DsId).HasColumnName("DS_ID");
             entity.Property(e => e.DocId).HasColumnName("Doc_ID");
             entity.Property(e => e.IsAvailable).HasColumnName("isAvailable");
-            entity.Property(e => e.RoomId).HasColumnName("Room_ID");
             entity.Property(e => e.SlotId).HasColumnName("Slot_ID");
 
             entity.HasOne(d => d.Doc).WithMany(p => p.DoctorSchedules)
                 .HasForeignKey(d => d.DocId)
-                .HasConstraintName("FK__DoctorSch__Doc_I__44FF419A");
-
-            entity.HasOne(d => d.Room).WithMany(p => p.DoctorSchedules)
-                .HasForeignKey(d => d.RoomId)
-                .HasConstraintName("FK__DoctorSch__Room___46E78A0C");
+                .HasConstraintName("FK__DoctorSch__Doc_I__440B1D61");
 
             entity.HasOne(d => d.Slot).WithMany(p => p.DoctorSchedules)
                 .HasForeignKey(d => d.SlotId)
-                .HasConstraintName("FK__DoctorSch__Slot___45F365D3");
+                .HasConstraintName("FK__DoctorSch__Slot___44FF419A");
         });
 
         modelBuilder.Entity<Feedback>(entity =>
         {
-            entity.HasKey(e => e.FbId).HasName("PK__Feedback__28DF6171A3CAD1C5");
+            entity.HasKey(e => e.FbId).HasName("PK__Feedback__28DF61716883D175");
 
             entity.ToTable("Feedback");
 
@@ -273,128 +267,116 @@ public partial class HIEM_MUONContext : DbContext
 
             entity.HasOne(d => d.Doc).WithMany(p => p.Feedbacks)
                 .HasForeignKey(d => d.DocId)
-                .HasConstraintName("FK__Feedback__Doc_ID__5CD6CB2B");
+                .HasConstraintName("FK__Feedback__Doc_ID__5EBF139D");
 
             entity.HasOne(d => d.Tp).WithMany(p => p.Feedbacks)
                 .HasForeignKey(d => d.TpId)
-                .HasConstraintName("FK__Feedback__TP_ID__5BE2A6F2");
+                .HasConstraintName("FK__Feedback__TP_ID__5DCAEF64");
         });
 
         modelBuilder.Entity<MethodPayment>(entity =>
         {
-            entity.HasKey(e => e.MethodId).HasName("PK__Method_P__FB48B3C42D339E23");
+            entity.HasKey(e => e.MethodId).HasName("PK__Method_P__FB48B3C432744D69");
 
             entity.ToTable("Method_Payment");
 
             entity.Property(e => e.MethodId).HasColumnName("Method_ID");
             entity.Property(e => e.MethodName)
-                .IsRequired()
                 .HasMaxLength(50)
-                .IsUnicode(false)
                 .HasColumnName("Method_Name");
         });
 
-        modelBuilder.Entity<PaymentBooking>(entity =>
+        modelBuilder.Entity<Payment>(entity =>
         {
-            entity.HasKey(e => e.PbId).HasName("PK__Payment___624B28C499BBCB49");
+            entity.HasKey(e => e.PaymentId).HasName("PK__Payment__DA6C7FE18639CCC5");
 
-            entity.ToTable("Payment_Booking");
+            entity.ToTable("Payment");
 
-            entity.Property(e => e.PbId).HasColumnName("PB_ID");
+            entity.Property(e => e.PaymentId).HasColumnName("Payment_ID");
             entity.Property(e => e.Amount).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.BookingId).HasColumnName("Booking_ID");
             entity.Property(e => e.MethodId).HasColumnName("Method_ID");
-            entity.Property(e => e.PaymentDate)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
+            entity.Property(e => e.PaymentDate).HasColumnType("datetime");
+            entity.Property(e => e.PaymentTypeId).HasColumnName("PaymentType_ID");
             entity.Property(e => e.StatusId).HasColumnName("Status_ID");
+            entity.Property(e => e.TreatmentPlansId).HasColumnName("TreatmentPlans_ID");
 
-            entity.HasOne(d => d.Booking).WithMany(p => p.PaymentBookings)
+            entity.HasOne(d => d.Booking).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.BookingId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Payment_B__Booki__70DDC3D8");
+                .HasConstraintName("FK__Payment__Booking__693CA210");
 
-            entity.HasOne(d => d.Method).WithMany(p => p.PaymentBookings)
+            entity.HasOne(d => d.Method).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.MethodId)
-                .HasConstraintName("FK__Payment_B__Metho__71D1E811");
+                .HasConstraintName("FK__Payment__Method___6B24EA82");
 
-            entity.HasOne(d => d.Status).WithMany(p => p.PaymentBookings)
+            entity.HasOne(d => d.PaymentType).WithMany(p => p.Payments)
+                .HasForeignKey(d => d.PaymentTypeId)
+                .HasConstraintName("FK__Payment__Payment__68487DD7");
+
+            entity.HasOne(d => d.Status).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.StatusId)
-                .HasConstraintName("FK__Payment_B__Statu__72C60C4A");
+                .HasConstraintName("FK__Payment__Status___6C190EBB");
+
+            entity.HasOne(d => d.TreatmentPlans).WithMany(p => p.Payments)
+                .HasForeignKey(d => d.TreatmentPlansId)
+                .HasConstraintName("FK__Payment__Treatme__6A30C649");
         });
 
-        modelBuilder.Entity<PaymentTreatment>(entity =>
+        modelBuilder.Entity<PaymentType>(entity =>
         {
-            entity.HasKey(e => e.PtId).HasName("PK__Payment___6836DDD35027180D");
+            entity.HasKey(e => e.PaymentTypeId).HasName("PK__PaymentT__CD8B7D1920DA6DBA");
 
-            entity.ToTable("Payment_Treatment");
+            entity.ToTable("PaymentType");
 
-            entity.Property(e => e.PtId).HasColumnName("PT_ID");
-            entity.Property(e => e.Amount).HasColumnType("decimal(10, 2)");
-            entity.Property(e => e.MethodId).HasColumnName("Method_ID");
-            entity.Property(e => e.PaymentDate)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
-            entity.Property(e => e.StatusId).HasColumnName("Status_ID");
-            entity.Property(e => e.TpId).HasColumnName("TP_ID");
+            entity.Property(e => e.PaymentTypeId).HasColumnName("PaymentType_ID");
+            entity.Property(e => e.TypeName)
+                .HasMaxLength(50)
+                .HasColumnName("Type_Name");
+        });
 
-            entity.HasOne(d => d.Method).WithMany(p => p.PaymentTreatments)
-                .HasForeignKey(d => d.MethodId)
-                .HasConstraintName("FK__Payment_T__Metho__778AC167");
+        modelBuilder.Entity<Remind>(entity =>
+        {
+            entity.HasKey(e => e.RemindId).HasName("PK__Remind__A1DB7C9145C3A040");
 
-            entity.HasOne(d => d.Status).WithMany(p => p.PaymentTreatments)
-                .HasForeignKey(d => d.StatusId)
-                .HasConstraintName("FK__Payment_T__Statu__787EE5A0");
+            entity.ToTable("Remind");
 
-            entity.HasOne(d => d.Tp).WithMany(p => p.PaymentTreatments)
-                .HasForeignKey(d => d.TpId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Payment_T__TP_ID__76969D2E");
+            entity.Property(e => e.RemindId).HasColumnName("Remind_ID");
+            entity.Property(e => e.Message).HasColumnType("text");
+            entity.Property(e => e.ReminderDay).HasColumnName("Reminder_Day");
+            entity.Property(e => e.SdId).HasColumnName("SD_ID");
+
+            entity.HasOne(d => d.Sd).WithMany(p => p.Reminds)
+                .HasForeignKey(d => d.SdId)
+                .HasConstraintName("FK__Remind__SD_ID__619B8048");
         });
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Role__D80AB49B29E4EE42");
+            entity.HasKey(e => e.RoleId).HasName("PK__Role__D80AB49BE6A598E8");
 
             entity.ToTable("Role");
 
             entity.Property(e => e.RoleId).HasColumnName("Role_ID");
             entity.Property(e => e.RoleName)
                 .HasMaxLength(50)
-                .IsUnicode(false)
                 .HasColumnName("Role_Name");
-        });
-
-        modelBuilder.Entity<Room>(entity =>
-        {
-            entity.HasKey(e => e.RoomId).HasName("PK__Room__19EE6A73CB53DB15");
-
-            entity.ToTable("Room");
-
-            entity.Property(e => e.RoomId).HasColumnName("Room_ID");
-            entity.Property(e => e.RoomNumber)
-                .IsRequired()
-                .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasColumnName("Room_Number");
         });
 
         modelBuilder.Entity<Service>(entity =>
         {
-            entity.HasKey(e => e.SerId).HasName("PK__Services__266F00714D6724B3");
+            entity.HasKey(e => e.SerId).HasName("PK__Services__266F0071EA68907C");
 
             entity.Property(e => e.SerId).HasColumnName("Ser_ID");
             entity.Property(e => e.Description).HasColumnType("text");
             entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.SerName)
                 .HasMaxLength(100)
-                .IsUnicode(false)
                 .HasColumnName("Ser_Name");
         });
 
         modelBuilder.Entity<SlotSchedule>(entity =>
         {
-            entity.HasKey(e => e.SlotId).HasName("PK__Slot_Sch__1AE2AAAE779C60D6");
+            entity.HasKey(e => e.SlotId).HasName("PK__Slot_Sch__1AE2AAAE32C37A20");
 
             entity.ToTable("Slot_Schedule");
 
@@ -403,131 +385,144 @@ public partial class HIEM_MUONContext : DbContext
             entity.Property(e => e.SlotStart).HasColumnName("Slot_Start");
         });
 
+        modelBuilder.Entity<Status>(entity =>
+        {
+            entity.HasKey(e => e.StatusId).HasName("PK__Status__519009AC9ACB09A1");
+
+            entity.ToTable("Status");
+
+            entity.Property(e => e.StatusId)
+                .ValueGeneratedNever()
+                .HasColumnName("Status_ID");
+            entity.Property(e => e.StatusName)
+                .HasMaxLength(100)
+                .HasColumnName("Status_Name");
+        });
+
         modelBuilder.Entity<StatusPayment>(entity =>
         {
-            entity.HasKey(e => e.StatusId).HasName("PK__Status_P__519009AC75823F51");
+            entity.HasKey(e => e.StatusId).HasName("PK__Status_P__519009ACE8593290");
 
             entity.ToTable("Status_Payment");
 
             entity.Property(e => e.StatusId).HasColumnName("Status_ID");
             entity.Property(e => e.StatusName)
-                .IsRequired()
                 .HasMaxLength(50)
-                .IsUnicode(false)
                 .HasColumnName("Status_Name");
         });
 
         modelBuilder.Entity<StepDetail>(entity =>
         {
-            entity.HasKey(e => e.SdId).HasName("PK__StepDeta__DD5A6BA36DA53A04");
+            entity.HasKey(e => e.SdId).HasName("PK__StepDeta__DD5A6BA312510A8A");
 
             entity.ToTable("StepDetail");
 
             entity.Property(e => e.SdId).HasColumnName("SD_ID");
-            entity.Property(e => e.Dosage)
-                .HasMaxLength(50)
-                .IsUnicode(false);
+            entity.Property(e => e.DocId).HasColumnName("Doc_ID");
+            entity.Property(e => e.Dosage).HasMaxLength(50);
             entity.Property(e => e.DrugName)
                 .HasMaxLength(50)
-                .IsUnicode(false)
                 .HasColumnName("Drug_Name");
             entity.Property(e => e.Note).HasColumnType("text");
-            entity.Property(e => e.Status)
-                .HasMaxLength(50)
-                .IsUnicode(false);
             entity.Property(e => e.StepName)
                 .HasMaxLength(100)
-                .IsUnicode(false)
                 .HasColumnName("Step_Name");
             entity.Property(e => e.TpId).HasColumnName("TP_ID");
             entity.Property(e => e.TsId).HasColumnName("TS_ID");
 
+            entity.HasOne(d => d.Doc).WithMany(p => p.StepDetails)
+                .HasForeignKey(d => d.DocId)
+                .HasConstraintName("FK__StepDetai__Doc_I__5629CD9C");
+
             entity.HasOne(d => d.Tp).WithMany(p => p.StepDetails)
                 .HasForeignKey(d => d.TpId)
-                .HasConstraintName("FK__StepDetai__TP_ID__5FB337D6");
+                .HasConstraintName("FK__StepDetai__TP_ID__5441852A");
 
             entity.HasOne(d => d.Ts).WithMany(p => p.StepDetails)
                 .HasForeignKey(d => d.TsId)
-                .HasConstraintName("FK__StepDetai__TS_ID__60A75C0F");
+                .HasConstraintName("FK__StepDetai__TS_ID__5535A963");
         });
 
         modelBuilder.Entity<Test>(entity =>
         {
-            entity.HasKey(e => e.TestId).HasName("PK__Test__B502D0027606B2CC");
+            entity.HasKey(e => e.TestId).HasName("PK__Test__B502D002624C1E91");
 
             entity.ToTable("Test");
 
             entity.Property(e => e.TestId).HasColumnName("Test_ID");
             entity.Property(e => e.CusId).HasColumnName("Cus_ID");
-            entity.Property(e => e.DocId).HasColumnName("Doc_ID");
-            entity.Property(e => e.HusTest)
-                .HasMaxLength(100)
-                .IsUnicode(false)
-                .HasColumnName("Hus_Test");
-            entity.Property(e => e.HusTestDate).HasColumnName("Hus_Test_Date");
-            entity.Property(e => e.HusTestResult)
+            entity.Property(e => e.FilePath)
                 .HasColumnType("text")
-                .HasColumnName("Hus_Test_Result");
-            entity.Property(e => e.WifeTest)
-                .HasMaxLength(100)
-                .IsUnicode(false)
-                .HasColumnName("Wife_Test");
-            entity.Property(e => e.WifeTestDate).HasColumnName("Wife_Test_Date");
-            entity.Property(e => e.WifeTestResult)
-                .HasColumnType("text")
-                .HasColumnName("Wife_Test_Result");
+                .HasColumnName("File_Path");
+            entity.Property(e => e.Note).HasColumnType("text");
+            entity.Property(e => e.Result).HasColumnType("text");
+            entity.Property(e => e.SdId).HasColumnName("SD_ID");
+            entity.Property(e => e.TestTypeId).HasColumnName("TestType_ID");
 
             entity.HasOne(d => d.Cus).WithMany(p => p.Tests)
                 .HasForeignKey(d => d.CusId)
-                .HasConstraintName("FK__Test__Cus_ID__4F7CD00D");
+                .HasConstraintName("FK__Test__Cus_ID__59063A47");
 
-            entity.HasOne(d => d.Doc).WithMany(p => p.Tests)
-                .HasForeignKey(d => d.DocId)
-                .HasConstraintName("FK__Test__Doc_ID__4E88ABD4");
+            entity.HasOne(d => d.Sd).WithMany(p => p.Tests)
+                .HasForeignKey(d => d.SdId)
+                .HasConstraintName("FK__Test__SD_ID__5AEE82B9");
+
+            entity.HasOne(d => d.TestType).WithMany(p => p.Tests)
+                .HasForeignKey(d => d.TestTypeId)
+                .HasConstraintName("FK__Test__TestType_I__59FA5E80");
+        });
+
+        modelBuilder.Entity<TestType>(entity =>
+        {
+            entity.HasKey(e => e.TestTypeId).HasName("PK__TestType__C4970D625764D0EF");
+
+            entity.ToTable("TestType");
+
+            entity.Property(e => e.TestTypeId).HasColumnName("TestType_ID");
+            entity.Property(e => e.Person).HasMaxLength(10);
+            entity.Property(e => e.TestName)
+                .HasMaxLength(100)
+                .HasColumnName("Test_Name");
         });
 
         modelBuilder.Entity<TreatmentPlan>(entity =>
         {
-            entity.HasKey(e => e.TpId).HasName("PK__Treatmen__8106F2C46C873384");
+            entity.HasKey(e => e.TpId).HasName("PK__Treatmen__8106F2C4FA170E09");
 
             entity.Property(e => e.TpId).HasColumnName("TP_ID");
-            entity.Property(e => e.CurrentStepId).HasColumnName("Current_Step_ID");
             entity.Property(e => e.CusId).HasColumnName("Cus_ID");
             entity.Property(e => e.DocId).HasColumnName("Doc_ID");
             entity.Property(e => e.SerId).HasColumnName("Ser_ID");
-            entity.Property(e => e.Status)
-                .HasMaxLength(50)
-                .IsUnicode(false);
-
-            entity.HasOne(d => d.CurrentStep).WithMany(p => p.TreatmentPlans)
-                .HasForeignKey(d => d.CurrentStepId)
-                .HasConstraintName("FK__Treatment__Curre__59063A47");
 
             entity.HasOne(d => d.Cus).WithMany(p => p.TreatmentPlans)
                 .HasForeignKey(d => d.CusId)
-                .HasConstraintName("FK__Treatment__Cus_I__571DF1D5");
+                .HasConstraintName("FK__Treatment__Cus_I__4D94879B");
 
             entity.HasOne(d => d.Doc).WithMany(p => p.TreatmentPlans)
                 .HasForeignKey(d => d.DocId)
-                .HasConstraintName("FK__Treatment__Doc_I__5812160E");
+                .HasConstraintName("FK__Treatment__Doc_I__4E88ABD4");
 
             entity.HasOne(d => d.Ser).WithMany(p => p.TreatmentPlans)
                 .HasForeignKey(d => d.SerId)
-                .HasConstraintName("FK__Treatment__Ser_I__5629CD9C");
+                .HasConstraintName("FK__Treatment__Ser_I__4CA06362");
         });
 
         modelBuilder.Entity<TreatmentStep>(entity =>
         {
-            entity.HasKey(e => e.TsId).HasName("PK__Treatmen__D128865A8ACDA268");
+            entity.HasKey(e => e.TsId).HasName("PK__Treatmen__D128865AF910C19D");
 
             entity.ToTable("TreatmentStep");
 
             entity.Property(e => e.TsId).HasColumnName("TS_ID");
             entity.Property(e => e.Description).HasColumnType("text");
+            entity.Property(e => e.SerId).HasColumnName("Ser_ID");
             entity.Property(e => e.StepName)
                 .HasMaxLength(100)
-                .IsUnicode(false)
                 .HasColumnName("Step_Name");
+
+            entity.HasOne(d => d.Ser).WithMany(p => p.TreatmentSteps)
+                .HasForeignKey(d => d.SerId)
+                .HasConstraintName("FK__Treatment__Ser_I__5165187F");
         });
 
         OnModelCreatingPartial(modelBuilder);

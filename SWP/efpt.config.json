@@ -35,6 +35,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Certificate]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Customer]",
          "ObjectType": 0
       },
@@ -55,19 +59,19 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Payment_Booking]",
+         "Name": "[dbo].[Payment]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Payment_Treatment]",
+         "Name": "[dbo].[PaymentType]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Remind]",
          "ObjectType": 0
       },
       {
          "Name": "[dbo].[Role]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[Room]",
          "ObjectType": 0
       },
       {
@@ -76,6 +80,10 @@
       },
       {
          "Name": "[dbo].[Slot_Schedule]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Status]",
          "ObjectType": 0
       },
       {
@@ -88,6 +96,10 @@
       },
       {
          "Name": "[dbo].[Test]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TestType]",
          "ObjectType": 0
       },
       {

@@ -5,13 +5,17 @@ using System.Collections.Generic;
 
 namespace SWP.Models;
 
-public partial class PaymentBooking
+public partial class Payment
 {
-    public int PbId { get; set; }
+    public int PaymentId { get; set; }
 
-    public int BookingId { get; set; }
+    public int? PaymentTypeId { get; set; }
 
-    public decimal Amount { get; set; }
+    public int? BookingId { get; set; }
+
+    public int? TreatmentPlansId { get; set; }
+
+    public decimal? Amount { get; set; }
 
     public DateTime? PaymentDate { get; set; }
 
@@ -23,5 +27,9 @@ public partial class PaymentBooking
 
     public virtual MethodPayment Method { get; set; }
 
+    public virtual PaymentType PaymentType { get; set; }
+
     public virtual StatusPayment Status { get; set; }
+
+    public virtual TreatmentPlan TreatmentPlans { get; set; }
 }

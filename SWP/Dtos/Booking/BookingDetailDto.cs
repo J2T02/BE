@@ -11,7 +11,7 @@ namespace SWP.Dtos.Booking
     {
         public int BookingId { get; set; }
         public DateTime? CreateAt { get; set; }
-        public string Status { get; set; }
+        public int Status { get; set; }
         public string Note { get; set; }
         public DocDto Doc { get; set; }
         public DocScheduleDto Schedule { get; set; }

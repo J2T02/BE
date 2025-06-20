@@ -15,7 +15,7 @@ public partial class BioSample
 
     public string BsName { get; set; }
 
-    public string Status { get; set; }
+    public int? Status { get; set; }
 
     public string Quality { get; set; }
 

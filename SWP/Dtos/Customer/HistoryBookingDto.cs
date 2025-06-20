@@ -8,7 +8,7 @@
 
         public string ScheduleInfo { get; set; }
 
-        public string Status { get; set; }
+        public int Status { get; set; }
 
     }
 }

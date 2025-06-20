@@ -81,15 +81,15 @@ namespace SWP.Controllers
                 var error = BaseRespone<DoctorDto>.ErrorResponse(firstError, HttpStatusCode.BadRequest);
                 return BadRequest(error);
             }
-            if (await _context.Accounts.AnyAsync(a => a.AccName == doctor.AccName))
+            if (await _context.Accounts.AnyAsync(a => a.FullName == doctor.AccName))
             {
                 return BadRequest(new BaseRespone<DoctorDto>(HttpStatusCode.BadRequest, "Tên tài khoản đã tồn tại"));
             }
 
             var account = new Account
             {
-                AccName = doctor.AccName,
-                RoleId = 4 
+                FullName = doctor.AccName,
+                RoleId = 5 // RoleId 5 là cho Doctor 
             };
             var passwordHasher = new PasswordHasher<Account>();
             account.Password = passwordHasher.HashPassword(account, doctor.Password);

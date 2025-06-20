@@ -10,14 +10,13 @@ namespace SWP.Mapper
             return new DoctorDto
             {
                 AccId = (int)(doctor.Acc?.AccId),
-                AccName = doctor.Acc?.AccName,
+                
                 DocName = doctor.DocName,
                 Gender = doctor.Gender,
                 Yob = doctor.Yob,
-                Mail = doctor.Mail,
-                Phone = doctor.Phone,
+                
                 Experience = doctor.Experience,
-                Certification = doctor.Certification,
+                //Certification = doctor.Certification,
                 DoctorSchedule = doctor.DoctorSchedules.Where(x => x.WorkDate >= DateOnly.FromDateTime(DateTime.Today)).ToList()
             };
         }
@@ -26,12 +25,11 @@ namespace SWP.Mapper
             return new Doctor
             {
                 DocName = doctorDto.DocName,
-                Phone = doctorDto.Phone,
-                Mail = doctorDto.Mail,
+                
                 Gender = doctorDto.Gender,
                 Yob = doctorDto.Yob,
                 Experience = doctorDto.Experience,
-                Certification = doctorDto.Certification,
+                //Certification = doctorDto.Certification,
             };
         }
         public static DoctorScheduleDto ToDoctorScheduleDto(this DoctorSchedule doctorSchedule)
