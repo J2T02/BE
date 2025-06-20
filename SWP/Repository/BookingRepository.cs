@@ -54,7 +54,7 @@ namespace SWP.Repository
             // 4. Tạo và lưu booking
             var newBooking = new Booking
             {
-                CusId = booking.CustomerId,
+                AccId = booking.CustomerId,
                 DocId = selectedSchedule.DocId,
                 DsId = selectedSchedule.DsId,
                 Status = 1,

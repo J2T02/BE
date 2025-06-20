@@ -43,6 +43,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[DocCertificate]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Doctor]",
          "ObjectType": 0
       },
@@ -55,7 +59,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Method_Payment]",
+         "Name": "[dbo].[MethodPayment]",
          "ObjectType": 0
       },
       {
@@ -79,7 +83,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Slot_Schedule]",
+         "Name": "[dbo].[SlotSchedule]",
          "ObjectType": 0
       },
       {
@@ -87,7 +91,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Status_Payment]",
+         "Name": "[dbo].[StatusPayment]",
          "ObjectType": 0
       },
       {
