@@ -30,21 +30,30 @@ namespace SWP.Repository
         {
             return await _context.Doctors.Include(d => d.Acc).ThenInclude(a => a.Role).ToListAsync();
         }
-
+        public async Task<Account> GetAccountByDoctor(Doctor doctor)
+        {
+            return await _context.Accounts.FirstOrDefaultAsync(x => x.AccId == doctor.Acc.AccId);
+        }
         public async Task<Doctor> UpdateDoctorAsync(int id, UpdateDoctorRequestDto doctor)
         {
-            var existDoctor = await _context.Doctors.FirstOrDefaultAsync(x => x.DocId == id);
+            var existDoctor = await GetDoctorByIdAsync(id);
+            var doctorAccount = await GetAccountByDoctor(existDoctor);
+            if (doctorAccount == null)
+            {
+                throw new Exception("Không tìm thấy tài khoản bác sĩ");
+            }
             if(existDoctor == null)
             {
-                throw new Exception("Doctor not found");
+                throw new Exception("Không tìm thấy bác sĩ");
             }
             existDoctor.DocName = doctor.DocName;
             existDoctor.Gender = doctor.Gender;
             existDoctor.Yob = doctor.Yob;
-            
-            
             existDoctor.Experience = doctor.Experience;
-            
+            doctorAccount.Mail = doctor.Mail;
+            doctorAccount.Phone = doctor.Phone;
+            doctorAccount.FullName = doctor.FullName;
+
             await _context.SaveChangesAsync();
             return existDoctor;
         }
@@ -74,5 +83,6 @@ namespace SWP.Repository
             await _context.SaveChangesAsync();
             return doctorModel.Entity;
         }
+
     }
 }
