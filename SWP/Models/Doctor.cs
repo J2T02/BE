@@ -17,23 +17,23 @@ public partial class Doctor
 
     public DateOnly? Yob { get; set; }
 
-    public string Mail { get; set; }
-
-    public string Phone { get; set; }
-
     public int? Experience { get; set; }
 
-    public string Certification { get; set; }
+    public int? CerId { get; set; }
+
+    public int? Status { get; set; }
 
     public virtual Account Acc { get; set; }
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
+    public virtual Certificate Cer { get; set; }
+
     public virtual ICollection<DoctorSchedule> DoctorSchedules { get; set; } = new List<DoctorSchedule>();
 
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 
-    public virtual ICollection<Test> Tests { get; set; } = new List<Test>();
+    public virtual ICollection<StepDetail> StepDetails { get; set; } = new List<StepDetail>();
 
     public virtual ICollection<TreatmentPlan> TreatmentPlans { get; set; } = new List<TreatmentPlan>();
 }

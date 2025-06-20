@@ -15,7 +15,7 @@ public partial class Booking
 
     public int? DsId { get; set; }
 
-    public string Status { get; set; }
+    public int? Status { get; set; }
 
     public DateTime? CreateAt { get; set; }
 
@@ -27,5 +27,5 @@ public partial class Booking
 
     public virtual DoctorSchedule Ds { get; set; }
 
-    public virtual ICollection<PaymentBooking> PaymentBookings { get; set; } = new List<PaymentBooking>();
+    public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 }

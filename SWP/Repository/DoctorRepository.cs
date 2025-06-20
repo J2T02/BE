@@ -41,10 +41,10 @@ namespace SWP.Repository
             existDoctor.DocName = doctor.DocName;
             existDoctor.Gender = doctor.Gender;
             existDoctor.Yob = doctor.Yob;
-            existDoctor.Mail = doctor.Mail;
-            existDoctor.Phone = doctor.Phone;
+            
+            
             existDoctor.Experience = doctor.Experience;
-            existDoctor.Certification = doctor.Certification;
+            
             await _context.SaveChangesAsync();
             return existDoctor;
         }

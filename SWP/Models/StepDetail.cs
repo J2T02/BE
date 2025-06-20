@@ -13,11 +13,13 @@ public partial class StepDetail
 
     public int? TsId { get; set; }
 
+    public int? DocId { get; set; }
+
     public string StepName { get; set; }
 
     public string Note { get; set; }
 
-    public string Status { get; set; }
+    public int? Status { get; set; }
 
     public DateOnly? PlanDate { get; set; }
 
@@ -26,6 +28,12 @@ public partial class StepDetail
     public string DrugName { get; set; }
 
     public string Dosage { get; set; }
+
+    public virtual Doctor Doc { get; set; }
+
+    public virtual ICollection<Remind> Reminds { get; set; } = new List<Remind>();
+
+    public virtual ICollection<Test> Tests { get; set; } = new List<Test>();
 
     public virtual TreatmentPlan Tp { get; set; }
 

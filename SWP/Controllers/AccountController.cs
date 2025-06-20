@@ -51,54 +51,45 @@ namespace SWP.Controllers
                     return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, firstError);
                 }
 
-                if (await _context.Accounts.AnyAsync(a => a.AccName == registerDto.AccName))
+                if (await _context.Accounts.AnyAsync(a => a.Mail == registerDto.Mail))
                 {
                     return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, "Tên tài khoản đã tồn tại vui lòng thử lại.");
                 }
 
-                if (await _context.Customers.AnyAsync(c => c.Mail == registerDto.Mail))
+               
+
+                if (await _context.Accounts.AnyAsync(c => c.Phone == registerDto.Phone))
                 {
                     return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, "Số điện thoại hoặc Email đã tồn tại vui lòng thử lại");
                 }
 
-                if (await _context.Customers.AnyAsync(c => c.Phone == registerDto.Phone))
-                {
-                    return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, "Số điện thoại hoặc Email đã tồn tại vui lòng thử lại");
-                }
+               
 
 
 
                 var account = new Account
                 {
-
-                    AccName = registerDto.AccName,
-                    RoleId = 3
+                    Mail = registerDto.Mail,
+                    Password = registerDto.Password,
+                    FullName = registerDto.FullName,
+                    Phone = registerDto.Phone,
+                    RoleId = 4, // RoleId 4 là cho Customer
+                    IsActive = true,
                 };
                 account.Password = _passwordHasher.HashPassword(account, registerDto.Password);
                 _context.Accounts.Add(account);
                 await _context.SaveChangesAsync();
 
-                var customer = new Customer
-                {
-                    AccId = account.AccId,
-                    HusName = registerDto.HusName,
-                    HusYob = registerDto.HusYob,
-                    WifeName = registerDto.WifeName,
-                    WifeYob = registerDto.WifeYob,
-                    Phone = registerDto.Phone,
-                    Mail = registerDto.Mail
-                };
-                _context.Customers.Add(customer);
-                await _context.SaveChangesAsync();
+               
 
                 var role = await _context.Roles.FindAsync(account.RoleId);
 
-                var token = _tokenService.CreateToken(account.AccName!, account.AccId, role?.RoleName ?? "Customer");
+                var token = _tokenService.CreateToken(account.FullName!, account.AccId, role?.RoleName ?? "Customer");
                 
                 var newUser = new NewUserDto
                 {
-                    Token = token,
-                    UserName = account.AccName!,
+                    Token = null,
+                    UserName = account.FullName!,
                     Role = role?.RoleName ?? "Customer",
                 };
 
@@ -118,9 +109,12 @@ namespace SWP.Controllers
         {
             try
             {
-                var account = await _context.Accounts.Include(a => a.Role).FirstOrDefaultAsync(a => a.AccName == loginDto.UserName );
+                var account = await _context.Accounts.Include(a => a.Role).FirstOrDefaultAsync(a => (a.Mail == loginDto.MailOrPhone || a.Phone == loginDto.MailOrPhone) && a.IsActive == true );
                 if (account == null)
                     return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, "Tên tài khoản hoặc mật khẩu không đúng");
+
+                if(account.IsActive == false)
+                    return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, "Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên để biết thêm chi tiết.");
 
                 //Xác thực mật khẩu:
                 var passwordVerifi = _passwordHasher.VerifyHashedPassword(account, account.Password, loginDto.Password);
@@ -129,7 +123,7 @@ namespace SWP.Controllers
 
                 var role = await _context.Roles.FindAsync(account.RoleId);
 
-                var token = _tokenService.CreateToken(account.AccName!, account.AccId, role?.RoleName ?? "Customer");
+                var token = _tokenService.CreateToken(account.FullName!, account.AccId, role?.RoleName ?? "Customer");
 
                 // Truy vấn Customer theo AccountId
                 var customer = await _context.Customers.FirstOrDefaultAsync(c => c.AccId == account.AccId);
@@ -137,7 +131,7 @@ namespace SWP.Controllers
                 var newUser = new NewUserDto
                 {
                     Token = token,
-                    UserName = account.AccName!,
+                    UserName = account.FullName!,
                     Role = role?.RoleName ?? "Customer",
                     UserId = customer?.CusId ?? 0 // Lấy CusId từ Customer nếu có, nếu không thì 0
                 };
@@ -159,7 +153,7 @@ namespace SWP.Controllers
                 // 1. Kiểm tra tài khoản
                 var account = await _context.Accounts
                     .Include(a => a.Role)
-                    .FirstOrDefaultAsync(a => a.AccName == loginDto.UserName);
+                    .FirstOrDefaultAsync(a => a.Mail == loginDto.MailOrPhone || a.Phone == loginDto.MailOrPhone);
 
                 if (account == null || account.Role?.RoleName != "Doctor")
                     return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, "Tên tài khoản hoặc mật khẩu không đúng");
@@ -174,7 +168,7 @@ namespace SWP.Controllers
                 var roleName = role?.RoleName ?? "Doctor";
 
                 // 4. Tạo token
-                var token = _tokenService.CreateToken(account.AccName!, account.AccId, roleName);
+                var token = _tokenService.CreateToken(account.FullName!, account.AccId, roleName);
 
                 var doctor = await _context.Doctors
                     .FirstOrDefaultAsync(d => d.AccId == account.AccId);
@@ -183,7 +177,7 @@ namespace SWP.Controllers
                 var newUser = new NewUserDto
                 {
                     Token = token,
-                    UserName = account.AccName!,
+                    UserName = account.FullName!,
                     Role = roleName,
                     UserId = doctor?.DocId ?? 0 // Lấy DocId từ Doctor nếu có, nếu không thì 0
                 };

@@ -19,10 +19,6 @@ public partial class Customer
 
     public DateOnly? WifeYob { get; set; }
 
-    public string Phone { get; set; }
-
-    public string Mail { get; set; }
-
     public virtual Account Acc { get; set; }
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();

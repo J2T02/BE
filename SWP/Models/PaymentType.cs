@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace SWP.Models;
 
-public partial class MethodPayment
+public partial class PaymentType
 {
-    public int MethodId { get; set; }
+    public int PaymentTypeId { get; set; }
 
-    public string MethodName { get; set; }
+    public string TypeName { get; set; }
 
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
 }

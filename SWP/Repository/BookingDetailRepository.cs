@@ -22,8 +22,7 @@ namespace SWP.Repository
                 .Include(b => b.Doc)
                 .Include(b => b.Ds)
                     .ThenInclude(ds => ds.Slot)
-                .Include(b => b.Ds)
-                    .ThenInclude(ds => ds.Room)
+                
                 .FirstOrDefaultAsync(b => b.BookingId == id);
 
             return booking; // Trả về null nếu không tìm thấy

@@ -13,7 +13,9 @@ public partial class TreatmentStep
 
     public string Description { get; set; }
 
-    public virtual ICollection<StepDetail> StepDetails { get; set; } = new List<StepDetail>();
+    public int? SerId { get; set; }
 
-    public virtual ICollection<TreatmentPlan> TreatmentPlans { get; set; } = new List<TreatmentPlan>();
+    public virtual Service Ser { get; set; }
+
+    public virtual ICollection<StepDetail> StepDetails { get; set; } = new List<StepDetail>();
 }

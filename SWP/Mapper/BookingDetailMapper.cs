@@ -14,14 +14,14 @@ namespace SWP.Mapper
             {
                 BookingId = booking.BookingId,
                 CreateAt = booking.CreateAt,
-                Status = booking.Status,
+                Status = 1,
                 Note = booking.Note,
 
                 Doc = new DocDto
                 {
                     DocName = booking.Doc?.DocName,
-                    Phone = booking.Doc?.Phone,
-                    Mail = booking.Doc?.Mail,
+                    //Phone = booking.Doc?.Phone,
+                    //Mail = booking.Doc?.Mail,
                     //Gender = booking.Doc?.Gender,
                     //Yob = booking.Doc?.Yob,
                     //Certification = booking.Doc?.Certification,
@@ -44,14 +44,14 @@ namespace SWP.Mapper
             {
                 BookingId = booking.BookingId,
                 CreateAt = booking.CreateAt,
-                Status = booking.Status,
+                Status = 1,
                 Note = booking.Note,
 
                 Doc = new DocDto
                 {
                     DocName = booking.Doc?.DocName,
-                    Phone = booking.Doc?.Phone,
-                    Mail = booking.Doc?.Mail,
+                    //Phone = booking.Doc?.Phone,
+                    //Mail = booking.Doc?.Mail,
                     //Gender = booking.Doc?.Gender,
                     //Yob = booking.Doc?.Yob,
                     //Experience = booking.Doc?.Experience,

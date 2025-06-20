@@ -1,7 +1,9 @@
 ﻿using System.Net;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SWP.Data;
 using SWP.Dtos.Customer;
 using SWP.Interfaces;
@@ -22,11 +24,27 @@ namespace SWP.Controllers
         }
 
         [Authorize(Roles = "Customer")]
-        [HttpGet("{Id}")]
-        public async Task<IActionResult> GetHistoryBookings(int Id)
+        [HttpGet]
+        public async Task<IActionResult> GetHistoryBookings()
         {
             try
             {
+                var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (accountIdClaim == null)
+                {
+                    return BadRequest(new BaseRespone<List<HistoryBookingDto>>(HttpStatusCode.BadRequest, "Không tìm thấy thông tin khách hàng"));
+                }
+
+                int accountId = int.Parse(accountIdClaim);
+
+                var customer = await _context.Customers.FirstOrDefaultAsync(c => c.AccId == accountId);
+                if(customer == null)
+                {
+                    return NotFound(new BaseRespone<List<HistoryBookingDto>>(HttpStatusCode.NotFound, "Không tìm thấy khách hàng với tài khoản này"));
+                }
+
+                int Id = customer.CusId;
+
                 var historyBookings = await _hisotryBookingRepository.GetHistoryBookingsAsync(Id);
                 if (historyBookings == null || historyBookings.Count == 0)
                 {

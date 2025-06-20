@@ -35,10 +35,19 @@ namespace SWP.Controllers
                 var alreadyBooked = await _context.Bookings
                 .Include(b => b.Ds)
                 .Where(b => b.CusId == bookingRequest.CustomerId &&
-                        b.Ds.WorkDate == bookingRequest.WorkDate &&
-                        b.Ds.SlotId == bookingRequest.SlotId).AnyAsync();
-     
-    
+                        b.Ds.WorkDate == bookingRequest.WorkDate &&  
+                        b.Ds.SlotId == bookingRequest.SlotId ).AnyAsync();
+
+                var booked = await _context.Bookings.Where(b => b.CusId == bookingRequest.CustomerId &&
+                        b.Status <4).AnyAsync();
+
+
+                if (booked)
+                {
+                    return Conflict(BaseRespone<BookingResponseDto>.ErrorResponse(
+                        "Khách hàng đã đặt lịch vui lòng đến khám",
+                        HttpStatusCode.Conflict));
+                }
 
                 if (alreadyBooked)
                 {

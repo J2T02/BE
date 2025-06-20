@@ -24,7 +24,7 @@ namespace SWP.Repository
             // 1. Lấy danh sách lịch làm việc phù hợp
             var slotSchedules = await _context.DoctorSchedules
                 .Include(ds => ds.Bookings)
-                .Where(ds => ds.WorkDate == booking.WorkDate && ds.SlotId == booking.SlotId && ds.IsAvailable == true)
+                .Where(ds => ds.WorkDate == booking.WorkDate && ds.SlotId == booking.SlotId && ds.IsAvailable == true )
                 .ToListAsync();
 
             // 2. Chọn lịch làm việc
@@ -57,7 +57,7 @@ namespace SWP.Repository
                 CusId = booking.CustomerId,
                 DocId = selectedSchedule.DocId,
                 DsId = selectedSchedule.DsId,
-                Status = "Chờ xác nhận",
+                Status = 1,
                 CreateAt = DateTime.Now,
                 Note = booking.Note
             };
