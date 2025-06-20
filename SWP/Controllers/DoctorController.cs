@@ -24,7 +24,7 @@ namespace SWP.Controllers
             _doctorRepo = doctorRepo;
         }
 
-        [Authorize(Roles = "Admin,Manager")]
+        //[Authorize(Roles = "Admin,Manager")]
         [HttpGet]
         public async Task<IActionResult> GetAllDoctors()
         {
@@ -43,7 +43,7 @@ namespace SWP.Controllers
         }
 
 
-        [Authorize(Roles = "Admin,Manager")]
+        //[Authorize(Roles = "Admin,Manager")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDoctorById(int id)
         {
@@ -67,7 +67,7 @@ namespace SWP.Controllers
             return Ok(response);
         }
 
-        [Authorize(Roles = "Admin,Manager")]
+        //[Authorize(Roles = "Admin,Manager")]
         [HttpPost]
         public async Task<IActionResult> CreateDoctor([FromBody] CreateDocotorRequestDto doctor)
         {
@@ -81,28 +81,30 @@ namespace SWP.Controllers
                 var error = BaseRespone<DoctorDto>.ErrorResponse(firstError, HttpStatusCode.BadRequest);
                 return BadRequest(error);
             }
-            if (await _context.Accounts.AnyAsync(a => a.FullName == doctor.AccName))
+            if (await _context.Accounts.AnyAsync(a => a.Mail == doctor.Mail || a.Phone == doctor.Phone))
             {
                 return BadRequest(new BaseRespone<DoctorDto>(HttpStatusCode.BadRequest, "Tên tài khoản đã tồn tại"));
             }
 
             var account = new Account
             {
-                FullName = doctor.AccName,
+                FullName = doctor.FullName,
+                CreateAt = DateTime.Now,
+                IsActive = true,
+                Mail = doctor.Mail,
+                Phone = doctor.Phone,
                 RoleId = 5 // RoleId 5 là cho Doctor 
             };
             var passwordHasher = new PasswordHasher<Account>();
             account.Password = passwordHasher.HashPassword(account, doctor.Password);
-
-            _context.Accounts.Add(account);
-            await _context.SaveChangesAsync();
 
 
             var doctorModel = doctor.ToDoctorFromCreateDTO();
             doctorModel.AccId = account.AccId;
 
             await _doctorRepo.CreateDoctorAsync(doctorModel);
-
+            _context.Accounts.Add(account);
+            await _context.SaveChangesAsync();
 
             var loadedDoctor = await _context.Doctors.Include(d => d.Acc).ThenInclude(acc => acc.Role).FirstOrDefaultAsync(d => d.DocId == doctorModel.DocId);
 
@@ -116,7 +118,7 @@ namespace SWP.Controllers
             return CreatedAtAction(nameof(GetDoctorById), new { id = loadedDoctor.DocId }, response);
         }
 
-        [Authorize(Roles = "Admin,Manager,Doctor")]
+        //[Authorize(Roles = "Admin,Manager,Doctor")]
         [HttpPut]
         [Route("{id}")]
         public async Task<IActionResult> UpdateDoctor([FromRoute] int id, [FromBody] UpdateDoctorRequestDto doctor)
@@ -141,7 +143,7 @@ namespace SWP.Controllers
             var response = BaseRespone<DoctorDto>.SuccessResponse(updatedDoctor.ToDoctorDto(), "Cập nhật thông tin bác sĩ thành công");
             return Ok(response);
         }
-        [Authorize(Roles = "Admin,Manager")]
+        //[Authorize(Roles = "Admin,Manager")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDoctor([FromRoute] int id)
         {
