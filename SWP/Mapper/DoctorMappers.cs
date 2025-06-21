@@ -11,7 +11,7 @@ namespace SWP.Mapper
             {
                 AccId = (int)(doctor.Acc?.AccId),
                 
-                DocName = doctor.DocName,
+                //DocName = doctor.DocName,
                 Gender = doctor.Gender,
                 Yob = doctor.Yob,
                 
@@ -24,7 +24,7 @@ namespace SWP.Mapper
         {
             return new Doctor
             {
-                DocName = doctorDto.DocName,
+                //DocName = doctorDto.DocName,
                 
                 Gender = doctorDto.Gender,
                 Yob = doctorDto.Yob,
@@ -38,7 +38,7 @@ namespace SWP.Mapper
             {
                 DsId = doctorSchedule.DsId,
                 DocId = doctorSchedule.DocId,
-                DocName = doctorSchedule.Doc?.DocName,
+                //DocName = doctorSchedule.Doc?.DocName,
                 WorkDate = doctorSchedule.WorkDate,
                 SlotId = doctorSchedule.SlotId,
                 IsAvailable = doctorSchedule.IsAvailable,

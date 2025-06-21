@@ -29,5 +29,7 @@ public partial class Test
 
     public virtual StepDetail Sd { get; set; }
 
+    public virtual TestStatus StatusNavigation { get; set; }
+
     public virtual TestType TestType { get; set; }
 }

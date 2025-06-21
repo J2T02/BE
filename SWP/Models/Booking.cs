@@ -28,4 +28,6 @@ public partial class Booking
     public virtual DoctorSchedule Ds { get; set; }
 
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+
+    public virtual BookingStatus StatusNavigation { get; set; }
 }

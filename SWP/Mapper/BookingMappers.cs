@@ -11,7 +11,7 @@ namespace SWP.Mapper
             {
 
                 Status = (int)booking.Status,
-                DoctorName = booking.Doc?.DocName ?? string.Empty,
+                //DoctorName = booking.Doc?.DocName ?? string.Empty,
                 WorkDate = booking.Ds?.WorkDate ?? default,
                 SlotStart = booking.Ds?.Slot?.SlotStart ?? default,
                 SlotEnd = booking.Ds?.Slot?.SlotEnd ?? default,

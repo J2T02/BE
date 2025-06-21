@@ -38,7 +38,7 @@ namespace SWP.Repository
             {
                 throw new Exception("Doctor not found");
             }
-            existDoctor.DocName = doctor.DocName;
+            //existDoctor.DocName = doctor.DocName;
             existDoctor.Gender = doctor.Gender;
             existDoctor.Yob = doctor.Yob;
             
@@ -51,16 +51,16 @@ namespace SWP.Repository
 
         public async Task<string> DeleteDoctorAsync(int id)
         {
-            var doctor = await _context.Doctors.FirstOrDefaultAsync(x => x.DocId == id);
-            var docName = doctor.DocName;
-            if(doctor == null)
-            {
-                return null;
-            }
-             _context.Doctors.Remove(doctor);
-            await _context.SaveChangesAsync();
-            return docName;
-
+            //var doctor = await _context.Doctors.FirstOrDefaultAsync(x => x.DocId == id);
+            ////var docName = doctor.DocName;
+            //if(doctor == null)
+            //{
+            //    return null;
+            //}
+            // _context.Doctors.Remove(doctor);
+            //await _context.SaveChangesAsync();
+            //return docName;
+            return null;
         }
 
         public async Task<DoctorSchedule> GetDoctorScheduleByIdAsync(DoctorSchedule doctorSchedule)
