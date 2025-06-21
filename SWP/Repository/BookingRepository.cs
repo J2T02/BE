@@ -17,14 +17,14 @@ namespace SWP.Repository
             _context = context;
         }
 
-        public async Task<Booking> BookingAsync(BookingRequestDto booking)
+        public async Task<Booking> BookingAsync(BookingRequestDto booking, int accId)
         {
-            const int MAX_PATIENTS_PER_SLOT = 5;
+            
 
             // 1. Lấy danh sách lịch làm việc phù hợp
             var slotSchedules = await _context.DoctorSchedules
                 .Include(ds => ds.Bookings)
-                .Where(ds => ds.WorkDate == booking.WorkDate && ds.SlotId == booking.SlotId && ds.IsAvailable == true )
+                .Where(ds => ds.WorkDate == booking.WorkDate && ds.SlotId == booking.SlotId && ds.IsAvailable == true && ds.MaxBooking >0 )
                 .ToListAsync();
 
             // 2. Chọn lịch làm việc
@@ -54,7 +54,7 @@ namespace SWP.Repository
             // 4. Tạo và lưu booking
             var newBooking = new Booking
             {
-                AccId = booking.CustomerId,
+                AccId = accId,
                 DocId = selectedSchedule.DocId,
                 DsId = selectedSchedule.DsId,
                 Status = 1,
@@ -63,19 +63,18 @@ namespace SWP.Repository
             };
 
             await _context.Bookings.AddAsync(newBooking);
-            await _context.SaveChangesAsync();
 
-            // 5. Cập nhật trạng thái slot nếu đã đầy
-            selectedSchedule = await _context.DoctorSchedules
-                .Include(ds => ds.Bookings)
-                .FirstOrDefaultAsync(ds => ds.DsId == selectedSchedule.DsId);
+            // giảm max booking của lịch làm việc
+            selectedSchedule.MaxBooking--;
 
-            if (selectedSchedule != null && selectedSchedule.Bookings.Count >= MAX_PATIENTS_PER_SLOT)
+            //Nếu bằng 0 thì đánh dấu không còn trống
+            if (selectedSchedule.MaxBooking == 0)
             {
                 selectedSchedule.IsAvailable = false;
-                _context.DoctorSchedules.Update(selectedSchedule);
-                await _context.SaveChangesAsync();
             }
+
+            _context.DoctorSchedules.Update(selectedSchedule);
+            await _context.SaveChangesAsync();
 
             // 6. Load lại booking để lấy navigation properties
             var fullBooking = await _context.Bookings

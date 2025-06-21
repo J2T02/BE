@@ -4,7 +4,7 @@
     {
         
 
-        public string Status { get; set; } = string.Empty;
+        public int Status { get; set; } 
 
         public string DoctorName { get; set; } = string.Empty;
 
