@@ -143,11 +143,13 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IDoctor, DoctorRepository>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IHistoryBookingRepository, HistoryBookingRepository>();
 builder.Services.AddScoped<IBookingDetail, BookingDetailRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+
 
 
 
