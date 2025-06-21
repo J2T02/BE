@@ -37,15 +37,11 @@ namespace SWP.Controllers
 
                 int accountId = int.Parse(accountIdClaim);
 
-                var customer = await _context.Customers.FirstOrDefaultAsync(c => c.AccId == accountId);
-                if(customer == null)
-                {
-                    return NotFound(new BaseRespone<List<HistoryBookingDto>>(HttpStatusCode.NotFound, "Không tìm thấy khách hàng với tài khoản này"));
-                }
+                
 
-                int Id = customer.CusId;
+                
 
-                var historyBookings = await _hisotryBookingRepository.GetHistoryBookingsAsync(Id);
+                var historyBookings = await _hisotryBookingRepository.GetHistoryBookingsAsync(accountId);
                 if (historyBookings == null || historyBookings.Count == 0)
                 {
                     return NotFound(new BaseRespone<HistoryBookingDto>(HttpStatusCode.NotFound, "Không tìm thấy lịch sử đặt lịch cho khách hàng này"));

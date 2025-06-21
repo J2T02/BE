@@ -1,10 +1,12 @@
 ﻿using System.Net;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SWP.Data;
 using SWP.Dtos.Booking;
+using SWP.Dtos.Customer;
 using SWP.Interfaces;
 using SWP.Mapper;
 using SWP.Models;
@@ -29,16 +31,17 @@ namespace SWP.Controllers
         {
             try
             {
+                var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (accountIdClaim == null)
+                {
+                    return BadRequest(new BaseRespone<List<HistoryBookingDto>>(HttpStatusCode.BadRequest, "Không tìm thấy thông tin khách hàng"));
+                }
+
+                int accountId = int.Parse(accountIdClaim);
                 var today = DateTime.Today;
 
-                // ✅ Kiểm tra trước: Khách đã đặt trong slot chưa
-                var alreadyBooked = await _context.Bookings
-                .Include(b => b.Ds)
-                .Where(b => b.AccId == bookingRequest.CustomerId &&
-                        b.Ds.WorkDate == bookingRequest.WorkDate &&  
-                        b.Ds.SlotId == bookingRequest.SlotId ).AnyAsync();
-
-                var booked = await _context.Bookings.Where(b => b.AccId == bookingRequest.CustomerId &&
+                
+                var booked = await _context.Bookings.Where(b => b.AccId == accountId &&
                         b.Status <4).AnyAsync();
 
 
@@ -49,13 +52,8 @@ namespace SWP.Controllers
                         HttpStatusCode.Conflict));
                 }
 
-                if (alreadyBooked)
-                {
-                    return Conflict(BaseRespone<BookingResponseDto>.ErrorResponse(
-                        "Khách hàng đã đặt lịch trong giờ này. Không thể đặt thêm.",
-                        HttpStatusCode.Conflict));
-                }
-                var booking = await _bookingRepo.BookingAsync(bookingRequest);
+                
+                var booking = await _bookingRepo.BookingAsync(bookingRequest, accountId);
 
 
 
