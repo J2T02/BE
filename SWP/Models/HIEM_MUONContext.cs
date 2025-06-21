@@ -17,11 +17,15 @@ public partial class HIEM_MUONContext : DbContext
 
     public virtual DbSet<BioSample> BioSamples { get; set; }
 
+    public virtual DbSet<BioSampleStatus> BioSampleStatuses { get; set; }
+
     public virtual DbSet<BioType> BioTypes { get; set; }
 
     public virtual DbSet<Blog> Blogs { get; set; }
 
     public virtual DbSet<Booking> Bookings { get; set; }
+
+    public virtual DbSet<BookingStatus> BookingStatuses { get; set; }
 
     public virtual DbSet<Certificate> Certificates { get; set; }
 
@@ -32,6 +36,8 @@ public partial class HIEM_MUONContext : DbContext
     public virtual DbSet<Doctor> Doctors { get; set; }
 
     public virtual DbSet<DoctorSchedule> DoctorSchedules { get; set; }
+
+    public virtual DbSet<DoctorStatus> DoctorStatuses { get; set; }
 
     public virtual DbSet<Feedback> Feedbacks { get; set; }
 
@@ -49,17 +55,21 @@ public partial class HIEM_MUONContext : DbContext
 
     public virtual DbSet<SlotSchedule> SlotSchedules { get; set; }
 
-    public virtual DbSet<Status> Statuses { get; set; }
-
     public virtual DbSet<StatusPayment> StatusPayments { get; set; }
 
     public virtual DbSet<StepDetail> StepDetails { get; set; }
 
+    public virtual DbSet<StepDetailStatus> StepDetailStatuses { get; set; }
+
     public virtual DbSet<Test> Tests { get; set; }
+
+    public virtual DbSet<TestStatus> TestStatuses { get; set; }
 
     public virtual DbSet<TestType> TestTypes { get; set; }
 
     public virtual DbSet<TreatmentPlan> TreatmentPlans { get; set; }
+
+    public virtual DbSet<TreatmentPlanStatus> TreatmentPlanStatuses { get; set; }
 
     public virtual DbSet<TreatmentStep> TreatmentSteps { get; set; }
 
@@ -67,547 +77,575 @@ public partial class HIEM_MUONContext : DbContext
     {
         modelBuilder.Entity<Account>(entity =>
         {
-            entity.HasKey(e => e.AccId).HasName("PK__Account__A471AFDAB647753C");
+            entity.HasKey(e => e.AccId).HasName("PK__Account__49ACB9A4313D5639");
 
             entity.ToTable("Account");
 
-            entity.Property(e => e.AccId).HasColumnName("accId");
-            entity.Property(e => e.CreateAt)
-                .HasColumnType("datetime")
-                .HasColumnName("createAt");
+            entity.Property(e => e.AccId).HasColumnName("Acc_ID");
+            entity.Property(e => e.CreateAt).HasColumnType("datetime");
             entity.Property(e => e.FullName)
                 .HasMaxLength(100)
-                .HasColumnName("fullName");
-            entity.Property(e => e.Img)
-                .HasColumnType("text")
-                .HasColumnName("img");
-            entity.Property(e => e.IsActive).HasColumnName("isActive");
-            entity.Property(e => e.Mail)
-                .HasMaxLength(100)
-                .HasColumnName("mail");
+                .HasColumnName("Full_Name");
+            entity.Property(e => e.Img).HasColumnType("text");
+            entity.Property(e => e.Mail).HasMaxLength(100);
             entity.Property(e => e.Password)
                 .HasMaxLength(100)
-                .IsUnicode(false)
-                .HasColumnName("password");
+                .IsUnicode(false);
             entity.Property(e => e.Phone)
                 .HasMaxLength(15)
-                .IsUnicode(false)
-                .HasColumnName("phone");
-            entity.Property(e => e.RoleId).HasColumnName("roleId");
+                .IsUnicode(false);
+            entity.Property(e => e.RoleId).HasColumnName("Role_ID");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Accounts)
                 .HasForeignKey(d => d.RoleId)
-                .HasConstraintName("FK__Account__roleId__35BCFE0A");
+                .HasConstraintName("FK__Account__Role_ID__37A5467C");
         });
 
         modelBuilder.Entity<BioSample>(entity =>
         {
-            entity.HasKey(e => e.BsId).HasName("PK__BioSampl__5338D47FEACA1F93");
+            entity.HasKey(e => e.BsId).HasName("PK__BioSampl__B5A8B265A7C5B10C");
 
             entity.ToTable("BioSample");
 
-            entity.Property(e => e.BsId).HasColumnName("bsId");
+            entity.Property(e => e.BsId).HasColumnName("BS_ID");
             entity.Property(e => e.BsName)
                 .HasMaxLength(100)
-                .HasColumnName("bsName");
-            entity.Property(e => e.BtId).HasColumnName("btId");
-            entity.Property(e => e.CollectionDate).HasColumnName("collectionDate");
-            entity.Property(e => e.Note)
-                .HasColumnType("text")
-                .HasColumnName("note");
-            entity.Property(e => e.Quality)
-                .HasMaxLength(50)
-                .HasColumnName("quality");
-            entity.Property(e => e.Status).HasColumnName("status");
-            entity.Property(e => e.StorageLocation)
-                .HasMaxLength(100)
-                .HasColumnName("storageLocation");
-            entity.Property(e => e.TpId).HasColumnName("tpId");
+                .HasColumnName("BS_Name");
+            entity.Property(e => e.BtId).HasColumnName("BT_ID");
+            entity.Property(e => e.Note).HasColumnType("text");
+            entity.Property(e => e.Quality).HasMaxLength(50);
+            entity.Property(e => e.StorageLocation).HasMaxLength(100);
+            entity.Property(e => e.TpId).HasColumnName("TP_ID");
 
             entity.HasOne(d => d.Bt).WithMany(p => p.BioSamples)
                 .HasForeignKey(d => d.BtId)
-                .HasConstraintName("FK__BioSample__btId__656C112C");
+                .HasConstraintName("FK__BioSample__BT_ID__73BA3083");
+
+            entity.HasOne(d => d.StatusNavigation).WithMany(p => p.BioSamples)
+                .HasForeignKey(d => d.Status)
+                .HasConstraintName("FK__BioSample__Statu__74AE54BC");
 
             entity.HasOne(d => d.Tp).WithMany(p => p.BioSamples)
                 .HasForeignKey(d => d.TpId)
-                .HasConstraintName("FK__BioSample__tpId__6477ECF3");
+                .HasConstraintName("FK__BioSample__TP_ID__72C60C4A");
+        });
+
+        modelBuilder.Entity<BioSampleStatus>(entity =>
+        {
+            entity.HasKey(e => e.StatusId).HasName("PK__BioSampl__519009ACE9F01189");
+
+            entity.ToTable("BioSample_Status");
+
+            entity.Property(e => e.StatusId)
+                .ValueGeneratedNever()
+                .HasColumnName("Status_ID");
+            entity.Property(e => e.StatusName)
+                .HasMaxLength(100)
+                .HasColumnName("Status_Name");
         });
 
         modelBuilder.Entity<BioType>(entity =>
         {
-            entity.HasKey(e => e.BtId).HasName("PK__BioType__5276C666619D2099");
+            entity.HasKey(e => e.BtId).HasName("PK__BioType__9C28A3C29FC71137");
 
             entity.ToTable("BioType");
 
-            entity.Property(e => e.BtId).HasColumnName("btId");
+            entity.Property(e => e.BtId).HasColumnName("BT_ID");
             entity.Property(e => e.BtName)
                 .HasMaxLength(100)
-                .HasColumnName("btName");
+                .HasColumnName("BT_Name");
         });
 
         modelBuilder.Entity<Blog>(entity =>
         {
-            entity.HasKey(e => e.BlogId).HasName("PK__Blog__FA0AA72DC17ABA1C");
+            entity.HasKey(e => e.BlogId).HasName("PK__Blog__C164D0182A2C99AF");
 
             entity.ToTable("Blog");
 
-            entity.Property(e => e.BlogId).HasColumnName("blogId");
-            entity.Property(e => e.AuthorId).HasColumnName("authorId");
-            entity.Property(e => e.Content)
-                .HasColumnType("text")
-                .HasColumnName("content");
-            entity.Property(e => e.Img)
-                .HasColumnType("text")
-                .HasColumnName("img");
+            entity.Property(e => e.BlogId).HasColumnName("Blog_ID");
+            entity.Property(e => e.AuthorId).HasColumnName("Author_ID");
+            entity.Property(e => e.Content).HasColumnType("text");
+            entity.Property(e => e.Img).HasColumnType("text");
             entity.Property(e => e.IsActive).HasColumnName("isActive");
-            entity.Property(e => e.PostDate).HasColumnName("postDate");
-            entity.Property(e => e.Title)
-                .HasMaxLength(255)
-                .HasColumnName("title");
+            entity.Property(e => e.Title).HasMaxLength(255);
 
             entity.HasOne(d => d.Author).WithMany(p => p.Blogs)
                 .HasForeignKey(d => d.AuthorId)
-                .HasConstraintName("FK__Blog__authorId__68487DD7");
+                .HasConstraintName("FK__Blog__Author_ID__778AC167");
         });
 
         modelBuilder.Entity<Booking>(entity =>
         {
-            entity.HasKey(e => e.BookingId).HasName("PK__Booking__C6D03BCDA2E0853D");
+            entity.HasKey(e => e.BookingId).HasName("PK__Booking__35ABFDE059D68397");
 
             entity.ToTable("Booking");
 
-            entity.Property(e => e.BookingId).HasColumnName("bookingId");
-            entity.Property(e => e.AccId).HasColumnName("accId");
+            entity.Property(e => e.BookingId).HasColumnName("Booking_ID");
+            entity.Property(e => e.AccId).HasColumnName("Acc_ID");
             entity.Property(e => e.CreateAt)
                 .HasColumnType("datetime")
-                .HasColumnName("createAt");
-            entity.Property(e => e.DocId).HasColumnName("docId");
-            entity.Property(e => e.DsId).HasColumnName("dsId");
-            entity.Property(e => e.Note)
-                .HasColumnType("text")
-                .HasColumnName("note");
-            entity.Property(e => e.Status).HasColumnName("status");
+                .HasColumnName("Create_At");
+            entity.Property(e => e.DocId).HasColumnName("Doc_ID");
+            entity.Property(e => e.DsId).HasColumnName("DS_ID");
+            entity.Property(e => e.Note).HasColumnType("text");
 
             entity.HasOne(d => d.Acc).WithMany(p => p.Bookings)
                 .HasForeignKey(d => d.AccId)
-                .HasConstraintName("FK__Booking__accId__45F365D3");
+                .HasConstraintName("FK__Booking__Acc_ID__5070F446");
 
             entity.HasOne(d => d.Doc).WithMany(p => p.Bookings)
                 .HasForeignKey(d => d.DocId)
-                .HasConstraintName("FK__Booking__docId__46E78A0C");
+                .HasConstraintName("FK__Booking__Doc_ID__5165187F");
 
             entity.HasOne(d => d.Ds).WithMany(p => p.Bookings)
                 .HasForeignKey(d => d.DsId)
-                .HasConstraintName("FK__Booking__dsId__47DBAE45");
+                .HasConstraintName("FK__Booking__DS_ID__52593CB8");
+
+            entity.HasOne(d => d.StatusNavigation).WithMany(p => p.Bookings)
+                .HasForeignKey(d => d.Status)
+                .HasConstraintName("FK__Booking__Status__534D60F1");
+        });
+
+        modelBuilder.Entity<BookingStatus>(entity =>
+        {
+            entity.HasKey(e => e.StatusId).HasName("PK__Booking___519009AC8D11763C");
+
+            entity.ToTable("Booking_Status");
+
+            entity.Property(e => e.StatusId)
+                .ValueGeneratedNever()
+                .HasColumnName("Status_ID");
+            entity.Property(e => e.StatusName)
+                .HasMaxLength(100)
+                .HasColumnName("Status_Name");
         });
 
         modelBuilder.Entity<Certificate>(entity =>
         {
-            entity.HasKey(e => e.CerId).HasName("PK__Certific__22EED4632E2ADF0A");
+            entity.HasKey(e => e.CerId).HasName("PK__Certific__C5D9F2E3356761E8");
 
             entity.ToTable("Certificate");
 
             entity.Property(e => e.CerId)
                 .ValueGeneratedNever()
-                .HasColumnName("cerId");
+                .HasColumnName("Cer_ID");
             entity.Property(e => e.CerName)
                 .HasMaxLength(100)
-                .HasColumnName("cerName");
+                .HasColumnName("Cer_name");
         });
 
         modelBuilder.Entity<Customer>(entity =>
         {
-            entity.HasKey(e => e.CusId).HasName("PK__Customer__BA9897F3CB16B36D");
+            entity.HasKey(e => e.CusId).HasName("PK__Customer__0AD16557DE25EAA6");
 
             entity.ToTable("Customer");
 
-            entity.Property(e => e.CusId).HasColumnName("cusId");
-            entity.Property(e => e.AccId).HasColumnName("accId");
+            entity.Property(e => e.CusId).HasColumnName("Cus_ID");
+            entity.Property(e => e.AccId).HasColumnName("Acc_ID");
             entity.Property(e => e.HusName)
                 .HasMaxLength(100)
-                .HasColumnName("husName");
-            entity.Property(e => e.HusYob).HasColumnName("husYob");
+                .HasColumnName("Hus_Name");
+            entity.Property(e => e.HusYob).HasColumnName("Hus_YOB");
             entity.Property(e => e.WifeName)
                 .HasMaxLength(100)
-                .HasColumnName("wifeName");
-            entity.Property(e => e.WifeYob).HasColumnName("wifeYob");
+                .HasColumnName("Wife_Name");
+            entity.Property(e => e.WifeYob).HasColumnName("Wife_YOB");
 
             entity.HasOne(d => d.Acc).WithMany(p => p.Customers)
                 .HasForeignKey(d => d.AccId)
-                .HasConstraintName("FK__Customer__accId__38996AB5");
+                .HasConstraintName("FK__Customer__Acc_ID__4222D4EF");
         });
 
         modelBuilder.Entity<DocCertificate>(entity =>
         {
-            entity.HasKey(e => new { e.DocId, e.CerId }).HasName("PK__DocCerti__241729649B00FC5E");
+            entity.HasKey(e => new { e.DocId, e.CerId }).HasName("PK__DocCerti__6A1AA70FE39551C4");
 
             entity.ToTable("DocCertificate");
 
-            entity.Property(e => e.DocId).HasColumnName("docId");
-            entity.Property(e => e.CerId).HasColumnName("cerId");
+            entity.Property(e => e.DocId).HasColumnName("Doc_ID");
+            entity.Property(e => e.CerId).HasColumnName("Cer_ID");
             entity.Property(e => e.FilePath)
                 .HasColumnType("text")
-                .HasColumnName("filePath");
+                .HasColumnName("File_Path");
 
             entity.HasOne(d => d.Cer).WithMany(p => p.DocCertificates)
                 .HasForeignKey(d => d.CerId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__DocCertif__cerId__3F466844");
+                .HasConstraintName("FK__DocCertif__Cer_I__49C3F6B7");
 
             entity.HasOne(d => d.Doc).WithMany(p => p.DocCertificates)
                 .HasForeignKey(d => d.DocId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__DocCertif__docId__3E52440B");
+                .HasConstraintName("FK__DocCertif__Doc_I__48CFD27E");
         });
 
         modelBuilder.Entity<Doctor>(entity =>
         {
-            entity.HasKey(e => e.DocId).HasName("PK__Doctor__0639C422E8180122");
+            entity.HasKey(e => e.DocId).HasName("PK__Doctor__46473821F71578CC");
 
             entity.ToTable("Doctor");
 
-            entity.Property(e => e.DocId).HasColumnName("docId");
-            entity.Property(e => e.AccId).HasColumnName("accId");
-            entity.Property(e => e.DocName)
-                .HasMaxLength(100)
-                .HasColumnName("docName");
-            entity.Property(e => e.Experience).HasColumnName("experience");
-            entity.Property(e => e.Gender)
-                .HasMaxLength(10)
-                .HasColumnName("gender");
-            entity.Property(e => e.Status).HasColumnName("status");
-            entity.Property(e => e.Yob).HasColumnName("yob");
+            entity.Property(e => e.DocId).HasColumnName("Doc_ID");
+            entity.Property(e => e.AccId).HasColumnName("Acc_ID");
+            entity.Property(e => e.Gender).HasMaxLength(10);
+            entity.Property(e => e.Yob).HasColumnName("YOB");
 
             entity.HasOne(d => d.Acc).WithMany(p => p.Doctors)
                 .HasForeignKey(d => d.AccId)
-                .HasConstraintName("FK__Doctor__accId__3B75D760");
+                .HasConstraintName("FK__Doctor__Acc_ID__44FF419A");
+
+            entity.HasOne(d => d.StatusNavigation).WithMany(p => p.Doctors)
+                .HasForeignKey(d => d.Status)
+                .HasConstraintName("FK__Doctor__Status__45F365D3");
         });
 
         modelBuilder.Entity<DoctorSchedule>(entity =>
         {
-            entity.HasKey(e => e.DsId).HasName("PK__DoctorSc__247E3DA76D931E20");
+            entity.HasKey(e => e.DsId).HasName("PK__DoctorSc__EFC56BC6558807B6");
 
             entity.ToTable("DoctorSchedule");
 
-            entity.Property(e => e.DsId).HasColumnName("dsId");
-            entity.Property(e => e.DocId).HasColumnName("docId");
+            entity.Property(e => e.DsId).HasColumnName("DS_ID");
+            entity.Property(e => e.DocId).HasColumnName("Doc_ID");
             entity.Property(e => e.IsAvailable).HasColumnName("isAvailable");
-            entity.Property(e => e.MaxBooking).HasColumnName("maxBooking");
-            entity.Property(e => e.SlotId).HasColumnName("slotId");
-            entity.Property(e => e.WorkDate).HasColumnName("workDate");
+            entity.Property(e => e.MaxBooking).HasColumnName("Max_Booking");
+            entity.Property(e => e.SlotId).HasColumnName("Slot_ID");
 
             entity.HasOne(d => d.Doc).WithMany(p => p.DoctorSchedules)
                 .HasForeignKey(d => d.DocId)
-                .HasConstraintName("FK__DoctorSch__docId__4222D4EF");
+                .HasConstraintName("FK__DoctorSch__Doc_I__4CA06362");
 
             entity.HasOne(d => d.Slot).WithMany(p => p.DoctorSchedules)
                 .HasForeignKey(d => d.SlotId)
-                .HasConstraintName("FK__DoctorSch__slotI__4316F928");
+                .HasConstraintName("FK__DoctorSch__Slot___4D94879B");
+        });
+
+        modelBuilder.Entity<DoctorStatus>(entity =>
+        {
+            entity.HasKey(e => e.StatusId).HasName("PK__DoctorSt__519009AC501969A4");
+
+            entity.ToTable("DoctorStatus");
+
+            entity.Property(e => e.StatusId)
+                .ValueGeneratedNever()
+                .HasColumnName("Status_ID");
+            entity.Property(e => e.StatusName)
+                .HasMaxLength(100)
+                .HasColumnName("Status_Name");
         });
 
         modelBuilder.Entity<Feedback>(entity =>
         {
-            entity.HasKey(e => e.FbId).HasName("PK__Feedback__30B6057F26D75BD9");
+            entity.HasKey(e => e.FbId).HasName("PK__Feedback__28DF61719C54BE0D");
 
             entity.ToTable("Feedback");
 
-            entity.Property(e => e.FbId).HasColumnName("fbId");
-            entity.Property(e => e.Content)
-                .HasColumnType("text")
-                .HasColumnName("content");
-            entity.Property(e => e.DocId).HasColumnName("docId");
-            entity.Property(e => e.Star).HasColumnName("star");
-            entity.Property(e => e.TpId).HasColumnName("tpId");
+            entity.Property(e => e.FbId).HasColumnName("FB_ID");
+            entity.Property(e => e.Content).HasColumnType("text");
+            entity.Property(e => e.DocId).HasColumnName("Doc_ID");
+            entity.Property(e => e.TpId).HasColumnName("TP_ID");
 
             entity.HasOne(d => d.Doc).WithMany(p => p.Feedbacks)
                 .HasForeignKey(d => d.DocId)
-                .HasConstraintName("FK__Feedback__docId__619B8048");
+                .HasConstraintName("FK__Feedback__Doc_ID__6E01572D");
 
             entity.HasOne(d => d.Tp).WithMany(p => p.Feedbacks)
                 .HasForeignKey(d => d.TpId)
-                .HasConstraintName("FK__Feedback__tpId__60A75C0F");
+                .HasConstraintName("FK__Feedback__TP_ID__6D0D32F4");
         });
 
         modelBuilder.Entity<MethodPayment>(entity =>
         {
-            entity.HasKey(e => e.MethodId).HasName("PK__MethodPa__C7B34C89D6943F2B");
+            entity.HasKey(e => e.MethodId).HasName("PK__Method_P__FB48B3C49BC111D3");
 
-            entity.ToTable("MethodPayment");
+            entity.ToTable("Method_Payment");
 
-            entity.Property(e => e.MethodId).HasColumnName("methodId");
+            entity.Property(e => e.MethodId).HasColumnName("Method_ID");
             entity.Property(e => e.MethodName)
                 .HasMaxLength(50)
-                .HasColumnName("methodName");
+                .HasColumnName("Method_Name");
         });
 
         modelBuilder.Entity<Payment>(entity =>
         {
-            entity.HasKey(e => e.PaymentId).HasName("PK__Payment__A0D9EFC6D21C3DB3");
+            entity.HasKey(e => e.PaymentId).HasName("PK__Payment__DA6C7FE154BBAD44");
 
             entity.ToTable("Payment");
 
-            entity.Property(e => e.PaymentId).HasColumnName("paymentId");
-            entity.Property(e => e.Amount)
-                .HasColumnType("decimal(10, 2)")
-                .HasColumnName("amount");
-            entity.Property(e => e.BookingId).HasColumnName("bookingId");
-            entity.Property(e => e.MethodId).HasColumnName("methodId");
-            entity.Property(e => e.PaymentDate)
-                .HasColumnType("datetime")
-                .HasColumnName("paymentDate");
-            entity.Property(e => e.PaymentTypeId).HasColumnName("paymentTypeId");
-            entity.Property(e => e.StatusId).HasColumnName("statusId");
-            entity.Property(e => e.TreatmentPlansId).HasColumnName("treatmentPlansId");
+            entity.Property(e => e.PaymentId).HasColumnName("Payment_ID");
+            entity.Property(e => e.Amount).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.BookingId).HasColumnName("Booking_ID");
+            entity.Property(e => e.MethodId).HasColumnName("Method_ID");
+            entity.Property(e => e.PaymentDate).HasColumnType("datetime");
+            entity.Property(e => e.PaymentTypeId).HasColumnName("PaymentType_ID");
+            entity.Property(e => e.StatusId).HasColumnName("Status_ID");
+            entity.Property(e => e.TreatmentPlansId).HasColumnName("TreatmentPlans_ID");
 
             entity.HasOne(d => d.Booking).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.BookingId)
-                .HasConstraintName("FK__Payment__booking__6C190EBB");
+                .HasConstraintName("FK__Payment__Booking__7B5B524B");
 
             entity.HasOne(d => d.Method).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.MethodId)
-                .HasConstraintName("FK__Payment__methodI__6E01572D");
+                .HasConstraintName("FK__Payment__Method___7D439ABD");
 
             entity.HasOne(d => d.PaymentType).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.PaymentTypeId)
-                .HasConstraintName("FK__Payment__payment__6B24EA82");
+                .HasConstraintName("FK__Payment__Payment__7A672E12");
 
             entity.HasOne(d => d.Status).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.StatusId)
-                .HasConstraintName("FK__Payment__statusI__6EF57B66");
+                .HasConstraintName("FK__Payment__Status___7E37BEF6");
 
             entity.HasOne(d => d.TreatmentPlans).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.TreatmentPlansId)
-                .HasConstraintName("FK__Payment__treatme__6D0D32F4");
+                .HasConstraintName("FK__Payment__Treatme__7C4F7684");
         });
 
         modelBuilder.Entity<PaymentType>(entity =>
         {
-            entity.HasKey(e => e.PaymentTypeId).HasName("PK__PaymentT__460ADCD2A34970A9");
+            entity.HasKey(e => e.PaymentTypeId).HasName("PK__PaymentT__CD8B7D19B2DCA88A");
 
             entity.ToTable("PaymentType");
 
-            entity.Property(e => e.PaymentTypeId).HasColumnName("paymentTypeId");
+            entity.Property(e => e.PaymentTypeId).HasColumnName("PaymentType_ID");
             entity.Property(e => e.TypeName)
                 .HasMaxLength(50)
-                .HasColumnName("typeName");
+                .HasColumnName("Type_Name");
         });
 
         modelBuilder.Entity<Remind>(entity =>
         {
-            entity.HasKey(e => e.RemindId).HasName("PK__Remind__65CCEA2F07ECAEAD");
+            entity.HasKey(e => e.RemindId).HasName("PK__Remind__A1DB7C914992D21B");
 
             entity.ToTable("Remind");
 
-            entity.Property(e => e.RemindId).HasColumnName("remindId");
-            entity.Property(e => e.IsTaken).HasColumnName("isTaken");
-            entity.Property(e => e.Message)
-                .HasColumnType("text")
-                .HasColumnName("message");
-            entity.Property(e => e.ReminderDay).HasColumnName("reminderDay");
-            entity.Property(e => e.SdId).HasColumnName("sdId");
+            entity.Property(e => e.RemindId).HasColumnName("Remind_ID");
+            entity.Property(e => e.Message).HasColumnType("text");
+            entity.Property(e => e.ReminderDay).HasColumnName("Reminder_Day");
+            entity.Property(e => e.SdId).HasColumnName("SD_ID");
 
             entity.HasOne(d => d.Sd).WithMany(p => p.Reminds)
                 .HasForeignKey(d => d.SdId)
-                .HasConstraintName("FK__Remind__sdId__5DCAEF64");
+                .HasConstraintName("FK__Remind__SD_ID__6A30C649");
         });
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Role__CD98462AC4BD406E");
+            entity.HasKey(e => e.RoleId).HasName("PK__Role__D80AB49B396D52FF");
 
             entity.ToTable("Role");
 
-            entity.Property(e => e.RoleId).HasColumnName("roleId");
+            entity.Property(e => e.RoleId).HasColumnName("Role_ID");
             entity.Property(e => e.RoleName)
                 .HasMaxLength(50)
-                .HasColumnName("roleName");
+                .HasColumnName("Role_Name");
         });
 
         modelBuilder.Entity<Service>(entity =>
         {
-            entity.HasKey(e => e.SerId).HasName("PK__Services__DFDAC530F8E541F2");
+            entity.HasKey(e => e.SerId).HasName("PK__Services__266F0071462383A4");
 
-            entity.Property(e => e.SerId).HasColumnName("serId");
-            entity.Property(e => e.Description)
+            entity.Property(e => e.SerId).HasColumnName("Ser_ID");
+            entity.Property(e => e.Description).HasColumnType("text");
+            entity.Property(e => e.FilePath)
                 .HasColumnType("text")
-                .HasColumnName("description");
-            entity.Property(e => e.Price)
-                .HasColumnType("decimal(10, 2)")
-                .HasColumnName("price");
+                .HasColumnName("File_Path");
+            entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.SerName)
                 .HasMaxLength(100)
-                .HasColumnName("serName");
+                .HasColumnName("Ser_Name");
         });
 
         modelBuilder.Entity<SlotSchedule>(entity =>
         {
-            entity.HasKey(e => e.SlotId).HasName("PK__SlotSche__9C4A67139E7DC667");
+            entity.HasKey(e => e.SlotId).HasName("PK__Slot_Sch__1AE2AAAE333A7C46");
 
-            entity.ToTable("SlotSchedule");
+            entity.ToTable("Slot_Schedule");
 
-            entity.Property(e => e.SlotId).HasColumnName("slotId");
-            entity.Property(e => e.SlotEnd).HasColumnName("slotEnd");
-            entity.Property(e => e.SlotStart).HasColumnName("slotStart");
-        });
-
-        modelBuilder.Entity<Status>(entity =>
-        {
-            entity.HasKey(e => e.StatusId).HasName("PK__Status__36257A18C3214483");
-
-            entity.ToTable("Status");
-
-            entity.Property(e => e.StatusId)
-                .ValueGeneratedNever()
-                .HasColumnName("statusId");
-            entity.Property(e => e.StatusName)
-                .HasMaxLength(100)
-                .HasColumnName("statusName");
+            entity.Property(e => e.SlotId).HasColumnName("Slot_ID");
+            entity.Property(e => e.SlotEnd).HasColumnName("Slot_End");
+            entity.Property(e => e.SlotStart).HasColumnName("Slot_Start");
         });
 
         modelBuilder.Entity<StatusPayment>(entity =>
         {
-            entity.HasKey(e => e.StatusId).HasName("PK__StatusPa__36257A18F4351DF2");
+            entity.HasKey(e => e.StatusId).HasName("PK__Status_P__519009ACDADEB0AE");
 
-            entity.ToTable("StatusPayment");
+            entity.ToTable("Status_Payment");
 
-            entity.Property(e => e.StatusId).HasColumnName("statusId");
+            entity.Property(e => e.StatusId).HasColumnName("Status_ID");
             entity.Property(e => e.StatusName)
                 .HasMaxLength(50)
-                .HasColumnName("statusName");
+                .HasColumnName("Status_Name");
         });
 
         modelBuilder.Entity<StepDetail>(entity =>
         {
-            entity.HasKey(e => e.SdId).HasName("PK__StepDeta__2CCB80E69F013841");
+            entity.HasKey(e => e.SdId).HasName("PK__StepDeta__DD5A6BA3397F9018");
 
             entity.ToTable("StepDetail");
 
-            entity.Property(e => e.SdId).HasColumnName("sdId");
-            entity.Property(e => e.DocId).HasColumnName("docId");
-            entity.Property(e => e.DoneDate).HasColumnName("doneDate");
-            entity.Property(e => e.Dosage)
-                .HasMaxLength(50)
-                .HasColumnName("dosage");
+            entity.Property(e => e.SdId).HasColumnName("SD_ID");
+            entity.Property(e => e.DocId).HasColumnName("Doc_ID");
+            entity.Property(e => e.Dosage).HasMaxLength(50);
             entity.Property(e => e.DrugName)
                 .HasMaxLength(50)
-                .HasColumnName("drugName");
-            entity.Property(e => e.Note)
-                .HasColumnType("text")
-                .HasColumnName("note");
-            entity.Property(e => e.PlanDate).HasColumnName("planDate");
-            entity.Property(e => e.Status).HasColumnName("status");
+                .HasColumnName("Drug_Name");
+            entity.Property(e => e.Note).HasColumnType("text");
             entity.Property(e => e.StepName)
                 .HasMaxLength(100)
-                .HasColumnName("stepName");
-            entity.Property(e => e.TpId).HasColumnName("tpId");
-            entity.Property(e => e.TsId).HasColumnName("tsId");
+                .HasColumnName("Step_Name");
+            entity.Property(e => e.TpId).HasColumnName("TP_ID");
+            entity.Property(e => e.TsId).HasColumnName("TS_ID");
 
             entity.HasOne(d => d.Doc).WithMany(p => p.StepDetails)
                 .HasForeignKey(d => d.DocId)
-                .HasConstraintName("FK__StepDetai__docId__5629CD9C");
+                .HasConstraintName("FK__StepDetai__Doc_I__60A75C0F");
+
+            entity.HasOne(d => d.StatusNavigation).WithMany(p => p.StepDetails)
+                .HasForeignKey(d => d.Status)
+                .HasConstraintName("FK__StepDetai__Statu__619B8048");
 
             entity.HasOne(d => d.Tp).WithMany(p => p.StepDetails)
                 .HasForeignKey(d => d.TpId)
-                .HasConstraintName("FK__StepDetail__tpId__5441852A");
+                .HasConstraintName("FK__StepDetai__TP_ID__5EBF139D");
 
             entity.HasOne(d => d.Ts).WithMany(p => p.StepDetails)
                 .HasForeignKey(d => d.TsId)
-                .HasConstraintName("FK__StepDetail__tsId__5535A963");
+                .HasConstraintName("FK__StepDetai__TS_ID__5FB337D6");
+        });
+
+        modelBuilder.Entity<StepDetailStatus>(entity =>
+        {
+            entity.HasKey(e => e.StatusId).HasName("PK__StepDeta__519009ACF8446FAF");
+
+            entity.ToTable("StepDetail_Status");
+
+            entity.Property(e => e.StatusId)
+                .ValueGeneratedNever()
+                .HasColumnName("Status_ID");
+            entity.Property(e => e.StatusName)
+                .HasMaxLength(100)
+                .HasColumnName("Status_Name");
         });
 
         modelBuilder.Entity<Test>(entity =>
         {
-            entity.HasKey(e => e.TestId).HasName("PK__Test__A29BFB88E1FBC089");
+            entity.HasKey(e => e.TestId).HasName("PK__Test__B502D002F940D8F5");
 
             entity.ToTable("Test");
 
-            entity.Property(e => e.TestId).HasColumnName("testId");
-            entity.Property(e => e.CusId).HasColumnName("cusId");
+            entity.Property(e => e.TestId).HasColumnName("Test_ID");
+            entity.Property(e => e.CusId).HasColumnName("Cus_ID");
             entity.Property(e => e.FilePath)
                 .HasColumnType("text")
-                .HasColumnName("filePath");
-            entity.Property(e => e.Note)
-                .HasColumnType("text")
-                .HasColumnName("note");
-            entity.Property(e => e.Result)
-                .HasColumnType("text")
-                .HasColumnName("result");
-            entity.Property(e => e.SdId).HasColumnName("sdId");
-            entity.Property(e => e.Status).HasColumnName("status");
-            entity.Property(e => e.TestDate).HasColumnName("testDate");
-            entity.Property(e => e.TestTypeId).HasColumnName("testTypeId");
+                .HasColumnName("File_Path");
+            entity.Property(e => e.Note).HasColumnType("text");
+            entity.Property(e => e.Result).HasColumnType("text");
+            entity.Property(e => e.SdId).HasColumnName("SD_ID");
+            entity.Property(e => e.TestTypeId).HasColumnName("TestType_ID");
 
             entity.HasOne(d => d.Cus).WithMany(p => p.Tests)
                 .HasForeignKey(d => d.CusId)
-                .HasConstraintName("FK__Test__cusId__59063A47");
+                .HasConstraintName("FK__Test__Cus_ID__6477ECF3");
 
             entity.HasOne(d => d.Sd).WithMany(p => p.Tests)
                 .HasForeignKey(d => d.SdId)
-                .HasConstraintName("FK__Test__sdId__5AEE82B9");
+                .HasConstraintName("FK__Test__SD_ID__66603565");
+
+            entity.HasOne(d => d.StatusNavigation).WithMany(p => p.Tests)
+                .HasForeignKey(d => d.Status)
+                .HasConstraintName("FK__Test__Status__6754599E");
 
             entity.HasOne(d => d.TestType).WithMany(p => p.Tests)
                 .HasForeignKey(d => d.TestTypeId)
-                .HasConstraintName("FK__Test__testTypeId__59FA5E80");
+                .HasConstraintName("FK__Test__TestType_I__656C112C");
+        });
+
+        modelBuilder.Entity<TestStatus>(entity =>
+        {
+            entity.HasKey(e => e.StatusId).HasName("PK__TestStat__519009AC352CAACD");
+
+            entity.ToTable("TestStatus");
+
+            entity.Property(e => e.StatusId)
+                .ValueGeneratedNever()
+                .HasColumnName("Status_ID");
+            entity.Property(e => e.StatusName)
+                .HasMaxLength(100)
+                .HasColumnName("Status_Name");
         });
 
         modelBuilder.Entity<TestType>(entity =>
         {
-            entity.HasKey(e => e.TestTypeId).HasName("PK__TestType__C3BB0189E95B5E90");
+            entity.HasKey(e => e.TestTypeId).HasName("PK__TestType__C4970D626FAF5A99");
 
             entity.ToTable("TestType");
 
-            entity.Property(e => e.TestTypeId).HasColumnName("testTypeId");
-            entity.Property(e => e.Person)
-                .HasMaxLength(10)
-                .HasColumnName("person");
+            entity.Property(e => e.TestTypeId).HasColumnName("TestType_ID");
+            entity.Property(e => e.Person).HasMaxLength(10);
             entity.Property(e => e.TestName)
                 .HasMaxLength(100)
-                .HasColumnName("testName");
+                .HasColumnName("Test_Name");
         });
 
         modelBuilder.Entity<TreatmentPlan>(entity =>
         {
-            entity.HasKey(e => e.TpId).HasName("PK__Treatmen__E1B86D6B263847D4");
+            entity.HasKey(e => e.TpId).HasName("PK__Treatmen__8106F2C4DF326FCE");
 
-            entity.Property(e => e.TpId).HasColumnName("tpId");
-            entity.Property(e => e.CusId).HasColumnName("cusId");
-            entity.Property(e => e.DocId).HasColumnName("docId");
-            entity.Property(e => e.EndDate).HasColumnName("endDate");
-            entity.Property(e => e.SerId).HasColumnName("serId");
-            entity.Property(e => e.StartDate).HasColumnName("startDate");
-            entity.Property(e => e.Status).HasColumnName("status");
+            entity.Property(e => e.TpId).HasColumnName("TP_ID");
+            entity.Property(e => e.CusId).HasColumnName("Cus_ID");
+            entity.Property(e => e.DocId).HasColumnName("Doc_ID");
+            entity.Property(e => e.SerId).HasColumnName("Ser_ID");
 
             entity.HasOne(d => d.Cus).WithMany(p => p.TreatmentPlans)
                 .HasForeignKey(d => d.CusId)
-                .HasConstraintName("FK__Treatment__cusId__5070F446");
+                .HasConstraintName("FK__Treatment__Cus_I__571DF1D5");
 
             entity.HasOne(d => d.Doc).WithMany(p => p.TreatmentPlans)
                 .HasForeignKey(d => d.DocId)
-                .HasConstraintName("FK__Treatment__docId__5165187F");
+                .HasConstraintName("FK__Treatment__Doc_I__5812160E");
 
             entity.HasOne(d => d.Ser).WithMany(p => p.TreatmentPlans)
                 .HasForeignKey(d => d.SerId)
-                .HasConstraintName("FK__Treatment__serId__4F7CD00D");
+                .HasConstraintName("FK__Treatment__Ser_I__5629CD9C");
+
+            entity.HasOne(d => d.StatusNavigation).WithMany(p => p.TreatmentPlans)
+                .HasForeignKey(d => d.Status)
+                .HasConstraintName("FK__Treatment__Statu__59063A47");
+        });
+
+        modelBuilder.Entity<TreatmentPlanStatus>(entity =>
+        {
+            entity.HasKey(e => e.StatusId).HasName("PK__Treatmen__519009AC9518B727");
+
+            entity.ToTable("TreatmentPlan_Status");
+
+            entity.Property(e => e.StatusId)
+                .ValueGeneratedNever()
+                .HasColumnName("Status_ID");
+            entity.Property(e => e.StatusName)
+                .HasMaxLength(100)
+                .HasColumnName("Status_Name");
         });
 
         modelBuilder.Entity<TreatmentStep>(entity =>
         {
-            entity.HasKey(e => e.TsId).HasName("PK__Treatmen__9C73E94B65150567");
+            entity.HasKey(e => e.TsId).HasName("PK__Treatmen__D128865A3661E0D4");
 
             entity.ToTable("TreatmentStep");
 
-            entity.Property(e => e.TsId).HasColumnName("tsId");
-            entity.Property(e => e.Description)
-                .HasColumnType("text")
-                .HasColumnName("description");
-            entity.Property(e => e.SerId).HasColumnName("serId");
+            entity.Property(e => e.TsId).HasColumnName("TS_ID");
+            entity.Property(e => e.Description).HasColumnType("text");
+            entity.Property(e => e.SerId).HasColumnName("Ser_ID");
             entity.Property(e => e.StepName)
                 .HasMaxLength(100)
-                .HasColumnName("stepName");
+                .HasColumnName("Step_Name");
 
             entity.HasOne(d => d.Ser).WithMany(p => p.TreatmentSteps)
                 .HasForeignKey(d => d.SerId)
-                .HasConstraintName("FK__Treatment__serId__4CA06362");
+                .HasConstraintName("FK__Treatment__Ser_I__5BE2A6F2");
         });
 
         OnModelCreatingPartial(modelBuilder);

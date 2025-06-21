@@ -82,11 +82,21 @@ namespace SWP.Controllers
                     Phone = registerDto.Phone,
                     RoleId = 4, // RoleId 4 là cho Customer
                     IsActive = true,
+                    CreateAt = DateTime.Now,
+                    Img = "https://cdn-icons-png.flaticon.com/512/149/149071.png" // Đặt ảnh đại diện mặc định
                 };
                 account.Password = _passwordHasher.HashPassword(account, registerDto.Password);
                 _context.Accounts.Add(account);
                 await _context.SaveChangesAsync();
 
+                var customer = new Customer
+                {
+                    AccId = account.AccId,
+                    HusName = null,
+                    WifeName = null,
+                    HusYob = null,
+                    WifeYob = null,
+                };
 
 
                 var role = await _context.Roles.FindAsync(account.RoleId);
@@ -96,8 +106,15 @@ namespace SWP.Controllers
                 var newUser = new NewUserDto
                 {
                     Token = null,
-                    UserName = account.FullName!,
-                    Role = role?.RoleName ?? "Customer",
+                    AccId = account.AccId,
+                    Mail = account.Mail,
+                    RoleId = account.RoleId ?? 0,
+                    FullName = account.FullName!,
+                    phone = account.Phone,
+                    IsActive = account.IsActive ?? true,
+                    CreateAt = account.CreateAt ?? DateTime.Now,
+                    img = account.Img ?? string.Empty,
+
                 };
 
                 return new BaseRespone<NewUserDto>(newUser, "Đăng ký thành công", HttpStatusCode.OK);
@@ -138,9 +155,14 @@ namespace SWP.Controllers
                 var newUser = new NewUserDto
                 {
                     Token = token,
-                    UserName = account.FullName!,
-                    Role = role?.RoleName ?? "Customer",
-                    UserId = customer?.CusId ?? 0 // Lấy CusId từ Customer nếu có, nếu không thì 0
+                    AccId = account.AccId,
+                    Mail = account.Mail,
+                    RoleId = account.RoleId ?? 0,
+                    FullName = account.FullName!,
+                    phone = account.Phone,
+                    IsActive = account.IsActive ?? true,
+                    CreateAt = account.CreateAt ?? DateTime.Now,
+                    img = account.Img ?? string.Empty,
                 };
                 return new BaseRespone<NewUserDto>(newUser, "Đăng nhập thành công", HttpStatusCode.OK);
             }
@@ -184,9 +206,14 @@ namespace SWP.Controllers
                 var newUser = new NewUserDto
                 {
                     Token = token,
-                    UserName = account.FullName!,
-                    Role = roleName,
-                    UserId = doctor?.DocId ?? 0 // Lấy DocId từ Doctor nếu có, nếu không thì 0
+                    AccId = account.AccId,
+                    Mail = account.Mail,
+                    RoleId = account.RoleId ?? 0,
+                    FullName = account.FullName!,
+                    phone = account.Phone,
+                    IsActive = account.IsActive ?? true,
+                    CreateAt = account.CreateAt ?? DateTime.Now,
+                    img = account.Img ?? string.Empty,
                 };
 
                 return new BaseRespone<NewUserDto>(newUser, "Đăng nhập thành công", HttpStatusCode.OK);

@@ -5,9 +5,11 @@ using System.Collections.Generic;
 
 namespace SWP.Models;
 
-public partial class Status
+public partial class StepDetailStatus
 {
     public int StatusId { get; set; }
 
     public string StatusName { get; set; }
+
+    public virtual ICollection<StepDetail> StepDetails { get; set; } = new List<StepDetail>();
 }

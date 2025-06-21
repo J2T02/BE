@@ -11,8 +11,6 @@ public partial class Doctor
 
     public int? AccId { get; set; }
 
-    public string DocName { get; set; }
-
     public string Gender { get; set; }
 
     public DateOnly? Yob { get; set; }
@@ -30,6 +28,8 @@ public partial class Doctor
     public virtual ICollection<DoctorSchedule> DoctorSchedules { get; set; } = new List<DoctorSchedule>();
 
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+
+    public virtual DoctorStatus StatusNavigation { get; set; }
 
     public virtual ICollection<StepDetail> StepDetails { get; set; } = new List<StepDetail>();
 

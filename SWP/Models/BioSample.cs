@@ -27,5 +27,7 @@ public partial class BioSample
 
     public virtual BioType Bt { get; set; }
 
+    public virtual BioSampleStatus StatusNavigation { get; set; }
+
     public virtual TreatmentPlan Tp { get; set; }
 }

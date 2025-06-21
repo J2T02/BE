@@ -19,7 +19,7 @@ namespace SWP.Mapper
 
                 Doc = new DocDto
                 {
-                    DocName = booking.Doc?.DocName,
+                    //DocName = booking.Doc?.DocName,
                     //Phone = booking.Doc?.Phone,
                     //Mail = booking.Doc?.Mail,
                     //Gender = booking.Doc?.Gender,
@@ -49,7 +49,7 @@ namespace SWP.Mapper
 
                 Doc = new DocDto
                 {
-                    DocName = booking.Doc?.DocName,
+                    //DocName = booking.Doc?.DocName,
                     //Phone = booking.Doc?.Phone,
                     //Mail = booking.Doc?.Mail,
                     //Gender = booking.Doc?.Gender,

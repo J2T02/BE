@@ -33,6 +33,8 @@ public partial class StepDetail
 
     public virtual ICollection<Remind> Reminds { get; set; } = new List<Remind>();
 
+    public virtual StepDetailStatus StatusNavigation { get; set; }
+
     public virtual ICollection<Test> Tests { get; set; } = new List<Test>();
 
     public virtual TreatmentPlan Tp { get; set; }
