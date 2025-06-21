@@ -19,13 +19,17 @@ public partial class Doctor
 
     public int? Status { get; set; }
 
+    public int? EduId { get; set; }
+
+    public string FilePathEdu { get; set; }
+
     public virtual Account Acc { get; set; }
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
-    public virtual ICollection<DocCertificate> DocCertificates { get; set; } = new List<DocCertificate>();
-
     public virtual ICollection<DoctorSchedule> DoctorSchedules { get; set; } = new List<DoctorSchedule>();
+
+    public virtual EducationLevel Edu { get; set; }
 
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 
