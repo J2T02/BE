@@ -21,12 +21,12 @@ namespace SWP.Repository
 
         public async Task<Booking> BookingAsync(BookingRequestDto booking, int accId)
         {
-            
+
 
             // 1. Lấy danh sách lịch làm việc phù hợp
             var slotSchedules = await _context.DoctorSchedules
                 .Include(ds => ds.Bookings)
-                .Where(ds => ds.WorkDate == booking.WorkDate && ds.SlotId == booking.SlotId && ds.IsAvailable == true && ds.MaxBooking >0 )
+                .Where(ds => ds.WorkDate == booking.WorkDate && ds.SlotId == booking.SlotId && ds.IsAvailable == true && ds.MaxBooking > 0)
                 .ToListAsync();
 
             // Kiểm tra xem còn lịch trống không (dựa trên SlotId, WorkDate)
@@ -48,15 +48,17 @@ namespace SWP.Repository
             {
                 // Nếu người dùng chọn bác sĩ
                 selectedSchedule = slotSchedules
-                    .FirstOrDefault(ds => ds.DocId == booking.DoctorId && ds.Bookings.Count < MAX_PATIENTS_PER_SLOT);
+                .Where(ds => ds.DocId == booking.DoctorId && ds.MaxBooking > 0)
+                .OrderByDescending(ds => ds.MaxBooking)
+                .FirstOrDefault();
             }
             else
             {
                 // Nếu không chọn bác sĩ, hệ thống chọn bác sĩ có ít booking nhất
                 selectedSchedule = slotSchedules
-                    .Where(ds => ds.Bookings.Count < MAX_PATIENTS_PER_SLOT)
-                    .OrderBy(ds => ds.Bookings.Count)
-                    .FirstOrDefault();
+                .Where(ds => ds.MaxBooking > 0)
+                .OrderByDescending(ds => ds.MaxBooking)
+                .FirstOrDefault();
             }
 
             // 3. Nếu không có lịch trống thì throw exception
