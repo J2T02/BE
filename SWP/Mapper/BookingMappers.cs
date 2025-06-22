@@ -10,8 +10,8 @@ namespace SWP.Mapper
             return new BookingResponseDto
             {
 
-                Status = (int)booking.Status,
-                //DoctorName = booking.Doc?.DocName ?? string.Empty,
+                Status = booking.StatusNavigation?.StatusName,
+                DoctorName = booking.Doc?.Acc?.FullName,
                 WorkDate = booking.Ds?.WorkDate ?? default,
                 SlotStart = booking.Ds?.Slot?.SlotStart ?? default,
                 SlotEnd = booking.Ds?.Slot?.SlotEnd ?? default,

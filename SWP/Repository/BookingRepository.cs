@@ -1,5 +1,7 @@
 ﻿using System.Linq;
+using System.Net;
 using Microsoft.EntityFrameworkCore;
+using SWP.Data;
 using SWP.Dtos.Booking;
 using SWP.Interfaces;
 using SWP.Models;
@@ -26,6 +28,18 @@ namespace SWP.Repository
                 .Include(ds => ds.Bookings)
                 .Where(ds => ds.WorkDate == booking.WorkDate && ds.SlotId == booking.SlotId && ds.IsAvailable == true && ds.MaxBooking >0 )
                 .ToListAsync();
+
+            // Kiểm tra xem còn lịch trống không (dựa trên SlotId, WorkDate)
+            var hasAvailableSchedule = await _context.DoctorSchedules
+                .AnyAsync(ds => ds.SlotId == booking.SlotId
+                                && ds.WorkDate == booking.WorkDate
+                                && ds.IsAvailable == true
+                                && ds.MaxBooking > 0);
+
+            if (!hasAvailableSchedule)
+            {
+                throw new InvalidOperationException("Lịch đã đầy. Vui lòng chọn thời gian khác.");
+            }
 
             // 2. Chọn lịch làm việc
             DoctorSchedule? selectedSchedule = null;
@@ -79,8 +93,10 @@ namespace SWP.Repository
             // 6. Load lại booking để lấy navigation properties
             var fullBooking = await _context.Bookings
                 .Include(b => b.Doc)
+                    .ThenInclude(doc => doc.Acc)
                 .Include(b => b.Ds)
                     .ThenInclude(ds => ds.Slot)
+                .Include(b => b.StatusNavigation)
                 .FirstOrDefaultAsync(b => b.BookingId == newBooking.BookingId);
 
             if (fullBooking == null)
