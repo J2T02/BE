@@ -149,7 +149,7 @@ builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IHistoryBookingRepository, HistoryBookingRepository>();
 builder.Services.AddScoped<IBookingDetail, BookingDetailRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
-
+builder.Services.AddScoped<IUpdateBookingStatus, UpdateBookingStatusRepository>();
 
 
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure.Core;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
@@ -89,6 +90,29 @@ namespace SWP.Controllers
                     statusCode: HttpStatusCode.InternalServerError,
                     message: "Lỗi: " + ex.Message
                 );
+            }
+        }
+
+        [HttpPut("update")]
+        public async Task<ActionResult> UpdateCustomer([FromBody] UpdateCustomerRequestDto updateDto, [FromQuery] int AccountId)
+        {
+            
+
+            try
+            {
+                var result = await _customerRepository.CreateCustomerAsync(updateDto, AccountId);
+                return Ok(BaseRespone<UpdateCustomerResponseDto>.SuccessResponse(result, "Cập nhật thông tin khách hàng thành công", HttpStatusCode.OK)); 
+            }
+            catch (ArgumentException ex)
+            {
+                return NotFound(BaseRespone<UpdateCustomerResponseDto>.ErrorResponse(ex.Message, System.Net.HttpStatusCode.NotFound));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    BaseRespone<UpdateCustomerResponseDto>.ErrorResponse(
+                        "Cập nhật thông tin khách hàng không thành công do lỗi hệ thống: " + ex.Message,
+                        System.Net.HttpStatusCode.InternalServerError));
             }
         }
 
