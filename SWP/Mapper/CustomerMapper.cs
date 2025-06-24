@@ -18,6 +18,16 @@ namespace SWP.Mapper
                 WifeYob = customer.WifeYob,
             };
         }
+        public static UpdateCustomerResponseDto ToCustomer(this Customer customer)
+        {
+           return new UpdateCustomerResponseDto
+            {
+                HusName = customer.HusName,
+                WifeName = customer.WifeName,
+                HusYob = (DateOnly)customer.HusYob,
+                WifeYob = (DateOnly)customer.WifeYob
+           };
 
+        }
     }
 }

@@ -20,13 +20,15 @@ namespace SWP.Controllers
     {
         private readonly IBookingRepository _bookingRepo;
         private readonly IHistoryBookingRepository _hisotryBookingRepository;
+        private readonly IUpdateBookingStatus _updateBookingStatusRepo;
         private readonly HIEM_MUONContext _context;
 
-        public BookingController(IBookingRepository bookingRepository, HIEM_MUONContext context, IHistoryBookingRepository hisotryBookingRepository)
+        public BookingController(IBookingRepository bookingRepository, HIEM_MUONContext context, IHistoryBookingRepository hisotryBookingRepository, IUpdateBookingStatus updateBookingStatus)
         {
             _bookingRepo = bookingRepository;
             _hisotryBookingRepository = hisotryBookingRepository;
             _context = context;
+            _updateBookingStatusRepo = updateBookingStatus;
         }
         [Authorize(Roles = "Customer")]
         [HttpPost("Booking")]
@@ -43,9 +45,9 @@ namespace SWP.Controllers
                 int accountId = int.Parse(accountIdClaim);
                 var today = DateTime.Today;
 
-                
+
                 var booked = await _context.Bookings.Where(b => b.AccId == accountId &&
-                        b.Status <4).AnyAsync();
+                        b.Status < 4).AnyAsync();
 
 
                 if (booked)
@@ -55,7 +57,7 @@ namespace SWP.Controllers
                         HttpStatusCode.Conflict));
                 }
 
-                
+
                 var booking = await _bookingRepo.BookingAsync(bookingRequest, accountId);
 
 
@@ -105,7 +107,7 @@ namespace SWP.Controllers
 
                 int accountId = int.Parse(accountIdClaim);
 
-               
+
 
 
 
@@ -123,6 +125,23 @@ namespace SWP.Controllers
             {
                 return StatusCode(500, new BaseRespone<List<HistoryBookingDto>>(HttpStatusCode.InternalServerError, $"Lỗi hệ thống: {ex.Message}"));
             }
+        }
+
+        [HttpPut("{id}/status")]
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] UpdateBookingStatusRequestDto dto)
+        {
+            // 1. Tìm booking có id tương ứng
+
+            var booking = await _updateBookingStatusRepo.UpdateBookingStatusAsync(id, dto);
+            if (booking == null)
+            {
+                return NotFound(BaseRespone<UpdateBookingStatusRequestDto>.ErrorResponse(
+                        "Không tìm thấy booking",
+                        System.Net.HttpStatusCode.NotFound));
+            }
+            return Ok(BaseRespone<BookingDetailDto>.SuccessResponse(
+                        booking.ToBookingDetail(),
+                        "Cập nhật trạng thái đặt lịch thành công"));
         }
     }
 }

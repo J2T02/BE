@@ -97,7 +97,8 @@ namespace SWP.Controllers
                     HusYob = null,
                     WifeYob = null,
                 };
-
+                _context.Customers.Add(customer);
+                await _context.SaveChangesAsync();
 
                 var role = await _context.Roles.FindAsync(account.RoleId);
 
