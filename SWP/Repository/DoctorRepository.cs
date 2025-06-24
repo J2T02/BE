@@ -50,26 +50,36 @@ namespace SWP.Repository
             existDoctor.Gender = doctor.Gender;
             existDoctor.Yob = doctor.Yob;
             existDoctor.Experience = doctor.Experience;
+            existDoctor.EduId = doctor.Edu_Id;
+            existDoctor.FilePathEdu = doctor.FilePathEdu;
+            existDoctor.Status = doctor.Status;
+          
+
             doctorAccount.Mail = doctor.Mail;
             doctorAccount.Phone = doctor.Phone;
             doctorAccount.FullName = doctor.FullName;
+            doctorAccount.Img = doctor.Img;
 
             await _context.SaveChangesAsync();
             return existDoctor;
         }
-
         public async Task<string> DeleteDoctorAsync(int id)
         {
-            //var doctor = await _context.Doctors.FirstOrDefaultAsync(x => x.DocId == id);
-            ////var docName = doctor.DocName;
-            //if(doctor == null)
-            //{
-            //    return null;
-            //}
-            // _context.Doctors.Remove(doctor);
-            //await _context.SaveChangesAsync();
-            //return docName;
-            return null;
+            var doctor = await _context.Doctors.FirstOrDefaultAsync(x => x.DocId == id);
+            
+            if (doctor == null)
+            {
+                return "Không tìm thấy bác sĩ";
+            }
+            var accountDoctor = await GetAccountByDoctor(doctor);
+            accountDoctor.IsActive = false;
+            if (accountDoctor == null)
+            {
+                return "Không tìm thấy tài khoản";
+            }
+            _context.Doctors.Remove(doctor);
+            await _context.SaveChangesAsync();
+            return accountDoctor.FullName;
         }
 
         public async Task<DoctorSchedule> GetDoctorScheduleByIdAsync(DoctorSchedule doctorSchedule)
@@ -84,5 +94,20 @@ namespace SWP.Repository
             return doctorModel.Entity;
         }
 
+        public async Task<Doctor> GetDoctorByAccountId(int accountId)
+        {
+            var doctorModel = await _context.Doctors.FirstOrDefaultAsync(x => x.AccId == accountId);
+            return doctorModel;
+        }
+
+        public Task<List<DoctorSchedule>> GetDoctorScheduleIsTrue(int doctorId)
+        {
+            return _context.DoctorSchedules.Where(x => x.IsAvailable == true && x.DocId == doctorId).ToListAsync();
+        }
+
+        public Task<List<DoctorSchedule>> GetAllDoctorSchedule(int doctorId)
+        {
+            return _context.DoctorSchedules.Where(x => x.DocId == doctorId).ToListAsync();
+        }
     }
 }

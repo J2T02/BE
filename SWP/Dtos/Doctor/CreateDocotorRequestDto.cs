@@ -15,16 +15,13 @@ namespace SWP.Dtos.Doctor
         public string Password { get; set; } = string.Empty;
 
         [Required]
+        [MaxLength(50, ErrorMessage = "Tên không được vượt quá 50 kí tự")]
         public string FullName { get; set; } = string.Empty;
 
 
         [Required]
         [RegularExpression(@"^(0[3|5|7|8|9])[0-9]{8}$", ErrorMessage = "Sai số điện thoại")]
         public string Phone { get; set; } = string.Empty;
-
-        [Required]
-        [MaxLength(50, ErrorMessage = "Tên không được vượt quá 50 kí tự")]
-        public string DocName { get; set; } = string.Empty;
 
         [Required]
         [MaxLength(15, ErrorMessage = "Giới tính không được vượt quá 15 kí tự")]
@@ -40,7 +37,12 @@ namespace SWP.Dtos.Doctor
         [Range(0, 60, ErrorMessage = "Kinh nghiệm làm việc không vượt quá 60 năm")]
         public int? Experience { get; set; }
 
-        public int? Cer_Id { get; set; }
+        public int? Edu_Id { get; set; }
+
+        public string FilePathEdu { get; set; }
+
+        public int? Status { get; set; }
+        public string Img { get; set; }
 
     }
     public class PastDateAttribute : ValidationAttribute
