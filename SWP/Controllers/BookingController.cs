@@ -1,13 +1,16 @@
 ﻿using System.Net;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SWP.Data;
 using SWP.Dtos.Booking;
+using SWP.Dtos.Customer;
 using SWP.Interfaces;
 using SWP.Mapper;
 using SWP.Models;
+using SWP.Repository;
 
 namespace SWP.Controllers
 {
@@ -16,11 +19,13 @@ namespace SWP.Controllers
     public class BookingController : ControllerBase
     {
         private readonly IBookingRepository _bookingRepo;
+        private readonly IHistoryBookingRepository _hisotryBookingRepository;
         private readonly HIEM_MUONContext _context;
 
-        public BookingController(IBookingRepository bookingRepository, HIEM_MUONContext context)
+        public BookingController(IBookingRepository bookingRepository, HIEM_MUONContext context, IHistoryBookingRepository hisotryBookingRepository)
         {
             _bookingRepo = bookingRepository;
+            _hisotryBookingRepository = hisotryBookingRepository;
             _context = context;
         }
         [Authorize(Roles = "Customer")]
@@ -29,16 +34,17 @@ namespace SWP.Controllers
         {
             try
             {
+                var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (accountIdClaim == null)
+                {
+                    return BadRequest(new BaseRespone<List<HistoryBookingDto>>(HttpStatusCode.BadRequest, "Không tìm thấy thông tin khách hàng"));
+                }
+
+                int accountId = int.Parse(accountIdClaim);
                 var today = DateTime.Today;
 
-                // ✅ Kiểm tra trước: Khách đã đặt trong slot chưa
-                var alreadyBooked = await _context.Bookings
-                .Include(b => b.Ds)
-                .Where(b => b.CusId == bookingRequest.CustomerId &&
-                        b.Ds.WorkDate == bookingRequest.WorkDate &&  
-                        b.Ds.SlotId == bookingRequest.SlotId ).AnyAsync();
-
-                var booked = await _context.Bookings.Where(b => b.CusId == bookingRequest.CustomerId &&
+                
+                var booked = await _context.Bookings.Where(b => b.AccId == accountId &&
                         b.Status <4).AnyAsync();
 
 
@@ -49,13 +55,8 @@ namespace SWP.Controllers
                         HttpStatusCode.Conflict));
                 }
 
-                if (alreadyBooked)
-                {
-                    return Conflict(BaseRespone<BookingResponseDto>.ErrorResponse(
-                        "Khách hàng đã đặt lịch trong giờ này. Không thể đặt thêm.",
-                        HttpStatusCode.Conflict));
-                }
-                var booking = await _bookingRepo.BookingAsync(bookingRequest);
+                
+                var booking = await _bookingRepo.BookingAsync(bookingRequest, accountId);
 
 
 
@@ -71,12 +72,56 @@ namespace SWP.Controllers
 
 
             }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(BaseRespone<BookingResponseDto>.ErrorResponse(
+                    ex.Message,
+                    System.Net.HttpStatusCode.BadRequest));
+            }
             catch (Exception)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     BaseRespone<BookingResponseDto>.ErrorResponse(
                         "Đặt lịch không thành công do lỗi hệ thống",
                         System.Net.HttpStatusCode.InternalServerError));
+            }
+        }
+
+        [Authorize(Roles = "Customer")]
+        [HttpGet]
+        public async Task<IActionResult> GetHistoryBookings()
+        {
+            try
+            {
+                if (!User.Identity?.IsAuthenticated ?? true)
+                {
+                    return Unauthorized(new BaseRespone<List<HistoryBookingDto>>(HttpStatusCode.Unauthorized, "Chưa đăng nhập"));
+                }
+                var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (accountIdClaim == null)
+                {
+                    return BadRequest(new BaseRespone<List<HistoryBookingDto>>(HttpStatusCode.BadRequest, "Không tìm thấy thông tin khách hàng"));
+                }
+
+                int accountId = int.Parse(accountIdClaim);
+
+               
+
+
+
+
+
+                var historyBookings = await _hisotryBookingRepository.GetHistoryBookingsAsync(accountId);
+                if (historyBookings == null || historyBookings.Count == 0)
+                {
+                    return NotFound(new BaseRespone<HistoryBookingDto>(HttpStatusCode.NotFound, "Không tìm thấy lịch sử đặt lịch cho khách hàng này"));
+                }
+
+                return Ok(new BaseRespone<List<HistoryBookingDto>>(historyBookings, "Lấy lịch sử đặt lịch thành công", HttpStatusCode.OK));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new BaseRespone<List<HistoryBookingDto>>(HttpStatusCode.InternalServerError, $"Lỗi hệ thống: {ex.Message}"));
             }
         }
     }

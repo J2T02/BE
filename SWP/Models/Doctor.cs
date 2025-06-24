@@ -11,27 +11,29 @@ public partial class Doctor
 
     public int? AccId { get; set; }
 
-    public string DocName { get; set; }
-
     public string Gender { get; set; }
 
     public DateOnly? Yob { get; set; }
 
     public int? Experience { get; set; }
 
-    public int? CerId { get; set; }
-
     public int? Status { get; set; }
+
+    public int? EduId { get; set; }
+
+    public string FilePathEdu { get; set; }
 
     public virtual Account Acc { get; set; }
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
-    public virtual Certificate Cer { get; set; }
-
     public virtual ICollection<DoctorSchedule> DoctorSchedules { get; set; } = new List<DoctorSchedule>();
 
+    public virtual EducationLevel Edu { get; set; }
+
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+
+    public virtual DoctorStatus StatusNavigation { get; set; }
 
     public virtual ICollection<StepDetail> StepDetails { get; set; } = new List<StepDetail>();
 

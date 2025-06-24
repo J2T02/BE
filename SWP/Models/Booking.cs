@@ -9,7 +9,7 @@ public partial class Booking
 {
     public int BookingId { get; set; }
 
-    public int? CusId { get; set; }
+    public int? AccId { get; set; }
 
     public int? DocId { get; set; }
 
@@ -21,11 +21,13 @@ public partial class Booking
 
     public string Note { get; set; }
 
-    public virtual Customer Cus { get; set; }
+    public virtual Account Acc { get; set; }
 
     public virtual Doctor Doc { get; set; }
 
     public virtual DoctorSchedule Ds { get; set; }
 
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+
+    public virtual BookingStatus StatusNavigation { get; set; }
 }

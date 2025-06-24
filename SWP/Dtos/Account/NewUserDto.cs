@@ -2,14 +2,23 @@
 {
     public class NewUserDto
     {
-        public string UserName { get; set; }
-
-        public string Role { get; set; }
-
         public string Token { get; set; }
 
-        ///ABCDXYZ
+        public int AccId { get; set; }
+        public string Mail { get; set; }
 
-        public int UserId { get; set; }
+        public int RoleId { get; set; }
+
+        public string FullName { get; set; }
+
+        public string phone { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public DateTime CreateAt { get; set; }
+
+        public string img { get; set; }
+
+        
     }
 }

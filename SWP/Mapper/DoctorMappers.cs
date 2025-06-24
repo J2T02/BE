@@ -38,7 +38,7 @@ namespace SWP.Mapper
             {
                 DsId = doctorSchedule.DsId,
                 DocId = doctorSchedule.DocId,
-                DocName = doctorSchedule.Doc?.DocName,
+                //DocName = doctorSchedule.Doc?.DocName,
                 WorkDate = doctorSchedule.WorkDate,
                 SlotId = doctorSchedule.SlotId,
                 IsAvailable = doctorSchedule.IsAvailable,

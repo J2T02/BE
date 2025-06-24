@@ -17,6 +17,8 @@ public partial class DoctorSchedule
 
     public bool? IsAvailable { get; set; }
 
+    public int? MaxBooking { get; set; }
+
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 
     public virtual Doctor Doc { get; set; }

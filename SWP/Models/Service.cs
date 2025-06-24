@@ -15,6 +15,8 @@ public partial class Service
 
     public string Description { get; set; }
 
+    public string FilePath { get; set; }
+
     public virtual ICollection<TreatmentPlan> TreatmentPlans { get; set; } = new List<TreatmentPlan>();
 
     public virtual ICollection<TreatmentStep> TreatmentSteps { get; set; } = new List<TreatmentStep>();

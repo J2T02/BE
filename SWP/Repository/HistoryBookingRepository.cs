@@ -13,12 +13,13 @@ namespace SWP.Repository
         {
             _context = context;
         }
-        public async Task<List<HistoryBookingDto>> GetHistoryBookingsAsync(int cusId)
+        public async Task<List<HistoryBookingDto>> GetHistoryBookingsAsync(int accId)
         {
             var hisBooking = await _context.Bookings
-                .Where(b => b.CusId == cusId)
+                .Where(b => b.AccId == accId)
                 .Include(b => b.Doc)
                 .Include(b => b.Ds)
+                .Include(b=> b.StatusNavigation)
                 .ToListAsync();
 
             return hisBooking.Select(b => b.ToHistoryBookingDto()).ToList();

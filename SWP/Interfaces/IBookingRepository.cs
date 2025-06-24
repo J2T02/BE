@@ -5,6 +5,6 @@ namespace SWP.Interfaces
 {
     public interface IBookingRepository
     {
-        Task<Booking> BookingAsync(BookingRequestDto booking);
+        Task<Booking> BookingAsync(BookingRequestDto booking, int accId);
     }
 }
