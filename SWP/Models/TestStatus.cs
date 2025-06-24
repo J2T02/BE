@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 namespace SWP.Models;
 
-public partial class Certificate
+public partial class TestStatus
 {
-    public int CerId { get; set; }
+    public int StatusId { get; set; }
 
-    public string CerName { get; set; }
+    public string StatusName { get; set; }
 
-    public virtual ICollection<Doctor> Doctors { get; set; } = new List<Doctor>();
+    public virtual ICollection<Test> Tests { get; set; } = new List<Test>();
 }

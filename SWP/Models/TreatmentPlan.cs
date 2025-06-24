@@ -33,5 +33,7 @@ public partial class TreatmentPlan
 
     public virtual Service Ser { get; set; }
 
+    public virtual TreatmentPlanStatus StatusNavigation { get; set; }
+
     public virtual ICollection<StepDetail> StepDetails { get; set; } = new List<StepDetail>();
 }

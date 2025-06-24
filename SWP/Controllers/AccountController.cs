@@ -7,10 +7,15 @@ using SWP.Data;
 
 //using SWP.Data;
 using SWP.Dtos.Account;
+using SWP.Dtos.Booking;
+using SWP.Dtos.Customer;
 using SWP.Interfaces;
+using SWP.Mapper;
 using SWP.Models;
+using SWP.Repository;
 using System.Data;
 using System.Net;
+using System.Security.Claims;
 
 namespace SWP.Controllers
 {
@@ -20,12 +25,14 @@ namespace SWP.Controllers
     {
         private readonly ITokenService _tokenService;
         private readonly HIEM_MUONContext _context;
+        private readonly IAccountRepository _accountRepo;
         private readonly PasswordHasher<Account> _passwordHasher;
 
-        public AccountController(ITokenService tokenService, HIEM_MUONContext context)
+        public AccountController(ITokenService tokenService, HIEM_MUONContext context, IAccountRepository accountRepo)
         {
             _tokenService = tokenService;
             _context = context;
+            _accountRepo = accountRepo;
             _passwordHasher = new PasswordHasher<Account>();
         }
 
@@ -56,14 +63,14 @@ namespace SWP.Controllers
                     return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, "Tên tài khoản đã tồn tại vui lòng thử lại.");
                 }
 
-               
+
 
                 if (await _context.Accounts.AnyAsync(c => c.Phone == registerDto.Phone))
                 {
                     return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, "Số điện thoại hoặc Email đã tồn tại vui lòng thử lại");
                 }
 
-               
+
 
 
 
@@ -75,22 +82,39 @@ namespace SWP.Controllers
                     Phone = registerDto.Phone,
                     RoleId = 4, // RoleId 4 là cho Customer
                     IsActive = true,
+                    CreateAt = DateTime.Now,
+                    Img = "https://cdn-icons-png.flaticon.com/512/149/149071.png" // Đặt ảnh đại diện mặc định
                 };
                 account.Password = _passwordHasher.HashPassword(account, registerDto.Password);
                 _context.Accounts.Add(account);
                 await _context.SaveChangesAsync();
 
-               
+                var customer = new Customer
+                {
+                    AccId = account.AccId,
+                    HusName = null,
+                    WifeName = null,
+                    HusYob = null,
+                    WifeYob = null,
+                };
+
 
                 var role = await _context.Roles.FindAsync(account.RoleId);
 
                 var token = _tokenService.CreateToken(account.FullName!, account.AccId, role?.RoleName ?? "Customer");
-                
+
                 var newUser = new NewUserDto
                 {
                     Token = null,
-                    UserName = account.FullName!,
-                    Role = role?.RoleName ?? "Customer",
+                    AccId = account.AccId,
+                    Mail = account.Mail,
+                    RoleId = account.RoleId ?? 0,
+                    FullName = account.FullName!,
+                    phone = account.Phone,
+                    IsActive = account.IsActive ?? true,
+                    CreateAt = account.CreateAt ?? DateTime.Now,
+                    img = account.Img ?? string.Empty,
+
                 };
 
                 return new BaseRespone<NewUserDto>(newUser, "Đăng ký thành công", HttpStatusCode.OK);
@@ -109,11 +133,11 @@ namespace SWP.Controllers
         {
             try
             {
-                var account = await _context.Accounts.Include(a => a.Role).FirstOrDefaultAsync(a => (a.Mail == loginDto.MailOrPhone || a.Phone == loginDto.MailOrPhone) && a.IsActive == true );
+                var account = await _context.Accounts.Include(a => a.Role).FirstOrDefaultAsync(a => (a.Mail == loginDto.MailOrPhone || a.Phone == loginDto.MailOrPhone) && a.IsActive == true);
                 if (account == null)
                     return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, "Tên tài khoản hoặc mật khẩu không đúng");
 
-                if(account.IsActive == false)
+                if (account.IsActive == false)
                     return new BaseRespone<NewUserDto>(HttpStatusCode.BadRequest, "Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên để biết thêm chi tiết.");
 
                 //Xác thực mật khẩu:
@@ -131,9 +155,14 @@ namespace SWP.Controllers
                 var newUser = new NewUserDto
                 {
                     Token = token,
-                    UserName = account.FullName!,
-                    Role = role?.RoleName ?? "Customer",
-                    UserId = customer?.CusId ?? 0 // Lấy CusId từ Customer nếu có, nếu không thì 0
+                    AccId = account.AccId,
+                    Mail = account.Mail,
+                    RoleId = account.RoleId ?? 0,
+                    FullName = account.FullName!,
+                    phone = account.Phone,
+                    IsActive = account.IsActive ?? true,
+                    CreateAt = account.CreateAt ?? DateTime.Now,
+                    img = account.Img ?? string.Empty,
                 };
                 return new BaseRespone<NewUserDto>(newUser, "Đăng nhập thành công", HttpStatusCode.OK);
             }
@@ -177,9 +206,14 @@ namespace SWP.Controllers
                 var newUser = new NewUserDto
                 {
                     Token = token,
-                    UserName = account.FullName!,
-                    Role = roleName,
-                    UserId = doctor?.DocId ?? 0 // Lấy DocId từ Doctor nếu có, nếu không thì 0
+                    AccId = account.AccId,
+                    Mail = account.Mail,
+                    RoleId = account.RoleId ?? 0,
+                    FullName = account.FullName!,
+                    phone = account.Phone,
+                    IsActive = account.IsActive ?? true,
+                    CreateAt = account.CreateAt ?? DateTime.Now,
+                    img = account.Img ?? string.Empty,
                 };
 
                 return new BaseRespone<NewUserDto>(newUser, "Đăng nhập thành công", HttpStatusCode.OK);
@@ -190,6 +224,34 @@ namespace SWP.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllAccounts()
+        {
+            try
+            {
+                var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (accountIdClaim == null)
+                {
+                    return BadRequest(new BaseRespone<List<Account>>(HttpStatusCode.BadRequest, "Không tìm thấy thông tin tài khoản."));
+                }
 
+                int accountId = int.Parse(accountIdClaim);
+
+                var account = await _accountRepo.GetAccountAsync(accountId);
+
+                if (account == null)
+                {
+                    return NotFound(new BaseRespone<List<Account>>(HttpStatusCode.NotFound, "Không tìm thấy tài khoản nào."));
+                }
+                var responeDto = account.ToAccountDetailResponeDto();
+                return Ok(BaseRespone<AccountDetailResponeDto>.SuccessResponse(responeDto, "Đặt lịch thành công"));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new BaseRespone<string>(HttpStatusCode.InternalServerError, $"Lỗi hệ thống: {e.Message}"));
+            }
+
+
+        }
     }
 }

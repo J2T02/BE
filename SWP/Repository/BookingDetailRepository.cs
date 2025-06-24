@@ -18,7 +18,7 @@ namespace SWP.Repository
         public async Task<Booking?> GetBookingDetailAsync(int id)
         {
             var booking = await _context.Bookings
-                .Include(b => b.Cus)
+                .Include(b => b.Acc)
                 .Include(b => b.Doc)
                 .Include(b => b.Ds)
                     .ThenInclude(ds => ds.Slot)
