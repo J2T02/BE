@@ -1,4 +1,5 @@
-﻿using SWP.Dtos.Doctor;
+﻿using SWP.Dtos.Account;
+using SWP.Dtos.Doctor;
 using SWP.Models;
 
 namespace SWP.Mapper
@@ -9,27 +10,33 @@ namespace SWP.Mapper
         {
             return new DoctorDto
             {
-                AccId = (int)(doctor.Acc?.AccId),
-                
-                //DocName = doctor.DocName,
+                //Field
+                DocId = doctor.DocId,
+                AccId = doctor.AccId,
                 Gender = doctor.Gender,
                 Yob = doctor.Yob,
-                
                 Experience = doctor.Experience,
-                //Certification = doctor.Certification,
-                DoctorSchedule = doctor.DoctorSchedules.Where(x => x.WorkDate >= DateOnly.FromDateTime(DateTime.Today)).ToList()
+                Status = doctor.Status,
+                EduId = doctor.EduId,
+                FilePathEdu = doctor.FilePathEdu,
+                AccountInfo = new AccountDetailResponeDto
+                {
+                    FullName = doctor.Acc.FullName,
+                    Mail = doctor.Acc.Mail,
+                    Phone = doctor.Acc.Phone
+                }
             };
         }
         public static Doctor ToDoctorFromCreateDTO(this CreateDocotorRequestDto doctorDto)
         {
             return new Doctor
             {
-                //DocName = doctorDto.DocName,
-                
                 Gender = doctorDto.Gender,
                 Yob = doctorDto.Yob,
                 Experience = doctorDto.Experience,
-                //Certification = doctorDto.Certification,
+                EduId = doctorDto.Edu_Id,
+                FilePathEdu = doctorDto.FilePathEdu,
+                Status = doctorDto.Status
             };
         }
         public static DoctorScheduleDto ToDoctorScheduleDto(this DoctorSchedule doctorSchedule)
@@ -38,19 +45,21 @@ namespace SWP.Mapper
             {
                 DsId = doctorSchedule.DsId,
                 DocId = doctorSchedule.DocId,
-                //DocName = doctorSchedule.Doc?.DocName,
                 WorkDate = doctorSchedule.WorkDate,
                 SlotId = doctorSchedule.SlotId,
                 IsAvailable = doctorSchedule.IsAvailable,
+                MaxBooking = doctorSchedule.MaxBooking
             };
         }
-        public static DoctorSchedule ToDoctorScheduleFromCreateDTO(this CreateDoctorScheduleDto doctorSchedule)
+        public static DoctorSchedule ToDoctorScheduleFromCreateDTO(this CreateDoctorScheduleDto doctorSchedule, int docId)
         {
             return new DoctorSchedule
             {
-                DocId = doctorSchedule.DocId,
+                DocId = docId,
                 WorkDate = doctorSchedule?.WorkDate,
-                SlotId = doctorSchedule.SlotId
+                SlotId = doctorSchedule?.SlotId,
+                IsAvailable = false,
+                MaxBooking = doctorSchedule?.MaxBooking,
             };
         }
     }
