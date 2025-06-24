@@ -1,15 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SWP.Data;
+using SWP.Dtos.Account;
+using SWP.Dtos.Customer;
 using SWP.Dtos.Doctor;
 using SWP.Interfaces;
 using SWP.Mapper;
 using SWP.Models;
 using SWP.Repository;
-using SWP.Data;
 using System.Net;
-using SWP.Dtos.Account;
-using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 namespace SWP.Controllers
 {
     [Route("api/[controller]")]
@@ -24,8 +26,8 @@ namespace SWP.Controllers
             _doctorRepo = doctorRepo;
         }
 
-        //[Authorize(Roles = "Admin,Manager")]
-        [HttpGet]
+        [Authorize(Roles = "Admin,Manager")]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAllDoctors()
         {
 
@@ -43,7 +45,7 @@ namespace SWP.Controllers
         }
 
 
-        //[Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Manager")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDoctorById(int id)
         {
@@ -67,7 +69,7 @@ namespace SWP.Controllers
             return Ok(response);
         }
 
-        //[Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPost]
         public async Task<IActionResult> CreateDoctor([FromBody] CreateDocotorRequestDto doctor)
         {
@@ -93,21 +95,21 @@ namespace SWP.Controllers
                 IsActive = true,
                 Mail = doctor.Mail,
                 Phone = doctor.Phone,
+                Img = doctor.Img,
                 RoleId = 5 // RoleId 5 là cho Doctor 
             };
             var passwordHasher = new PasswordHasher<Account>();
             account.Password = passwordHasher.HashPassword(account, doctor.Password);
-
-
-            var doctorModel = doctor.ToDoctorFromCreateDTO();
-            doctorModel.AccId = account.AccId;
-
-            await _doctorRepo.CreateDoctorAsync(doctorModel);
             _context.Accounts.Add(account);
             await _context.SaveChangesAsync();
 
-            var loadedDoctor = await _context.Doctors.Include(d => d.Acc).ThenInclude(acc => acc.Role).FirstOrDefaultAsync(d => d.DocId == doctorModel.DocId);
+            var doctorModel = doctor.ToDoctorFromCreateDTO();
+            doctorModel.AccId = account.AccId;
+            await _doctorRepo.CreateDoctorAsync(doctorModel);
+            await _context.SaveChangesAsync();
 
+            //var loadedDoctor = await _context.Doctors.Include(d => d.Acc).ThenInclude(acc => acc.Role).FirstOrDefaultAsync(d => d.DocId == doctorModel.DocId);
+            var loadedDoctor = await _doctorRepo.GetDoctorByIdAsync(doctorModel.DocId);
             if (loadedDoctor == null)
             {
                 var error = BaseRespone<DoctorDto>.ErrorResponse("Không tìm thấy bác sĩ sau khi tạo", HttpStatusCode.NotFound);
@@ -118,7 +120,7 @@ namespace SWP.Controllers
             return CreatedAtAction(nameof(GetDoctorById), new { id = loadedDoctor.DocId }, response);
         }
 
-        //[Authorize(Roles = "Admin,Manager,Doctor")]
+        [Authorize(Roles = "Admin,Manager,Doctor")]
         [HttpPut]
         [Route("{id}")]
         public async Task<IActionResult> UpdateDoctor([FromRoute] int id, [FromBody] UpdateDoctorRequestDto doctor)
@@ -143,7 +145,7 @@ namespace SWP.Controllers
             var response = BaseRespone<DoctorDto>.SuccessResponse(updatedDoctor.ToDoctorDto(), "Cập nhật thông tin bác sĩ thành công");
             return Ok(response);
         }
-        //[Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Manager")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDoctor([FromRoute] int id)
         {
@@ -167,7 +169,7 @@ namespace SWP.Controllers
             var response = BaseRespone<string>.SuccessResponse(doctor.ToString(), "Xóa bác sĩ thành công");
             return Ok(response);
         }
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPost("RegisterSchedule")]
         public async Task<IActionResult> RegisterSchedule([FromBody] CreateDoctorScheduleDto doctorScheduleRequest)
         {
@@ -181,14 +183,23 @@ namespace SWP.Controllers
                 var error = BaseRespone<DoctorDto>.ErrorResponse(firstError, HttpStatusCode.BadRequest);
                 return BadRequest(error);
             }
-            var doctor = await _context.Doctors.FirstOrDefaultAsync(x => x.DocId == doctorScheduleRequest.DocId);
+
+            var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (accountIdClaim == null)
+            {
+                return BadRequest(new BaseRespone<List<HistoryBookingDto>>(HttpStatusCode.BadRequest, "Không tìm thấy thông tin khách hàng"));
+            }
+
+            int accountId = int.Parse(accountIdClaim);
+
+            var doctor = await _doctorRepo.GetDoctorByAccountId(accountId);
             if (doctor == null)
             {
                 var error = BaseRespone<DoctorDto>.ErrorResponse("Bác sĩ không tồn tại", HttpStatusCode.NotFound);
                 return NotFound(error);
             }
 
-            var doctorSchedule = doctorScheduleRequest.ToDoctorScheduleFromCreateDTO();
+            var doctorSchedule = doctorScheduleRequest.ToDoctorScheduleFromCreateDTO(doctor.DocId);
             doctorSchedule.Doc = doctor;
             doctorSchedule.DsId = 0;
             var checkExist = await _doctorRepo.GetDoctorScheduleByIdAsync(doctorSchedule);
@@ -201,6 +212,53 @@ namespace SWP.Controllers
                 var doctorCreated = await _doctorRepo.RegisterDoctorSchedule(doctorSchedule);
                 return Ok(BaseRespone<DoctorScheduleDto>.SuccessResponse(doctorCreated.ToDoctorScheduleDto(), "Đặt lịch thành công", HttpStatusCode.OK));
             }
+        }
+
+        [Authorize(Roles = "Admin,Manager")]
+        [HttpGet("GetAllDoctorScheduleIsTrue")]
+        public async Task<IActionResult> GetDoctorScheduleIsTrue()
+        {
+            var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            if (accountIdClaim is null)
+            {
+                return BadRequest(BaseRespone<DoctorScheduleDto>.ErrorResponse("Không tìm thấy thông tin tài khoản", accountIdClaim, HttpStatusCode.BadRequest));
+            }
+            int accountId = int.Parse(accountIdClaim);
+            var doctorModel = await _doctorRepo.GetDoctorByAccountId(accountId);
+            if (doctorModel is null)
+            {
+                return BadRequest(BaseRespone<DoctorScheduleDto>.ErrorResponse("Không tìm thấy thông tin bác sĩ", doctorModel, HttpStatusCode.BadRequest));
+            }
+            var resultList = await _doctorRepo.GetDoctorScheduleIsTrue(doctorModel.DocId);
+            var resultListDto = resultList.Select(x => x.ToDoctorScheduleDto()).ToList();
+            return Ok(BaseRespone<List<DoctorScheduleDto>>.SuccessResponse(resultListDto, "Lấy lịch làm việc thành công", HttpStatusCode.OK));
+        }
+
+        [Authorize(Roles = "Admin,Manager")]
+        [HttpGet("GetAllDoctorSchedule")]
+        public async Task<IActionResult> GetAllDoctorSchedule()
+        {
+            var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            if (accountIdClaim is null)
+            {
+                return BadRequest(BaseRespone<DoctorScheduleDto>.ErrorResponse("Không tìm thấy thông tin tài khoản", accountIdClaim, HttpStatusCode.BadRequest));
+            }
+            int accountId = int.Parse(accountIdClaim);
+            var doctorModel = await _doctorRepo.GetDoctorByAccountId(accountId);
+            if (doctorModel is null)
+            {
+                return BadRequest(BaseRespone<DoctorScheduleDto>.ErrorResponse("Không tìm thấy thông tin bác sĩ", doctorModel, HttpStatusCode.BadRequest));
+            }
+            var resultList = await _doctorRepo.GetAllDoctorSchedule(doctorModel.DocId);
+            var resultListDto = resultList.Select(x => x.ToDoctorScheduleDto()).ToList();
+            if(resultListDto is null)
+            {
+                return Ok(BaseRespone<List<DoctorScheduleDto>>.SuccessResponse(resultListDto,"Danh sách lịch làm việc rỗng", HttpStatusCode.OK));
+            }
+
+            return Ok(BaseRespone<List<DoctorScheduleDto>>.SuccessResponse(resultListDto, "Lấy danh sách lịch làm việc thành công", HttpStatusCode.OK));
         }
     }
 }

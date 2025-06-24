@@ -1,27 +1,26 @@
-﻿using SWP.Models;
-
+﻿using SWP.Dtos;
+using SWP.Dtos.Account;
+using SWP.Models;
 namespace SWP.Dtos.Doctor
 {
     public class DoctorDto
     {
-        public int AccId { get; set; }
-        public string FullName { get; set; }
+        public int DocId { get; set; }
 
-        
-        public string DocName { get; set; }
+        public int? AccId { get; set; }
 
         public string Gender { get; set; }
 
         public DateOnly? Yob { get; set; }
 
-        public string Mail { get; set; }
-
-        public string Phone { get; set; }
-
         public int? Experience { get; set; }
 
-        public int Cer_Id { get; set; }
+        public int? Status { get; set; }
 
-        public List<DoctorSchedule> DoctorSchedule { get; set; }
+        public int? EduId { get; set; }
+
+        public string FilePathEdu { get; set; }
+
+        public AccountDetailResponeDto AccountInfo { get; set; }
     }
 }
