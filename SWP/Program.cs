@@ -1,4 +1,3 @@
-using System.Net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -6,12 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SWP.Data;
-
 //using SWP.Data;
 using SWP.Interfaces;
 using SWP.Models;
 using SWP.Repository;
 using SWP.Service;
+using System.Net;
+using static SWP.Repository.CancelBookingRepo;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -83,7 +83,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     options.SuppressModelStateInvalidFilter = true;
 });
 
-// Ho?c n?u b?n mu?n custom response cho toàn b? app
+// Ho?c n?u b?n mu?n custom response cho toï¿½n b? app
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.InvalidModelStateResponseFactory = context =>
@@ -97,7 +97,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
         var firstError = context.ModelState.Values
             .SelectMany(v => v.Errors)
-            .FirstOrDefault()?.ErrorMessage ?? "D? li?u không h?p l?";
+            .FirstOrDefault()?.ErrorMessage ?? "D? li?u khï¿½ng h?p l?";
 
         var response = new BaseRespone<object>(HttpStatusCode.BadRequest, firstError, errors);
 
@@ -151,6 +151,7 @@ builder.Services.AddScoped<IBookingDetail, BookingDetailRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IUpdateBookingStatus, UpdateBookingStatusRepository>();
 builder.Services.AddScoped<ITreatmentPlan, TreatmentPlanRepository>();
+builder.Services.AddScoped<ICancelBooking, CancelBooking>();
 
 
 
