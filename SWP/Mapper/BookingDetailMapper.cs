@@ -41,10 +41,6 @@ namespace SWP.Mapper
 
                 Doc = new DocDto
                 {
-                    Gender = booking.Doc?.Gender,
-                    Yob = booking.Doc?.Yob,
-                    EducationLevel = booking.Doc?.Edu?.EduName,
-                    Experience = booking.Doc?.Experience,
                     AccDoc = new AccountDetailResponeDto
                     {
                         FullName = booking.Doc?.Acc?.FullName,
