@@ -1,6 +1,7 @@
 ﻿using SWP.Dtos.Account;
 using SWP.Dtos.Doctor;
 using SWP.Models;
+using SWP.Dtos.DoctorSchedule;
 
 namespace SWP.Mapper
 {
@@ -41,16 +42,53 @@ namespace SWP.Mapper
         }
         public static DoctorScheduleDto ToDoctorScheduleDto(this DoctorSchedule doctorSchedule)
         {
+            if (doctorSchedule == null)
+                return null;
+
+            var doctor = doctorSchedule.Doc;
+            var account = doctor?.Acc;
+            var slot = doctorSchedule.Slot;
+
             return new DoctorScheduleDto
             {
                 DsId = doctorSchedule.DsId,
-                DocId = doctorSchedule.DocId,
+                Doctor = new DoctorDto
+                {
+                    DocId = (int)doctorSchedule.DocId,
+                    AccId = account?.AccId,
+                    Gender = doctor.Gender,
+                    Yob = doctor.Yob,
+                    Experience = doctor.Experience,
+                    Status = doctor.Status,
+                    EduId = doctor.EduId,
+                    FilePathEdu = doctor.FilePathEdu,
+                    AccountInfo = new AccountDetailResponeDto
+                    {
+                        FullName = account?.FullName ?? "Không rõ",
+                        Mail = account?.Mail ?? "Không rõ",
+                        Phone = account?.Phone ?? "Không rõ"
+                    }
+                },
                 WorkDate = doctorSchedule.WorkDate,
-                SlotId = doctorSchedule.SlotId,
+                Slot = (doctorSchedule.Slot != null && doctorSchedule.SlotId != null)
+                ? new SlotScheduleDto
+                {
+                    SlotId = doctorSchedule.SlotId.Value,
+                    SlotStart = doctorSchedule.Slot?.SlotStart ?? TimeOnly.MinValue,
+                    SlotEnd = doctorSchedule.Slot?.SlotEnd ?? TimeOnly.MinValue
+                }
+                : new SlotScheduleDto
+                {
+                    SlotId = 0,
+                    SlotStart = TimeOnly.MinValue,
+                    SlotEnd = TimeOnly.MinValue
+                },
+
                 IsAvailable = doctorSchedule.IsAvailable,
                 MaxBooking = doctorSchedule.MaxBooking
             };
         }
+
         public static DoctorSchedule ToDoctorScheduleFromCreateDTO(this CreateDoctorScheduleDto doctorSchedule, int docId)
         {
             return new DoctorSchedule
@@ -58,7 +96,7 @@ namespace SWP.Mapper
                 DocId = docId,
                 WorkDate = doctorSchedule?.WorkDate,
                 SlotId = doctorSchedule?.SlotId,
-                IsAvailable = false,
+                IsAvailable = true,
                 MaxBooking = doctorSchedule?.MaxBooking,
             };
         }
