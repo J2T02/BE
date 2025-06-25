@@ -52,23 +52,6 @@ namespace SWP.Mapper
             return new DoctorScheduleDto
             {
                 DsId = doctorSchedule.DsId,
-                Doctor = new DoctorDto
-                {
-                    DocId = (int)doctorSchedule.DocId,
-                    AccId = account?.AccId,
-                    Gender = doctor.Gender,
-                    Yob = doctor.Yob,
-                    Experience = doctor.Experience,
-                    Status = doctor.Status,
-                    EduId = doctor.EduId,
-                    FilePathEdu = doctor.FilePathEdu,
-                    AccountInfo = new AccountDetailResponeDto
-                    {
-                        FullName = account?.FullName ?? "Không rõ",
-                        Mail = account?.Mail ?? "Không rõ",
-                        Phone = account?.Phone ?? "Không rõ"
-                    }
-                },
                 WorkDate = doctorSchedule.WorkDate,
                 Slot = (doctorSchedule.Slot != null && doctorSchedule.SlotId != null)
                 ? new SlotScheduleDto

@@ -6,8 +6,6 @@ namespace SWP.Dtos.Doctor
     {
         public int DsId { get; set; }
 
-        public DoctorDto Doctor { get; set; }
-
         public DateOnly? WorkDate { get; set; }
 
         public SlotScheduleDto Slot { get; set; }
