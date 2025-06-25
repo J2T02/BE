@@ -83,7 +83,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
     options.SuppressModelStateInvalidFilter = true;
 });
 
-// Ho?c n?u b?n mu?n custom response cho toàn b? app
+// Ho?c n?u b?n mu?n custom response cho toï¿½n b? app
 builder.Services.Configure<ApiBehaviorOptions>(options =>
 {
     options.InvalidModelStateResponseFactory = context =>
@@ -97,7 +97,7 @@ builder.Services.Configure<ApiBehaviorOptions>(options =>
 
         var firstError = context.ModelState.Values
             .SelectMany(v => v.Errors)
-            .FirstOrDefault()?.ErrorMessage ?? "D? li?u không h?p l?";
+            .FirstOrDefault()?.ErrorMessage ?? "D? li?u khï¿½ng h?p l?";
 
         var response = new BaseRespone<object>(HttpStatusCode.BadRequest, firstError, errors);
 
@@ -151,6 +151,8 @@ builder.Services.AddScoped<IBookingDetail, BookingDetailRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IUpdateBookingStatus, UpdateBookingStatusRepository>();
 builder.Services.AddScoped<ICancelBooking, CancelBooking>();
+builder.Services.AddScoped<IUpdateBooking, UpdateBookingRepo>();
+
 
 
 
