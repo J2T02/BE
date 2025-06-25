@@ -3,7 +3,9 @@ using System.Net;
 using Microsoft.EntityFrameworkCore;
 using SWP.Data;
 using SWP.Dtos.Booking;
+using SWP.Dtos.Check;
 using SWP.Interfaces;
+using SWP.Mapper;
 using SWP.Models;
 
 namespace SWP.Repository
@@ -108,5 +110,43 @@ namespace SWP.Repository
 
             return fullBooking;
         }
+
+        public async Task<List<CheckSlotDoctorResponseDto>> CheckSlotDoctorAsync(CheckSlotDoctorRequestDto request)
+        {
+            var query = _context.DoctorSchedules
+                .Include(ds => ds.Doc)
+                    .ThenInclude(doc => doc.Acc)
+                .Where(ds =>
+                        ds.IsAvailable == true &&
+                        ds.DocId != null);
+
+            if(request.SlotId.HasValue && request.SlotId.Value > 0)
+            {
+                query = query.Where(ds => ds.SlotId == request.SlotId.Value);
+            }
+
+            if(request.FromDate.HasValue)
+            {
+                query = query.Where(ds => ds.WorkDate >= request.FromDate.Value);
+            }
+
+            if (request.ToDate.HasValue)
+            {
+                query = query.Where(ds => ds.WorkDate <= request.ToDate.Value);
+            }
+
+            var checkSlot = await query
+                .Select(ds => new CheckSlotDoctorResponseDto
+                {
+                    DocId = ds.DocId.Value,
+                    DoctorName = ds.Doc.Acc.FullName,
+                    slotId = ds.SlotId.Value,
+                    WorkDate = ds.WorkDate.Value,
+                })
+                .ToListAsync();
+            return checkSlot;
+        }
+
+       
     }
 }

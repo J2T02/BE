@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SWP.Data;
 using SWP.Dtos.Booking;
+using SWP.Dtos.Check;
 using SWP.Dtos.Customer;
 using SWP.Interfaces;
 using SWP.Mapper;
@@ -142,6 +143,32 @@ namespace SWP.Controllers
             return Ok(BaseRespone<BookingDetailDto>.SuccessResponse(
                         booking.ToBookingDetail(),
                         "Cập nhật trạng thái đặt lịch thành công"));
+        }
+
+        [HttpGet("Check-Slot")]
+        public async Task<IActionResult> CheckSlot([FromQuery] int? slotId, [FromQuery] DateOnly? fromDate, [FromQuery] DateOnly? toDate)
+        {
+            try
+            {
+                if (slotId <= 0 || fromDate > toDate)
+                    return BadRequest("Nhập sai dữ liệu.");
+                var request = new CheckSlotDoctorRequestDto
+                {
+                    SlotId = slotId,
+                    FromDate = fromDate,
+                    ToDate = toDate
+                };
+                var result = await _bookingRepo.CheckSlotDoctorAsync(request);
+                return Ok(new BaseRespone<List<CheckSlotDoctorResponseDto>>(result, "Kiểm tra lịch thành công", HttpStatusCode.OK));
+            }
+            catch (Exception)
+            {
+
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                     BaseRespone<CheckSlotDoctorResponseDto>.ErrorResponse(
+                         "Kiểm tra lịch không thành công do lỗi hệ thống",
+                         System.Net.HttpStatusCode.InternalServerError));
+            }
         }
     }
 }
