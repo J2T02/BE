@@ -15,18 +15,26 @@ namespace SWP.Repository
         {
             _context = context;
         }
+        
         public async Task<Booking?> GetBookingDetailAsync(int id)
         {
             var booking = await _context.Bookings
                 .Include(b => b.Acc)
+                    .ThenInclude(acc => acc.Customers) // ✅ Thêm dòng này
                 .Include(b => b.Doc)
+                    .ThenInclude(doc => doc.Acc)       // nếu cần thông tin account bác sĩ
+                .Include(b => b.Doc)
+                    .ThenInclude(doc => doc.Edu)       // nếu dùng EducationLevel
                 .Include(b => b.Ds)
                     .ThenInclude(ds => ds.Slot)
-                
+                .Include(b => b.StatusNavigation)      // ✅ nếu cần StatusName
                 .FirstOrDefaultAsync(b => b.BookingId == id);
 
-            return booking; // Trả về null nếu không tìm thấy
+            return booking;
         }
+
+        
+
     }
 
 }

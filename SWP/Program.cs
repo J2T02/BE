@@ -1,4 +1,3 @@
-using System.Net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -6,12 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SWP.Data;
-
 //using SWP.Data;
 using SWP.Interfaces;
 using SWP.Models;
 using SWP.Repository;
 using SWP.Service;
+using System.Net;
+using static SWP.Repository.CancelBookingRepo;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -150,6 +150,7 @@ builder.Services.AddScoped<IHistoryBookingRepository, HistoryBookingRepository>(
 builder.Services.AddScoped<IBookingDetail, BookingDetailRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 builder.Services.AddScoped<IUpdateBookingStatus, UpdateBookingStatusRepository>();
+builder.Services.AddScoped<ICancelBooking, CancelBooking>();
 
 
 

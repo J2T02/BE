@@ -141,7 +141,7 @@ namespace SWP.Controllers
                         System.Net.HttpStatusCode.NotFound));
             }
             return Ok(BaseRespone<BookingDetailDto>.SuccessResponse(
-                        booking.ToBookingDetail(),
+                        booking.ToBookingDetailDto(),
                         "Cập nhật trạng thái đặt lịch thành công"));
         }
 
