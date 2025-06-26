@@ -38,44 +38,33 @@ namespace SWP.Controllers
             return Ok( BaseRespone<List<CustomerDto>>.SuccessResponse(customerDtos,"Lấy dữ liệu thành công",HttpStatusCode.OK));
         }
 
-        [HttpGet("id")]
-        public async Task<BaseRespone<CustomerDto>> GetCustomerDetail()
+        [HttpGet("{id}")]
+        public async Task<BaseRespone<CustomerDto>> GetCustomerDetail(int id)
         {
             try
             {
-                var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-                if (accountIdClaim == null)
-                {
-                    return new BaseRespone<CustomerDto>(HttpStatusCode.NotFound, "Không tìm thấy khách hàng với tài khoản này");
-                }
-
-                int accountId = int.Parse(accountIdClaim);
-
-                var customerid = await _context.Customers.FirstOrDefaultAsync(c => c.AccId == accountId);
-                if (customerid == null)
-                {
-                   return new BaseRespone<CustomerDto>(HttpStatusCode.NotFound, "Không tìm thấy khách hàng với tài khoản này");
-                }
-
-                int Id = customerid.CusId;
-                var customer = await _context.Customers
-           .Include(c => c.Acc).FirstOrDefaultAsync(c => c.CusId == Id);
-
-                //var customer = await _context.Customers.FindAsync(id);   //
+                var customer = await _customerRepository.GetCustomerByCusIdAsync(id);
 
                 if (customer == null)
                 {
-                    return new BaseRespone<CustomerDto>(HttpStatusCode.NotFound, "Không tìm thấy khách hàng");
+                    return new BaseRespone<CustomerDto>(
+                        HttpStatusCode.NotFound,
+                        "Không tìm thấy khách hàng với ID này"
+                    );
                 }
 
                 var customerDto = new CustomerDto
                 {
-                    
                     HusName = customer.HusName,
                     HusYob = customer.HusYob,
                     WifeName = customer.WifeName,
                     WifeYob = customer.WifeYob,
-                   
+                    AccCus = new Dtos.Account.AccountDetailResponeDto
+                    {
+                        FullName = customer.Acc.FullName,
+                        Mail = customer.Acc.Mail,
+                        Phone = customer.Acc.Phone,
+                    }
                 };
 
                 return new BaseRespone<CustomerDto>(

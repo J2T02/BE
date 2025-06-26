@@ -6,7 +6,7 @@ namespace SWP.Interfaces
     public interface ICustomerRepository
     {
         Task<List<Customer>> GetAllCustomersAsync();
-        Task<Customer?> GetCustomerByIdAsync(int id);
+        Task<Customer?> GetCustomerByCusIdAsync(int id);
         
         Task<UpdateCustomerResponseDto> CreateCustomerAsync(UpdateCustomerRequestDto request, int accountId);
     }
