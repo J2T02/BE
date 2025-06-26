@@ -3,6 +3,7 @@ using SWP.Dtos.Customer;
 using SWP.Dtos.Doctor;
 using SWP.Dtos.Services;
 using SWP.Dtos.TreatmentPlan;
+using SWP.Dtos.TreatmentStep;
 using SWP.Models;
 
 namespace SWP.Mapper
@@ -13,7 +14,6 @@ namespace SWP.Mapper
         {
             return new TreatmentPlan
             {
-                StartDate = dto.StartDate,
                 EndDate = dto.EndDate,
                 SerId = dto.SerId,
                 CusId = dto.CusId,
@@ -59,6 +59,29 @@ namespace SWP.Mapper
                 }
             };
 
+        }
+        public static TreatmentStep ToTreatmentStepFromCreate(this CreateTreatmentStepDto treatmentStep)
+        {
+            return new TreatmentStep
+            {
+                StepName = treatmentStep.StepName,
+                Description = treatmentStep.Description,
+                SerId = treatmentStep.SerId,
+            };
+        }
+        public static TreatmentStepDto ToTreatmentStepDto(this TreatmentStep treatmentStep)
+        {
+            return new TreatmentStepDto
+            {
+                TsId = treatmentStep.TsId,
+                StepName = treatmentStep.StepName,
+                Description = treatmentStep.Description,
+                ServiceInfo = new ServiceDto
+                {
+                    SerId = (int)treatmentStep.SerId,
+                    SerName = treatmentStep.Ser.SerName
+                }
+            };
         }
     }
 }
