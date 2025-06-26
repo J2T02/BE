@@ -16,6 +16,12 @@ namespace SWP.Mapper
                 HusYob = customer.HusYob,
                 WifeName = customer.WifeName,
                 WifeYob = customer.WifeYob,
+                AccCus = customer.Acc != null ? new AccountDetailResponeDto
+                {
+                    FullName = customer.Acc.FullName,
+                    Phone = customer.Acc.Phone,
+                    Mail = customer.Acc.Mail
+                } : null
             };
         }
         public static UpdateCustomerResponseDto ToCustomer(this Customer customer)
