@@ -107,7 +107,7 @@ namespace SWP.Repository
 
         public Task<List<DoctorSchedule>> GetAllDoctorSchedule(int doctorId)
         {
-            return _context.DoctorSchedules.Where(x => x.DocId == doctorId).ToListAsync();
+            return _context.DoctorSchedules.Include(ds => ds.Slot).Include(ds => ds.Doc).ThenInclude(doc => doc.Acc).Where(x => x.DocId == doctorId).ToListAsync();
         }
     }
 }
