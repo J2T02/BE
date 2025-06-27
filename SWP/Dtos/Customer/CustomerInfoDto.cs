@@ -1,6 +1,6 @@
 ﻿namespace SWP.Dtos.Customer
 {
-    public class CustomerInTreatmentPlanDto
+    public class CustomerInfoDto
     {
         public string HusName { get; set; }
 
