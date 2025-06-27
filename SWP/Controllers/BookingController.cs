@@ -90,31 +90,13 @@ namespace SWP.Controllers
             }
         }
 
-        [Authorize(Roles = "Customer")]
-        [HttpGet]
-        public async Task<IActionResult> GetHistoryBookings()
+        
+        [HttpGet("History/{id}")]
+        public async Task<IActionResult> GetHistoryBookings(int id)
         {
             try
             {
-                if (!User.Identity?.IsAuthenticated ?? true)
-                {
-                    return Unauthorized(new BaseRespone<List<HistoryBookingDto>>(HttpStatusCode.Unauthorized, "Chưa đăng nhập"));
-                }
-                var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-                if (accountIdClaim == null)
-                {
-                    return BadRequest(new BaseRespone<List<HistoryBookingDto>>(HttpStatusCode.BadRequest, "Không tìm thấy thông tin khách hàng"));
-                }
-
-                int accountId = int.Parse(accountIdClaim);
-
-
-
-
-
-
-
-                var historyBookings = await _hisotryBookingRepository.GetHistoryBookingsAsync(accountId);
+                var historyBookings = await _hisotryBookingRepository.GetHistoryBookingsAsync(id);
                 if (historyBookings == null || historyBookings.Count == 0)
                 {
                     return NotFound(new BaseRespone<HistoryBookingDto>(HttpStatusCode.NotFound, "Không tìm thấy lịch sử đặt lịch cho khách hàng này"));
@@ -159,6 +141,10 @@ namespace SWP.Controllers
                     ToDate = toDate
                 };
                 var result = await _bookingRepo.CheckSlotDoctorAsync(request);
+                if(result == null || result.Count == 0)
+                {
+                    return NotFound(new BaseRespone<List<CheckSlotDoctorResponseDto>>(HttpStatusCode.NotFound, "Không tìm thấy lịch làm việc phù hợp"));
+                }
                 return Ok(new BaseRespone<List<CheckSlotDoctorResponseDto>>(result, "Kiểm tra lịch thành công", HttpStatusCode.OK));
             }
             catch (Exception)

@@ -14,5 +14,12 @@ namespace SWP.Mapper
                 Phone = account.Phone
             };
         }
+
+        
+
+        public static List<AccountDetailResponeDto> ToAccountDetailResponeDto(this List<Account> accounts)
+        {
+            return accounts.Select(a => a.ToAccountDetailResponeDto()).ToList();
+        }
     }
 }
