@@ -35,7 +35,7 @@ namespace SWP.Mapper
                     SerId = (int)treatmentPlan.SerId,
                     SerName = treatmentPlan.Ser?.SerName ?? "N/A",
                 },
-                CusInfo = new CustomerInTreatmentPlanDto
+                CusInfo = new CustomerInfoDto
                 {
                     HusName = cusInfo.HusName ?? "N/A",
                     HusYob = cusInfo.HusYob ?? null,
