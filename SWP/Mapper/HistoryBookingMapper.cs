@@ -12,6 +12,7 @@ namespace SWP.Mapper
                 BookingId = historyBooking.BookingId,
 
                 ScheduleInfo = historyBooking.Ds != null ? $"{historyBooking.Ds.WorkDate:dd/MM/yyyy}" : "chưa có lịch",
+                slotId = historyBooking.Ds?.SlotId ?? 0,
                 Status = historyBooking.StatusNavigation.StatusName,
 
             };

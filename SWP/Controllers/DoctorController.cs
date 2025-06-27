@@ -26,7 +26,7 @@ namespace SWP.Controllers
             _doctorRepo = doctorRepo;
         }
 
-        [Authorize(Roles = "Admin,Manager")]
+        //[Authorize(Roles = "Admin,Manager")]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllDoctors()
         {

@@ -226,7 +226,7 @@ namespace SWP.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllAccounts()
+        public async Task<IActionResult> GetAllAccountsById()
         {
             try
             {
@@ -251,6 +251,25 @@ namespace SWP.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new BaseRespone<string>(HttpStatusCode.InternalServerError, $"Lỗi hệ thống: {e.Message}"));
             }
+
+
+        }
+
+        [HttpGet("getAllAccounts")]
+        public async Task<IActionResult> GetAllAccounts()
+        {
+
+            var accounts = await _accountRepo.GetAllAccoun();
+
+            if (accounts == null || accounts.Count == 0)
+            {
+                return NotFound(new BaseRespone<List<AccountDetailResponeDto>>(HttpStatusCode.NotFound, "Không tìm thấy tài khoản nào."));
+            }
+
+            var accountResponse = accounts.ToAccountDetailResponeDto();
+
+            return Ok(BaseRespone<List<AccountDetailResponeDto>>.SuccessResponse(
+                accountResponse, "Lấy danh sách tài khoản thành công"));
 
 
         }

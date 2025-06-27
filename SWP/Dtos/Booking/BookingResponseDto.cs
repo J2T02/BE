@@ -3,7 +3,7 @@
     public class BookingResponseDto
     {
         
-
+        public int BookingId { get; set; }
         public string Status { get; set; } 
 
         public string DoctorName { get; set; } = string.Empty;

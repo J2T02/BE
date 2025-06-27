@@ -8,6 +8,8 @@
 
         public string ScheduleInfo { get; set; }
 
+        public int slotId { get; set; }
+
         public string Status { get; set; }
 
     }

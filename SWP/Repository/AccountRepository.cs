@@ -18,6 +18,12 @@ namespace SWP.Repository
             // Assuming you want to return the first account or a specific one
             return await _context.Accounts.FirstOrDefaultAsync(a => a.AccId == accId);
         }
+
+        public async Task<List<Account?>> GetAllAccoun()
+        {
+            return await _context.Accounts.Where(a => a.RoleId == 4).ToListAsync();
+                ;
+        }
     }
     
 }
