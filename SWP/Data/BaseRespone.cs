@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace SWP.Data
 {
@@ -41,6 +42,19 @@ namespace SWP.Data
         {
             return new BaseRespone<T>(statusCode, message, error);
 
+        }
+        public static BaseRespone<T> ResponseShow<T>(
+            T entity,
+            string successMessage,
+            string failureMessage,
+            object? error = null)
+        {
+            if (entity == null)
+            {
+                return BaseRespone<T>.ErrorResponse(failureMessage, error, HttpStatusCode.NotFound);
+            }
+
+            return BaseRespone<T>.SuccessResponse(entity, successMessage, HttpStatusCode.OK);
         }
     }
 }

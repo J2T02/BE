@@ -45,7 +45,7 @@ namespace SWP.Mapper
                     TpId = treatmentPlan.TpId,
                     StartDate = treatmentPlan.StartDate,
                     EndDate = treatmentPlan.EndDate,
-                    CusInfo = customer == null ? null : new CustomerInTreatmentPlanDto
+                    CusInfo = customer == null ? null : new CustomerInfoDto
                     {
                         HusName = customer.HusName ?? "N/A",
                         HusYob = customer.HusYob,
