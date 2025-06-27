@@ -16,7 +16,7 @@ namespace SWP.Dtos.TreatmentPlan
 
         public ServiceDto ServiceInfo { get; set; }
 
-        public CustomerInTreatmentPlanDto CusInfo { get; set; }
+        public CustomerInfoDto CusInfo { get; set; }
 
         public DoctorAccountDto DoctorInfo { get; set; }
 
