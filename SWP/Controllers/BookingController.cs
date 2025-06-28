@@ -90,7 +90,7 @@ namespace SWP.Controllers
             }
         }
 
-        
+
         [HttpGet("History/{id}")]
         public async Task<IActionResult> GetHistoryBookings(int id)
         {
@@ -141,7 +141,7 @@ namespace SWP.Controllers
                     ToDate = toDate
                 };
                 var result = await _bookingRepo.CheckSlotDoctorAsync(request);
-                if(result == null || result.Count == 0)
+                if (result == null || result.Count == 0)
                 {
                     return NotFound(new BaseRespone<List<CheckSlotDoctorResponseDto>>(HttpStatusCode.NotFound, "Không tìm thấy lịch làm việc phù hợp"));
                 }
@@ -152,6 +152,33 @@ namespace SWP.Controllers
 
                 return StatusCode(StatusCodes.Status500InternalServerError,
                      BaseRespone<CheckSlotDoctorResponseDto>.ErrorResponse(
+                         "Kiểm tra lịch không thành công do lỗi hệ thống",
+                         System.Net.HttpStatusCode.InternalServerError));
+            }
+        }
+
+        [HttpGet("Check-Slot/{docId}")]
+        public async Task<IActionResult> CheckSlotByDoctorId(int docId)
+        {
+            try
+            {
+                if (docId <= 0)
+                    return BadRequest("Nhập sai dữ liệu.");
+
+                var result = await _bookingRepo.CheckSlotByDoctorId(docId);
+                if (result == null || result.Count == 0)
+                {
+                    return NotFound(new BaseRespone<List<Booking>>(HttpStatusCode.NotFound, "Không tìm thấy lịch làm việc của bác sĩ này"));
+                }
+
+                
+                
+                return Ok(new BaseRespone<List<CheckSlotDoctorResponseDto>>(result, "Kiểm tra lịch thành công", HttpStatusCode.OK));
+            }
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                     BaseRespone<List<Booking>>.ErrorResponse(
                          "Kiểm tra lịch không thành công do lỗi hệ thống",
                          System.Net.HttpStatusCode.InternalServerError));
             }

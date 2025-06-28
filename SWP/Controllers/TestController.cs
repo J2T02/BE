@@ -53,8 +53,8 @@ namespace SWP.Controllers
         [HttpPost("CreateTest")]
         public async Task<IActionResult> CreateTest([FromBody] CreateTestDto request)
         {
-            
-            var checkCus = await _customerRepo.GetCustomerByIdAsync(request.CusId);
+
+            var checkCus = await _customerRepo.GetAllCustomersAsync();
             var checkStepDetail = await _stepDetailRepo.GetStepDetailById(request.SdId);
             if (checkCus == null || checkStepDetail == null)
             {
