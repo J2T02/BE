@@ -8,5 +8,6 @@ namespace SWP.Interfaces
     {
         Task<Booking> BookingAsync(BookingRequestDto booking, int accId);
         Task<List<CheckSlotDoctorResponseDto>> CheckSlotDoctorAsync(CheckSlotDoctorRequestDto request);
+        Task<List<CheckSlotDoctorResponseDto>> CheckSlotByDoctorId(int docId);
     }
 }
