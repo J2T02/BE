@@ -1,4 +1,5 @@
-﻿using SWP.Models;
+﻿using SWP.Dtos.Test;
+using SWP.Models;
 
 namespace SWP.Interfaces
 {
@@ -6,5 +7,6 @@ namespace SWP.Interfaces
     {
         Task<Test?> GetTestById(int id);
         Task<Test?> CreateTest(Test test);
+        Task<Test?> UpdateTest (int id, UpdateTestDto request);
     }
 }
