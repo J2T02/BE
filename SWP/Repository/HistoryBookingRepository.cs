@@ -19,6 +19,7 @@ namespace SWP.Repository
                 .Where(b => b.AccId == accId)
                 .Include(b => b.Doc)
                 .Include(b => b.Ds)
+                    .ThenInclude(ds => ds.Slot)
                 .Include(b=> b.StatusNavigation)
                 .ToListAsync();
 

@@ -120,12 +120,12 @@ namespace SWP.Repository
                         ds.IsAvailable == true &&
                         ds.DocId != null);
 
-            if(request.SlotId.HasValue && request.SlotId.Value > 0)
+            if (request.SlotId.HasValue && request.SlotId.Value > 0)
             {
                 query = query.Where(ds => ds.SlotId == request.SlotId.Value);
             }
 
-            if(request.FromDate.HasValue)
+            if (request.FromDate.HasValue)
             {
                 query = query.Where(ds => ds.WorkDate >= request.FromDate.Value);
             }
@@ -147,6 +147,30 @@ namespace SWP.Repository
             return checkSlot;
         }
 
-       
+        public async Task<List<CheckSlotDoctorResponseDto>> CheckSlotByDoctorId(int docId)
+        {
+            var result = await _context.DoctorSchedules
+        .Include(ds => ds.Doc)
+            .ThenInclude(doc => doc.Acc)
+        .Where(ds =>
+            ds.DocId == docId &&
+            ds.WorkDate.HasValue &&
+            ds.SlotId.HasValue &&
+            ds.IsAvailable == true
+        )
+        .Select(ds => new CheckSlotDoctorResponseDto
+        {
+            DocId = ds.DocId ?? 0,
+            DoctorName = ds.Doc.Acc.FullName,
+            slotId = ds.SlotId ?? 0,
+            WorkDate = ds.WorkDate ?? DateOnly.MinValue
+        })
+        .Distinct() // loại bỏ trùng nếu có nhiều bản ghi giống nhau
+        .OrderByDescending(ds => ds.WorkDate) // Sắp xếp theo WorkDate giảm dần
+
+        .ToListAsync();
+
+        return result;
+        }
     }
 }
