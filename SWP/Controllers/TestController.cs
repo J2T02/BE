@@ -71,7 +71,7 @@ namespace SWP.Controllers
             var checkTestType = await _context.TestTypes.FindAsync(request.TestTypeId);
             if (checkTestType == null)
             {
-                return BadRequest(BaseRespone<string>.ErrorResponse("Loại xét nghiệm được chọn không hợp lệ", $"TestType: {request.TestType}", HttpStatusCode.BadRequest));
+                return BadRequest(BaseRespone<string>.ErrorResponse("Loại xét nghiệm được chọn không hợp lệ", $"TestType: {request.TestTypeId}", HttpStatusCode.BadRequest));
             }
             var testModel = request.ToTestFromCreate();
             testModel.TestDate = DateOnly.FromDateTime(DateTime.Now);
