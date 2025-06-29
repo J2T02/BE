@@ -155,6 +155,7 @@ builder.Services.AddScoped<ICancelBooking, CancelBooking>();
 builder.Services.AddScoped<IStepDetail, StepDetailRepository>();
 builder.Services.AddScoped<IServices, ServicesRepositories>();
 builder.Services.AddScoped<ITest, TestRepository>();
+builder.Services.AddScoped<IUpdateBooking, UpdateBookingRepo>();
 
 
 
