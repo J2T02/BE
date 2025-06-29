@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SWP.Data;
 using SWP.Dtos.Customer;
 using SWP.Dtos.Doctor;
+using SWP.Dtos.StepDetail;
 using SWP.Dtos.Test;
 using SWP.Interfaces;
 using SWP.Mapper;
@@ -20,16 +21,18 @@ namespace SWP.Controllers
         private readonly ITest _testRepo;
         private readonly ICustomerRepository _customerRepo;
         private readonly IStepDetail _stepDetailRepo;
+        private readonly HIEM_MUONContext _context;
 
-        public TestController(ITest testRepo, ICustomerRepository customerRepo, IStepDetail stepDetailRepo)
+        public TestController(ITest testRepo, ICustomerRepository customerRepo, IStepDetail stepDetailRepo, HIEM_MUONContext context)
         {
             _testRepo = testRepo;
             _customerRepo = customerRepo;
             _stepDetailRepo = stepDetailRepo;
+            _context = context;
         }
 
         [Authorize(Roles = "Doctor, Customer")]
-        [HttpGet("GetTestById")]
+        [HttpGet("GetTestById/{id}")]
         public async Task<IActionResult> GetTestById([FromRoute] int id)
         {
             var result = await _testRepo.GetTestById(id);
@@ -54,11 +57,21 @@ namespace SWP.Controllers
         public async Task<IActionResult> CreateTest([FromBody] CreateTestDto request)
         {
             
-            var checkCus = await _customerRepo.GetCustomerByIdAsync(request.CusId);
+            var checkCus = await _customerRepo.GetCustomerByCusIdAsync(request.CusId);
             var checkStepDetail = await _stepDetailRepo.GetStepDetailById(request.SdId);
             if (checkCus == null || checkStepDetail == null)
             {
                 return NotFound(BaseRespone<Test>.ErrorResponse("Dữ liệu không hợp lệ.", null, HttpStatusCode.NotFound));
+            }
+            var checkStatus = await _context.TestStatuses.FindAsync(request.Status);
+            if (checkStatus == null)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Trạng thái được chọn không hợp lệ", $"Status: {request.Status}", HttpStatusCode.BadRequest));
+            }
+            var checkTestType = await _context.TestTypes.FindAsync(request.TestTypeId);
+            if (checkTestType == null)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Loại xét nghiệm được chọn không hợp lệ", $"TestType: {request.TestType}", HttpStatusCode.BadRequest));
             }
             var testModel = request.ToTestFromCreate();
             testModel.TestDate = DateOnly.FromDateTime(DateTime.Now);
@@ -79,6 +92,32 @@ namespace SWP.Controllers
                 return CreatedAtAction(nameof(GetTestById), new { id = result.TestId }, response);
             }
         }
+        [Authorize(Roles = "Doctor")]
+        [HttpPut("UpdateTest/{id}")]
+        public async Task<IActionResult> UpdateTest([FromRoute] int id,[FromBody] UpdateTestDto request)
+        {
+            var checkStatus = await _context.TestStatuses.FindAsync(request.Status);
+            if (checkStatus == null)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Trạng thái được chọn không hợp lệ", $"Status: {request.Status}", HttpStatusCode.BadRequest));
+            }
+            var checkTestType = await _context.TestTypes.FindAsync(request.TestType);
+            if (checkTestType == null)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Loại xét nghiệm được chọn không hợp lệ", $"TestType: {request.TestType}", HttpStatusCode.BadRequest));
+            }
+
+            var result = await _testRepo.UpdateTest(id, request);
+            if (result == null)
+            {
+                return BadRequest(BaseRespone<TestDto>.ErrorResponse("Cập nhật thất bại", result.ToTestDto, HttpStatusCode.BadRequest));
+            }
+            var testModelDto = result.ToTestDto();
+            var response = BaseRespone<TestDto>.SuccessResponse(testModelDto, "Cập nhật thành công", HttpStatusCode.OK);
+
+            return Ok(response);
+        }
+
 
     }
 

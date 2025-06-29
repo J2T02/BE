@@ -51,8 +51,8 @@ namespace SWP.Repository
 
         public async Task<StepDetail> UpdateStepDetail(int id, UpdateStepDetailDto request)
         {
-            var exist = await _context.StepDetails.FirstOrDefaultAsync(x => x.SdId == id);
-            if(exist == null)
+            var exist = await GetStepDetailById(id);
+            if (exist == null)
             {
                 throw new Exception("Không tìm thấy chi tiết bước điều trị");
             }

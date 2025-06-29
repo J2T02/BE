@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SWP.Dtos.Test;
 using SWP.Interfaces;
 using SWP.Models;
 
@@ -29,6 +30,21 @@ namespace SWP.Repository
                 .Include(x => x.Sd).ThenInclude(x => x.StatusNavigation)
                 .Include(x => x.StatusNavigation).FirstOrDefaultAsync(x => x.TestId == id);
         }
-        
+
+        public async Task<Test?> UpdateTest(int id, UpdateTestDto request)
+        {
+            var exist = await GetTestById(id);
+            if (exist == null)
+            {
+                throw new Exception("Không tìm thấy thông tin xét nghiệm");
+            }
+            exist.Result = request.Result;
+            exist.Note = request.Note;
+            exist.FilePath = request.FilePath;
+            exist.Status = request.Status;
+            exist.TestTypeId = request.TestType;
+            await _context.SaveChangesAsync();
+            return exist;
+        }
     }
 }
