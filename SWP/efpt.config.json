@@ -19,11 +19,15 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[BioQuality_Status]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[BioSample]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[BioSampleStatus]",
+         "Name": "[dbo].[BioSample_Status]",
          "ObjectType": 0
       },
       {
@@ -39,7 +43,11 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[BookingStatus]",
+         "Name": "[dbo].[Booking_Status]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Certificate]",
          "ObjectType": 0
       },
       {
@@ -67,11 +75,15 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[MethodPayment]",
+         "Name": "[dbo].[Method_Payment]",
          "ObjectType": 0
       },
       {
          "Name": "[dbo].[Payment]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Payment_Status]",
          "ObjectType": 0
       },
       {
@@ -91,11 +103,7 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[SlotSchedule]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[StatusPayment]",
+         "Name": "[dbo].[Slot_Schedule]",
          "ObjectType": 0
       },
       {
@@ -103,11 +111,15 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[StepDetailStatus]",
+         "Name": "[dbo].[StepDetail_Status]",
          "ObjectType": 0
       },
       {
          "Name": "[dbo].[Test]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[TestQuality_Status]",
          "ObjectType": 0
       },
       {
@@ -119,11 +131,11 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[TreatmentPlans]",
+         "Name": "[dbo].[TreatmentPlan_Status]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[TreatmentPlanStatus]",
+         "Name": "[dbo].[TreatmentPlans]",
          "ObjectType": 0
       },
       {

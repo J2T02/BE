@@ -19,7 +19,7 @@ namespace SWP.Mapper
                 Experience = doctor.Experience,
                 Status = doctor.Status,
                 EduId = doctor.EduId,
-                FilePathEdu = doctor.FilePathEdu,
+                //FilePathEdu = doctor.FilePathEdu,
                 AccountInfo = new AccountDetailResponeDto
                 {
                     FullName = doctor.Acc.FullName,
@@ -36,7 +36,7 @@ namespace SWP.Mapper
                 Yob = doctorDto.Yob,
                 Experience = doctorDto.Experience,
                 EduId = doctorDto.Edu_Id,
-                FilePathEdu = doctorDto.FilePathEdu,
+                //FilePathEdu = doctorDto.FilePathEdu,
                 Status = doctorDto.Status
             };
         }

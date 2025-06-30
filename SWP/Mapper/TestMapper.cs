@@ -16,7 +16,7 @@ namespace SWP.Mapper
                 TestTypeId = request.TestTypeId,
                 SdId = request.SdId,
                 //TestDate = request.TestDate, //Lấy từ ngày hiện tại 
-                Result = request.Result,
+                //Result = request.Result,
                 Note = request.Note,
                 FilePath = request.FilePath,
                 Status = request.Status,
@@ -57,7 +57,7 @@ namespace SWP.Mapper
                     Note = stepDetail.Note
                 },
                 TestDate = request.TestDate,
-                Result = request.Result,
+                //Result = request.Result,
                 Note = request.Note,
                 Status = new TestStatus
                 {
@@ -98,7 +98,7 @@ namespace SWP.Mapper
                     Note = stepDetail.Note
                 },
                 TestDate = request.TestDate,
-                Result = request.Result,
+                //Result = request.Result,
                 Note = request.Note,
                 Status = new TestStatus
                 {
@@ -139,7 +139,7 @@ namespace SWP.Mapper
                     Note = stepDetail.Note
                 },
                 TestDate = request.TestDate,
-                Result = request.Result,
+                //Result = request.Result,
                 Note = request.Note,
                 Status = new TestStatus
                 {

@@ -17,13 +17,15 @@ public partial class BioSample
 
     public int? Status { get; set; }
 
-    public string Quality { get; set; }
-
     public DateOnly? CollectionDate { get; set; }
 
     public string StorageLocation { get; set; }
 
+    public int? BqsId { get; set; }
+
     public string Note { get; set; }
+
+    public virtual BioQualityStatus Bqs { get; set; }
 
     public virtual BioType Bt { get; set; }
 

@@ -38,7 +38,7 @@ namespace SWP.Repository
             {
                 throw new Exception("Không tìm thấy thông tin xét nghiệm");
             }
-            exist.Result = request.Result;
+            //exist.Result = request.Result;
             exist.Note = request.Note;
             exist.FilePath = request.FilePath;
             exist.Status = request.Status;

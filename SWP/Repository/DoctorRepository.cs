@@ -51,7 +51,7 @@ namespace SWP.Repository
             existDoctor.Yob = doctor.Yob;
             existDoctor.Experience = doctor.Experience;
             existDoctor.EduId = doctor.Edu_Id;
-            existDoctor.FilePathEdu = doctor.FilePathEdu;
+            //existDoctor.FilePathEdu = doctor.FilePathEdu;
             existDoctor.Status = doctor.Status;
           
 

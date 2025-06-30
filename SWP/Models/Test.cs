@@ -17,7 +17,9 @@ public partial class Test
 
     public DateOnly? TestDate { get; set; }
 
-    public string Result { get; set; }
+    public int? TqsId { get; set; }
+
+    public DateOnly? ResultDay { get; set; }
 
     public string Note { get; set; }
 
@@ -32,4 +34,6 @@ public partial class Test
     public virtual TestStatus StatusNavigation { get; set; }
 
     public virtual TestType TestType { get; set; }
+
+    public virtual TestQualityStatus Tqs { get; set; }
 }

@@ -29,7 +29,7 @@ public partial class Payment
 
     public virtual PaymentType PaymentType { get; set; }
 
-    public virtual StatusPayment Status { get; set; }
+    public virtual PaymentStatus Status { get; set; }
 
     public virtual TreatmentPlan TreatmentPlans { get; set; }
 }
