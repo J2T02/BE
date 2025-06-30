@@ -19,8 +19,6 @@ namespace SWP.Dtos.Doctor
 
         public int? EduId { get; set; }
 
-        public string FilePathEdu { get; set; }
-
         public AccountDetailResponeDto AccountInfo { get; set; }
     }
 }

@@ -39,8 +39,6 @@ namespace SWP.Dtos.Doctor
 
         public int? Edu_Id { get; set; }
 
-        public string FilePathEdu { get; set; }
-
         public int? Status { get; set; }
         public string Img { get; set; }
 
