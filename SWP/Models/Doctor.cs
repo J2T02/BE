@@ -21,11 +21,11 @@ public partial class Doctor
 
     public int? EduId { get; set; }
 
-    public string FilePathEdu { get; set; }
-
     public virtual Account Acc { get; set; }
 
     public virtual ICollection<Booking> Bookings { get; set; } = new List<Booking>();
+
+    public virtual ICollection<Certificate> Certificates { get; set; } = new List<Certificate>();
 
     public virtual ICollection<DoctorSchedule> DoctorSchedules { get; set; } = new List<DoctorSchedule>();
 

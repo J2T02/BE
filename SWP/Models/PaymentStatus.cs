@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SWP.Models;
 
-public partial class StatusPayment
+public partial class PaymentStatus
 {
     public int StatusId { get; set; }
 

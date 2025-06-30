@@ -5,21 +5,15 @@ using System.Collections.Generic;
 
 namespace SWP.Models;
 
-public partial class Feedback
+public partial class Certificate
 {
-    public int FbId { get; set; }
+    public int CerId { get; set; }
 
-    public int? TpId { get; set; }
+    public string CerName { get; set; }
 
     public int? DocId { get; set; }
 
-    public int? Star { get; set; }
-
-    public DateOnly? CreateAt { get; set; }
-
-    public string Content { get; set; }
+    public string FilePath { get; set; }
 
     public virtual Doctor Doc { get; set; }
-
-    public virtual TreatmentPlan Tp { get; set; }
 }

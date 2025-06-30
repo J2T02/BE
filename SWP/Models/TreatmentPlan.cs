@@ -13,6 +13,8 @@ public partial class TreatmentPlan
 
     public DateOnly? EndDate { get; set; }
 
+    public string Result { get; set; }
+
     public int? SerId { get; set; }
 
     public int? CusId { get; set; }
