@@ -17,26 +17,36 @@ namespace SWP.Controllers
     {
         private readonly IStepDetail _stepDetailRepo;
         private readonly IDoctor _doctorRepo;
-
-        public StepDetailController(IStepDetail stepDetailRepo, IDoctor doctorRepo)
+        private readonly ITreatmentPlan _treatmentPlanRepo;
+        public StepDetailController(IStepDetail stepDetailRepo, IDoctor doctorRepo, ITreatmentPlan treatmentPlan)
         {
             _stepDetailRepo = stepDetailRepo;
             _doctorRepo = doctorRepo;
+            _treatmentPlanRepo = treatmentPlan;
         }
 
         [Authorize(Roles = "Doctor")]
         [HttpPost("CreateStepDetail")]
         public async Task<IActionResult> CreateStepDetail([FromBody] CreateStepDetailDto request)
         {
-            var stepDetailModel = request.ToStepDetailFromCreate();
+            var checkTreatmentPlan = await _treatmentPlanRepo.GetTreatmentPlanById(request.TpId);
+            if(checkTreatmentPlan == null)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Phác đồ điều trị không tồn tại", $"TreatmentPlanId: {request.TpId}"));
+            }
+            if (checkTreatmentPlan.Status == 2)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Phác đồ điều trị đã hoàn thành không được chỉnh sửa", $"TreatmentPlanId: {request.TpId}"));
+            }
             var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             if (accountIdClaim == null)
             {
                 return BadRequest(BaseRespone<TreatmentPlan>.ErrorResponse("Không tìm thấy thông tin tài khoản", null, HttpStatusCode.BadRequest));
             }
-
+            
             int accountId = int.Parse(accountIdClaim);
             var doctorModel = await _doctorRepo.GetDoctorByAccountId(accountId);
+            var stepDetailModel = request.ToStepDetailFromCreate();
             stepDetailModel.DocId = doctorModel.DocId;
             var result = await _stepDetailRepo.CreateStepDetail(stepDetailModel);
             if (result == null)

@@ -16,5 +16,7 @@ namespace SWP.Interfaces
         Task<DoctorSchedule> RegisterDoctorSchedule(DoctorSchedule doctorSchedule);
         Task<List<DoctorSchedule>> GetDoctorScheduleIsTrue(int doctorId);
         Task<List<DoctorSchedule>> GetAllDoctorSchedule(int doctorId);
+
+        Task<SlotSchedule?> GetSlotById(int id);
     }
 }

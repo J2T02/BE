@@ -4,9 +4,9 @@
     {
         //public int SdId { get; set; }
 
-        public int? TpId { get; set; }
+        public int TpId { get; set; }
 
-        public int? TsId { get; set; }
+        public int TsId { get; set; }
 
         //public int? DocId { get; set; } get from Token
 
