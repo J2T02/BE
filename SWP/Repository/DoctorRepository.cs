@@ -108,5 +108,10 @@ namespace SWP.Repository
         {
             return _context.DoctorSchedules.Include(ds => ds.Slot).Include(ds => ds.Doc).ThenInclude(doc => doc.Acc).Where(x => x.DocId == doctorId).ToListAsync();
         }
+
+        public async Task<SlotSchedule?> GetSlotById(int id)
+        {
+            return await _context.SlotSchedules.FindAsync(id);
+        }
     }
 }

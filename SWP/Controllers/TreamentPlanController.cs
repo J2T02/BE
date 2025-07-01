@@ -64,6 +64,10 @@ namespace SWP.Controllers
 
             int accountId = int.Parse(accountIdClaim);
             var doctorModel = await _doctorRepo.GetDoctorByAccountId(accountId);
+            if (doctorModel == null)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Không tìm thấy bác sĩ tương ứng với tài khoản", $"Account Id: {accountId}", HttpStatusCode.BadRequest));
+            }
             var treatmentPlanModel = dataRequest.ToTreatmentPlanFromCreate();
             treatmentPlanModel.DocId = doctorModel.DocId;
             treatmentPlanModel.Status = 1;

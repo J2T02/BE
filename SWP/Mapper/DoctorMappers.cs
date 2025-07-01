@@ -51,19 +51,13 @@ namespace SWP.Mapper
             {
                 DsId = doctorSchedule.DsId,
                 WorkDate = doctorSchedule.WorkDate,
-                Slot = (doctorSchedule.Slot != null && doctorSchedule.SlotId != null)
-                ? new SlotScheduleDto
+                Slot = slot != null ? new SlotScheduleDto
                 {
-                    SlotId = doctorSchedule.SlotId.Value,
-                    SlotStart = doctorSchedule.Slot?.SlotStart ?? TimeOnly.MinValue,
-                    SlotEnd = doctorSchedule.Slot?.SlotEnd ?? TimeOnly.MinValue
+                    SlotId = slot.SlotId,
+                    SlotStart = (TimeOnly)slot.SlotStart,
+                    SlotEnd = (TimeOnly)slot.SlotEnd
                 }
-                : new SlotScheduleDto
-                {
-                    SlotId = 0,
-                    SlotStart = TimeOnly.MinValue,
-                    SlotEnd = TimeOnly.MinValue
-                },
+                : null,
 
                 IsAvailable = doctorSchedule.IsAvailable,
                 MaxBooking = doctorSchedule.MaxBooking
@@ -75,8 +69,8 @@ namespace SWP.Mapper
             return new DoctorSchedule
             {
                 DocId = docId,
-                WorkDate = doctorSchedule?.WorkDate,
-                SlotId = doctorSchedule?.SlotId,
+                WorkDate = doctorSchedule.WorkDate,
+                SlotId = doctorSchedule.SlotId,
                 IsAvailable = true,
                 MaxBooking = doctorSchedule?.MaxBooking,
             };
