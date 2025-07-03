@@ -188,6 +188,14 @@ namespace SWP.Repository
 
 
         }
+        public async Task MarkAsPaid(int orderId)
+        {
+            var bk = await _context.Bookings.FirstOrDefaultAsync(b => b.BookingId == orderId);
+            if (bk == null) throw new Exception("Không tìm thấy booking");
+            if (bk.Status == 2) return;                 // đã Paid thì bỏ qua
+            bk.Status = 2;                              // 1 = Pending, 2 = Paid
+            await _context.SaveChangesAsync();
+        }
     }
 
 
