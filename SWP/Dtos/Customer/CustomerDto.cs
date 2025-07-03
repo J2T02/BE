@@ -4,7 +4,7 @@ namespace SWP.Dtos.Customer
 {
     public class CustomerDto
     {
-        //public int CusId { get; set; }
+        public int CusId { get; set; }
         //public int? AccId { get; set; }
 
 
