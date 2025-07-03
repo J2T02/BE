@@ -10,8 +10,7 @@ namespace SWP.Mapper
         {
             return new CustomerDto
             {
-
-
+                CusId = customer.CusId,
                 HusName = customer.HusName,
                 HusYob = customer.HusYob,
                 WifeName = customer.WifeName,
@@ -22,6 +21,7 @@ namespace SWP.Mapper
                     Phone = customer.Acc.Phone,
                     Mail = customer.Acc.Mail
                 } : null
+                
             };
         }
         public static UpdateCustomerResponseDto ToCustomer(this Customer customer)
