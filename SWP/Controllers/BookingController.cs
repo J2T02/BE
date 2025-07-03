@@ -183,6 +183,17 @@ namespace SWP.Controllers
                          System.Net.HttpStatusCode.InternalServerError));
             }
         }
+        [HttpGet("GetAllBooking")]
+        public async Task<IActionResult> GetAllBooking()
+        {
+            var listBooking = await _bookingRepo.GetAllBooking();
+            var listBookingDto = listBooking.Select(x => x.ToBookingDetailDto()).ToList();
+            if(listBookingDto == null)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Lấy danh sách đặt lịch thất bại", ""));
+            }
+            return Ok(BaseRespone<List<BookingDetailDto>>.SuccessResponse(listBookingDto, "Lấy danh sách lịch hẹn thành công"));
+        }
     }
 }
 

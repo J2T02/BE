@@ -11,7 +11,7 @@ namespace SWP.Dtos.TreatmentPlan
 
         public DateOnly? EndDate { get; set; }
 
-        public ServiceDto ServiceInfo { get; set; }
+        public ServiceInfoDto ServiceInfo { get; set; }
 
         public CustomerInfoDto CusInfo { get; set; }
         public TreatmentPlanStatusDto Status { get; set; }

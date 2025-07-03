@@ -52,7 +52,7 @@ namespace SWP.Mapper
                         WifeName = customer.WifeName ?? "N/A",
                         WifeYob = customer.WifeYob
                     },
-                    ServiceInfo = service == null ? null : new ServiceDto
+                    ServiceInfo = service == null ? null : new ServiceInfoDto
                     {
                         SerId = service.SerId,
                         SerName = service.SerName ?? "N/A"

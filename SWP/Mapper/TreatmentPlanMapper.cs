@@ -30,7 +30,7 @@ namespace SWP.Mapper
                 TpId = treatmentPlan.TpId,
                 StartDate = treatmentPlan.StartDate,
                 EndDate = treatmentPlan.EndDate,
-                ServiceInfo = new ServiceDto
+                ServiceInfo = new ServiceInfoDto
                 {
                     SerId = (int)treatmentPlan.SerId,
                     SerName = treatmentPlan.Ser?.SerName ?? "N/A",
@@ -76,7 +76,7 @@ namespace SWP.Mapper
                 TsId = treatmentStep.TsId,
                 StepName = treatmentStep.StepName,
                 Description = treatmentStep.Description,
-                ServiceInfo = new ServiceDto
+                ServiceInfo = new ServiceInfoDto
                 {
                     SerId = (int)treatmentStep.SerId,
                     SerName = treatmentStep.Ser.SerName
