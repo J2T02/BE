@@ -2,6 +2,7 @@
 using SWP.Dtos.Doctor;
 using SWP.Dtos.Payment;
 using SWP.Dtos.Account;
+using SWP.Dtos.DoctorSchedule;
 
 namespace SWP.Dtos.Booking
 
@@ -17,6 +18,8 @@ namespace SWP.Dtos.Booking
         public CustomerDto Cus { get; set; }
         public DocDto Doc { get; set; }
         public DocScheduleDto Schedule { get; set; }
+        public SlotScheduleDto Slot { get; set; }
+    
 
     }
 }

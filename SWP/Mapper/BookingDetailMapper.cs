@@ -3,6 +3,7 @@ using SWP.Dtos.Customer;
 using SWP.Dtos.Doctor;
 using SWP.Models;
 using SWP.Dtos.Account;
+using SWP.Dtos.DoctorSchedule;
 
 namespace SWP.Mapper
 {
@@ -18,13 +19,14 @@ namespace SWP.Mapper
                 Status = new BookingStatusDto
                 {
                     StatusId = booking.Status ?? 0,
-                    StatusName = booking.StatusNavigation?.StatusName ?? "Unknown"
+                    StatusName = booking.StatusNavigation?.StatusName ?? "Trạng thái không tồn tại"
                 },
                 Note = booking.Note,
 
                 Cus = customer != null
                     ? new CustomerDto
                 {
+                    CusId = customer.CusId,
                     HusName = customer.HusName,
                     HusYob = customer.HusYob,
                     WifeName = customer.WifeName,
@@ -41,8 +43,10 @@ namespace SWP.Mapper
 
                 Doc = new DocDto
                 {
+                    DocId = booking?.Doc?.DocId.ToString(),
                     AccDoc = new AccountDetailResponeDto
                     {
+                        
                         FullName = booking.Doc?.Acc?.FullName,
                         Phone = booking.Doc?.Acc?.Phone,
                         Mail = booking.Doc?.Acc?.Mail,
@@ -54,6 +58,15 @@ namespace SWP.Mapper
                     WorkDate = booking.Ds?.WorkDate,
                     SlotId = booking.Ds?.SlotId,
                 },
+
+                Slot = booking.Ds.Slot != null
+                    ? new SlotScheduleDto
+                    {
+                        SlotId = booking.Ds.Slot.SlotId,
+                        SlotStart = booking.Ds.Slot.SlotStart ?? default(TimeOnly),
+                        SlotEnd = booking.Ds.Slot.SlotEnd ?? default(TimeOnly),
+                    }
+                : null,
 
             };
         }
