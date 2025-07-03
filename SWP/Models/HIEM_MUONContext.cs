@@ -400,6 +400,7 @@ public partial class HIEM_MUONContext : DbContext
             entity.Property(e => e.PaymentDate).HasColumnType("datetime");
             entity.Property(e => e.PaymentTypeId).HasColumnName("PaymentType_ID");
             entity.Property(e => e.StatusId).HasColumnName("Status_ID");
+            entity.Property(e => e.TransactionId).HasMaxLength(100);
             entity.Property(e => e.TreatmentPlansId).HasColumnName("TreatmentPlans_ID");
 
             entity.HasOne(d => d.Booking).WithMany(p => p.Payments)

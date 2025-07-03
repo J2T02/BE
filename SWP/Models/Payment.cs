@@ -23,6 +23,8 @@ public partial class Payment
 
     public int? StatusId { get; set; }
 
+    public string TransactionId { get; set; }
+
     public virtual Booking Booking { get; set; }
 
     public virtual MethodPayment Method { get; set; }

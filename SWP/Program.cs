@@ -10,10 +10,14 @@ using SWP.Interfaces;
 using SWP.Models;
 using SWP.Repository;
 using SWP.Service;
+using SWP.Service.Vnpay;
 using System.Net;
 using static SWP.Repository.CancelBookingRepo;
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+
 
 builder.Services.AddCors(options =>
 {
@@ -141,6 +145,8 @@ builder.Services.AddAuthentication(options =>
     };
 
 });
+//API Vnpay
+builder.Services.AddScoped<IVnPayService, VnPayService>();
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
