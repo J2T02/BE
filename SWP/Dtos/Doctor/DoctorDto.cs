@@ -7,17 +7,22 @@ namespace SWP.Dtos.Doctor
     {
         public int DocId { get; set; }
 
-        public int? AccId { get; set; }
-
         public string Gender { get; set; }
 
         public DateOnly? Yob { get; set; }
 
         public int? Experience { get; set; }
 
-        public int? Status { get; set; }
+        public StatusInfoDto? Status { get; set; }
 
-        public int? EduId { get; set; }
+        public EduInfoDto? EduInfo { get; set; }
+
+        public List<CertificateDto?>? CertificateInfo { get; set; }
+
+        public DateTime? CreateAt { get; set; }
+
+        public string? Img { get; set; }
+
 
         public AccountDetailResponeDto AccountInfo { get; set; }
     }

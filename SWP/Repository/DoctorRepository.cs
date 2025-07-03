@@ -22,13 +22,19 @@ namespace SWP.Repository
 
         public async Task<Doctor?> GetDoctorByIdAsync(int id)
         {
-            return await _context.Doctors.Include(d => d.Acc).ThenInclude(a => a.Role).FirstOrDefaultAsync(d => d.DocId == id);
+            return await _context.Doctors.Include(d => d.Acc).ThenInclude(a => a.Role)
+                .Include(x => x.StatusNavigation)
+                .Include(x => x.Edu)
+                .Include(x => x.Certificates).FirstOrDefaultAsync(d => d.DocId == id);
         }
 
 
         public async Task<List<Doctor>> GetAllDoctorsAsync()
         {
-            return await _context.Doctors.Include(d => d.Acc).ThenInclude(a => a.Role).ToListAsync();
+            return await _context.Doctors.Include(d => d.Acc).ThenInclude(a => a.Role)
+                .Include(x => x.StatusNavigation)
+                .Include(x => x.Edu)
+                .Include(x => x.Certificates).ToListAsync();
         }
         public async Task<Account> GetAccountByDoctor(Doctor doctor)
         {

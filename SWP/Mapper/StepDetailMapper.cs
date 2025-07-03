@@ -73,6 +73,7 @@ namespace SWP.Mapper
                     DocId = doctor.DocId,
                     AccountInfo = account == null ? null : new AccountDetailResponeDto
                     {
+                        AccId = account.AccId,
                         FullName = account.FullName ?? "N/A",
                         Mail = account.Mail ?? "N/A",
                         Phone = account.Phone ?? "N/A"
