@@ -11,7 +11,9 @@ using SWP.Dtos.Customer;
 using SWP.Interfaces;
 using SWP.Mapper;
 using SWP.Models;
+using SWP.Models.Vnpay;
 using SWP.Repository;
+using SWP.Service.Vnpay;
 
 namespace SWP.Controllers
 {
@@ -22,71 +24,68 @@ namespace SWP.Controllers
         private readonly IBookingRepository _bookingRepo;
         private readonly IHistoryBookingRepository _hisotryBookingRepository;
         private readonly IUpdateBookingStatus _updateBookingStatusRepo;
+        private readonly IVnPayService _vn;
         private readonly HIEM_MUONContext _context;
 
-        public BookingController(IBookingRepository bookingRepository, HIEM_MUONContext context, IHistoryBookingRepository hisotryBookingRepository, IUpdateBookingStatus updateBookingStatus)
+        public BookingController(IBookingRepository bookingRepository, HIEM_MUONContext context, IHistoryBookingRepository hisotryBookingRepository, IUpdateBookingStatus updateBookingStatus, IVnPayService vn)
         {
             _bookingRepo = bookingRepository;
             _hisotryBookingRepository = hisotryBookingRepository;
             _context = context;
             _updateBookingStatusRepo = updateBookingStatus;
+            _vn = vn;
         }
         [Authorize(Roles = "Customer")]
         [HttpPost("Booking")]
-        public async Task<IActionResult> BookingAsync([FromBody] BookingRequestDto bookingRequest)
+        public async Task<IActionResult> BookingAndPayAsync([FromBody] BookingRequestDto bookingRequest)
         {
             try
             {
+                // ➊ Lấy accId từ JWT
                 var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
                 if (accountIdClaim == null)
                 {
                     return BadRequest(new BaseRespone<List<HistoryBookingDto>>(HttpStatusCode.BadRequest, "Không tìm thấy thông tin khách hàng"));
                 }
 
-                int accountId = int.Parse(accountIdClaim);
+                int accId = int.Parse(accountIdClaim);
                 var today = DateTime.Today;
 
+                // ➋ Kiểm tra khách đã có lịch pending/chưa thanh toán?
+                bool hasPending = await _context.Bookings
+                    .AnyAsync(b => b.AccId == accId && b.Status < 4);   // 1..3 = chưa khám
 
-                var booked = await _context.Bookings.Where(b => b.AccId == accountId &&
-                        b.Status < 4).AnyAsync();
+                if (hasPending)
+                    return Conflict(BaseRespone<string>.ErrorResponse("Khách hàng đã đặt lịch, vui lòng đến khám", HttpStatusCode.Conflict));
 
-
-                if (booked)
-                {
-                    return Conflict(BaseRespone<BookingResponseDto>.ErrorResponse(
-                        "Khách hàng đã đặt lịch vui lòng đến khám",
-                        HttpStatusCode.Conflict));
-                }
-
-
-                var booking = await _bookingRepo.BookingAsync(bookingRequest, accountId);
-
-
-
+                // ➌ Tạo booking (Status = 1 – Pending)
+                var booking = await _bookingRepo.BookingAsync(bookingRequest, accId);
                 if (booking == null)
+                    return NotFound(BaseRespone<string>.ErrorResponse("Lịch đã đầy, chọn khung giờ khác", HttpStatusCode.NotFound));
+
+                // ➍ Sinh URL VNPay
+                var payInfo = new PaymentInformationModel
                 {
-                    return NotFound(BaseRespone<BookingResponseDto>.ErrorResponse(
-                        "Lịch đã đầy vui lòng chọn thời gian khác",
-                        System.Net.HttpStatusCode.NotFound));
-                }
-                var responseDto = booking.ToBookingResponseDto();
+                    OrderId = booking.BookingId,                  // bookingId gửi sang VNPay
+                    Amount = 10000,                            // hoặc tính động
+                    OrderDescription = $"Thanh toán đặt lịch {booking.BookingId}"
+                };
+                string paymentUrl = _vn.CreatePaymentUrl(payInfo, HttpContext);
 
-                return Ok(BaseRespone<BookingResponseDto>.SuccessResponse(responseDto, "Đặt lịch thành công"));
-
-
+                // ➎ Trả bookingId + paymentUrl để FE redirect
+                var dto = booking.ToBookingResponseDto();
+                return Ok(BaseRespone<object>.SuccessResponse(
+                    new { booking = dto, paymentUrl },
+                    "Tạo lịch thành công – chuyển sang VNPay"));
             }
             catch (InvalidOperationException ex)
             {
-                return BadRequest(BaseRespone<BookingResponseDto>.ErrorResponse(
-                    ex.Message,
-                    System.Net.HttpStatusCode.BadRequest));
+                return BadRequest(BaseRespone<string>.ErrorResponse(ex.Message, HttpStatusCode.BadRequest));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,
-                    BaseRespone<BookingResponseDto>.ErrorResponse(
-                        "Đặt lịch không thành công do lỗi hệ thống",
-                        System.Net.HttpStatusCode.InternalServerError));
+                return StatusCode(500,
+                    BaseRespone<string>.ErrorResponse($"Lỗi hệ thống: {ex.Message}", HttpStatusCode.InternalServerError));
             }
         }
 
