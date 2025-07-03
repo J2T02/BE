@@ -7,6 +7,6 @@ namespace SWP.Dtos.TreatmentStep
         public int TsId { get; set; }
         public string StepName { get; set; }
         public string Description { get; set; }
-        public ServiceDto ServiceInfo { get; set; }
+        public ServiceInfoDto ServiceInfo { get; set; }
     }
 }

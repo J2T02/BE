@@ -170,7 +170,25 @@ namespace SWP.Repository
 
         .ToListAsync();
 
-        return result;
+            return result;
+        }
+
+        public async Task<List<Booking>> GetAllBooking()
+        {
+            var result = await _context.Bookings
+                                                .Include(x => x.Doc)
+                                                    .ThenInclude(d => d.Acc).ThenInclude(x=>x.Role)
+                                                .Include(x=>x.Doc).ThenInclude(x => x.StatusNavigation)
+                                                .Include(x => x.Doc).ThenInclude(x => x.Edu)
+                                                .Include(x => x.Ds)
+                                                    .ThenInclude(ds => ds.Slot)
+                                                .Include(x => x.StatusNavigation)
+                                                .ToListAsync();
+            return result;
+
+
         }
     }
+
+
 }

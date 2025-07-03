@@ -12,6 +12,12 @@ namespace SWP.Repository
         {
             _context = context;
         }
+
+        public async Task<List<Models.Service>?> GetAllServices()
+        {
+            return await _context.Services.ToListAsync();
+        }
+
         public async Task<Models.Service?> GetServiceById(int id)
         {
             return await _context.Services.FirstOrDefaultAsync(x => x.SerId == id);
