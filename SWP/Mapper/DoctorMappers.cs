@@ -9,18 +9,38 @@ namespace SWP.Mapper
     {
         public static DoctorDto ToDoctorDto(this Doctor doctor)
         {
+            var status = doctor.StatusNavigation;
+            var edu = doctor.Edu;
+            var cer = doctor.Certificates.Where(x => x.DocId == doctor.DocId);
             return new DoctorDto
             {
                 //Field
                 DocId = doctor.DocId,
-                AccId = doctor.AccId,
                 Gender = doctor.Gender,
                 Yob = doctor.Yob,
                 Experience = doctor.Experience,
-                Status = doctor.Status,
-                EduId = doctor.EduId,
+                Status = new StatusInfoDto
+                {
+                    StatusId = status.StatusId,
+                    StatusName = status.StatusName
+                },
+                EduInfo = new EduInfoDto
+                {
+                    EduId = edu.EduId,
+                    EduName = edu.EduName,
+                },
+                CertificateInfo = cer.Select(x => new CertificateDto
+                {
+                    CerId = x.CerId,
+                    CerName = x.CerName,
+                    FilePath = x.FilePath,
+                }).ToList()
+                ,
+                CreateAt = doctor.Acc.CreateAt,
+                Img = doctor.Acc.Img,
                 AccountInfo = new AccountDetailResponeDto
                 {
+                    AccId = doctor.Acc.AccId,
                     FullName = doctor.Acc.FullName,
                     Mail = doctor.Acc.Mail,
                     Phone = doctor.Acc.Phone
