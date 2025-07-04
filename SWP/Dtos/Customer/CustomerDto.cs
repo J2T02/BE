@@ -6,9 +6,6 @@ namespace SWP.Dtos.Customer
     {
         public int CusId { get; set; }
         //public int? AccId { get; set; }
-
-
-
         public string HusName { get; set; }
 
         public DateOnly? HusYob { get; set; }

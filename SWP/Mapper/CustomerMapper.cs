@@ -17,6 +17,7 @@ namespace SWP.Mapper
                 WifeYob = customer.WifeYob,
                 AccCus = customer.Acc != null ? new AccountDetailResponeDto
                 {
+                    AccId = customer.Acc.AccId,
                     FullName = customer.Acc.FullName,
                     Phone = customer.Acc.Phone,
                     Mail = customer.Acc.Mail
