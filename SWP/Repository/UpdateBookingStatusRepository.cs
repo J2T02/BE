@@ -30,7 +30,7 @@ namespace SWP.Repository
                 return null;
             }
 
-            booking.Status = status.Status;
+            
 
             await _context.SaveChangesAsync();
 
