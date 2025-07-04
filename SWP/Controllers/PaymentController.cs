@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Net;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SWP.Data;
+using SWP.Dtos.Booking;
 using SWP.Libaries;
 using SWP.Models;
 using SWP.Models.Vnpay;
@@ -89,12 +92,14 @@ namespace SWP.Controllers
                 .FirstOrDefaultAsync(b => b.BookingId == id);
 
             if (booking == null)
-                return NotFound("Không tìm thấy booking.");
+                return NotFound(BaseRespone<Payment>.ErrorResponse(
+                        "Không tìm thấy booking",
+                        System.Net.HttpStatusCode.NotFound));
 
             // 🛑 Kiểm tra nếu đã thanh toán thành công (StatusId = 2)
             var latestPayment = booking.Payments.OrderByDescending(p => p.PaymentDate).FirstOrDefault();
             if (latestPayment != null && latestPayment.StatusId == 2)
-                return BadRequest("Đơn này đã được thanh toán.");
+                return BadRequest(BaseRespone<string>.ErrorResponse("Đơn này đã được thanh toán", HttpStatusCode.BadRequest));
 
             // ✅ Tạo thông tin thanh toán lại
             var paymentInfo = new PaymentInformationModel
