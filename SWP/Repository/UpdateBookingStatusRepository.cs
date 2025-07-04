@@ -15,7 +15,16 @@ namespace SWP.Repository
 
         public async Task<Booking> UpdateBookingStatusAsync(int bookingId, UpdateBookingStatusRequestDto status)
         {
-            var booking = await _context.Bookings.FirstOrDefaultAsync(x => x.AccId == bookingId);
+            var booking = await _context.Bookings
+                .Include(b=> b.StatusNavigation)
+
+                .Include(c => c.Acc)
+                    .ThenInclude(x => x.Customers)
+                .Include(d => d.Doc)
+                .Include(d => d.Ds)
+                    .ThenInclude(ds => ds.Slot)
+                    
+                .FirstOrDefaultAsync(x => x.BookingId == bookingId);
             if (booking == null)
             {
                 return null;
