@@ -12,6 +12,18 @@ namespace SWP.Repository
             _context = context;
         }
 
+        public async Task<Feedback?> GetFeedbackById(int id)
+        {
+            return await _context.Feedbacks
+                .Include(x => x.Tp).ThenInclude(x => x.Ser)
+                .Include(x => x.Tp).ThenInclude(x => x.Cus).ThenInclude(x=>x.Acc)
+                .Include(x => x.Tp).ThenInclude(x => x.StatusNavigation)
+                .Include(x => x.Doc).ThenInclude(x => x.Acc).ThenInclude( x=> x.Role)
+                .Include(x => x.Doc).ThenInclude(x =>x.StatusNavigation)
+                .Include(x => x.Doc).ThenInclude(x =>x.Edu)
+                .FirstOrDefaultAsync(x => x.FbId == id);
+        }
+
         public async Task<IEnumerable<Feedback>> GetFeedbacksByDoctorIdAsync(int doctorId)
         {
             return await _context.Feedbacks
@@ -30,6 +42,18 @@ namespace SWP.Repository
                 .ThenInclude(cus => cus.Acc)
                 .Where(f => f.TpId == treatmentPlanId)
                 .ToListAsync();
+        }
+
+        public Task<Feedback?> PostFeedback(Feedback request)
+        {
+            if(request == null)
+            {
+                throw new Exception("Không tìm thấy phản hồi yêu cầu");
+            }
+            _context.Feedbacks.Add(request);
+            _context.SaveChanges();
+            var response = GetFeedbackById(request.FbId);
+            return response;
         }
     }
 }
