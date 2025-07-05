@@ -223,7 +223,7 @@ namespace SWP.Controllers
             return Ok(BaseRespone<List<DoctorScheduleDto>>.SuccessResponse(resultListDto, "Lấy lịch làm việc thành công", HttpStatusCode.OK));
         }
 
-        [HttpGet("GetAllDoctorSchedule/{id}")]
+        [HttpGet("GetAllDoctorScheduleByDoctorId/{id}")]
         public async Task<IActionResult> GetAllDoctorSchedule([FromRoute] int id)
         {
 
