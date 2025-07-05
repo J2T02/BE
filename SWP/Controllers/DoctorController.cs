@@ -44,7 +44,7 @@ namespace SWP.Controllers
         }
 
 
-        //[Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Manager")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDoctorById(int id)
         {
@@ -68,7 +68,7 @@ namespace SWP.Controllers
             return Ok(response);
         }
 
-        //[Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPost]
         public async Task<IActionResult> CreateDoctor([FromBody] CreateDocotorRequestDto doctor)
         {
@@ -119,7 +119,7 @@ namespace SWP.Controllers
             return CreatedAtAction(nameof(GetDoctorById), new { id = loadedDoctor.DocId }, response);
         }
 
-        //[Authorize(Roles = "Admin,Manager,Doctor")]
+        [Authorize(Roles = "Admin,Manager,Doctor")]
         [HttpPut]
         [Route("{id}")]
         public async Task<IActionResult> UpdateDoctor([FromRoute] int id, [FromBody] UpdateDoctorRequestDto doctor)
@@ -144,7 +144,7 @@ namespace SWP.Controllers
             var response = BaseRespone<DoctorDto>.SuccessResponse(updatedDoctor.ToDoctorDto(), "Cập nhật thông tin bác sĩ thành công");
             return Ok(response);
         }
-        //[Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Manager")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteDoctor([FromRoute] int id)
         {
@@ -168,7 +168,7 @@ namespace SWP.Controllers
             var response = BaseRespone<string>.SuccessResponse(doctor.ToString(), "Xóa bác sĩ thành công");
             return Ok(response);
         }
-        //[Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPost("RegisterSchedule/{id}")]
         public async Task<IActionResult> RegisterSchedule([FromBody] CreateDoctorScheduleDto doctorScheduleRequest, [FromRoute] int id)
         {
