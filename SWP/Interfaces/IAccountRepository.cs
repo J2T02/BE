@@ -6,5 +6,7 @@ namespace SWP.Interfaces
     {
         Task<Account?> GetAccountAsync(int accId);
         Task<List<Account>> GetAllAccoun();
+        Task<Account?> GetAccountByEmailAsync(string emailOrPhone);
+        Task UpdatePasswordAsync(Account account, string hashedNewPassword);
     }
 }
