@@ -23,16 +23,34 @@ namespace SWP.Controllers
         private readonly ITreatmentPlan _treatmentPlanRepo;
         private readonly IDoctor _doctorRepo;
         private readonly IServices _servicesRepo;
+        private readonly ICustomerRepository _customerRepo;
 
-        public TreamentPlanController(HIEM_MUONContext context, ITreatmentPlan treatmentPlanRepo, IDoctor doctorRepo, IServices services)
+        public TreamentPlanController(HIEM_MUONContext context, ITreatmentPlan treatmentPlanRepo, IDoctor doctorRepo, IServices services, ICustomerRepository customerRepo)
         {
             _context = context;
             _treatmentPlanRepo = treatmentPlanRepo;
             _doctorRepo = doctorRepo;
             _servicesRepo = services;
+            _customerRepo = customerRepo;
         }
 
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "Doctor, Receptionist")]
+        [HttpGet("GetAllTreatmentPlans")]
+        public async Task<IActionResult> GetAllTreatmentPlan()
+        {
+            var treatmentPlans = await _treatmentPlanRepo.GetAllTreatmentPlans();
+
+            if (treatmentPlans == null || !treatmentPlans.Any())
+            {
+                var error = BaseRespone<List<TreatmentPlanDto>>.ErrorResponse("Không tìm thấy phác đồ điều trị nào.", HttpStatusCode.NotFound);
+                return NotFound(error);
+            }
+
+            var listDto = treatmentPlans.Select(x => x.ToTreatmentPlanDto()).ToList();
+            var response = BaseRespone<List<TreatmentPlanDto>>.SuccessResponse(listDto, "Lấy danh sách thành công");
+            return Ok(response);
+        }
+        [Authorize(Roles = "Doctor, Receptionist")]
         [HttpPost("CreateTreatmentPlan")]
 
         public async Task<IActionResult> CreateTreatmentPlan([FromBody] CreateTreatmentPlanDto dataRequest)
@@ -47,31 +65,27 @@ namespace SWP.Controllers
             {
                 return BadRequest(BaseRespone<string>.ErrorResponse("Khách hàng được chọn không hợp lệ", $"Customer Id: {dataRequest.CusId}", HttpStatusCode.BadRequest));
             }
-            var checkTreatmentPlanIsExist = await _treatmentPlanRepo.GetTreatmentPlanByCustomerId(dataRequest.CusId);
-            if(checkTreatmentPlanIsExist != null)
+            var existingPlans = await _treatmentPlanRepo.GetTreatmentPlanByCustomerId(dataRequest.CusId);
+            bool isCurrentlyInTreatment = existingPlans.Any(p => p.Status == 1);
+
+            if (isCurrentlyInTreatment)
             {
-                if(checkTreatmentPlanIsExist.Status == 1)
-                {
-                    return BadRequest(BaseRespone<string>.ErrorResponse("Khách hàng đang trong quá trình điều trị", $"Customer Id: {dataRequest.CusId}", HttpStatusCode.BadRequest));
-                }
+                return BadRequest(BaseRespone<string>.ErrorResponse(
+                    "Khách hàng đang trong quá trình điều trị",
+                    $"Customer Id: {dataRequest.CusId}",
+                    HttpStatusCode.BadRequest
+                ));
             }
 
-            var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (accountIdClaim == null)
-            {
-                return BadRequest(BaseRespone<string>.ErrorResponse("Không tìm thấy thông tin tài khoản", $"Account: {accountIdClaim}",HttpStatusCode.BadRequest));
-            }
-
-            int accountId = int.Parse(accountIdClaim);
-            var doctorModel = await _doctorRepo.GetDoctorByAccountId(accountId);
+            var doctorModel = await _doctorRepo.GetDoctorByIdAsync(dataRequest.DocId);
             if (doctorModel == null)
             {
-                return BadRequest(BaseRespone<string>.ErrorResponse("Không tìm thấy bác sĩ tương ứng với tài khoản", $"Account Id: {accountId}", HttpStatusCode.BadRequest));
+                return BadRequest(BaseRespone<string>.ErrorResponse("Không tìm thấy bác sĩ", $"Account Id: {dataRequest.DocId}", HttpStatusCode.BadRequest));
             }
             var treatmentPlanModel = dataRequest.ToTreatmentPlanFromCreate();
-            treatmentPlanModel.DocId = doctorModel.DocId;
             treatmentPlanModel.Status = 1;
             treatmentPlanModel.StartDate = DateOnly.FromDateTime(DateTime.Now);
+            treatmentPlanModel.Result = "Đang tiến hành";
 
             var result = await _treatmentPlanRepo.CreateTreatmentPlan(treatmentPlanModel);
             if (result == null) {
@@ -80,7 +94,7 @@ namespace SWP.Controllers
             var responseDto = BaseRespone<TreatmentPlanDto>.SuccessResponse(result.ToTreatmentPlanDto(), "Tạo phác đồ điều trị thành công", HttpStatusCode.OK);
             return CreatedAtAction(nameof(GetTreatmentPlanById), new { id = result.TpId }, responseDto);
         }
-        [Authorize(Roles = "Doctor, Customer")]
+        [Authorize(Roles = "Doctor, Customer, Receptionist")]
         [HttpGet("GetTreatmentPlanById/{id}")]
         public async Task<IActionResult> GetTreatmentPlanById([FromRoute] int id)
         {
@@ -91,6 +105,36 @@ namespace SWP.Controllers
             }
             var treatmentPlanDto = treatmentPlanModel.ToTreatmentPlanDto();
             return Ok(BaseRespone<TreatmentPlanDto>.SuccessResponse(treatmentPlanDto, "Lấy thông tin phác đồ điều trị thành công", HttpStatusCode.OK));
+        }
+        [Authorize(Roles = "Doctor, Customer, Receptionist")]
+        [HttpGet("GetTreatmentPlanByCustomerId/{cusId}")]
+        public async Task<IActionResult> GetTreatmentPlanByCusId([FromRoute] int cusId)
+        {
+            var checkCustomer = await _customerRepo.GetCustomerByCusIdAsync(cusId);
+            if (checkCustomer == null)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Không tìm thấy khách hàng", $"Customer Id: {cusId}", HttpStatusCode.BadRequest));
+            }
+            var treatmentPlanModel = await _treatmentPlanRepo.GetTreatmentPlanByCustomerId(cusId);
+            if (treatmentPlanModel == null)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Không tìm thấy phác đồ điều trị qua khách hàng", $"Customer Id: {cusId}", HttpStatusCode.BadRequest));
+            }
+            var treatmentPlanDto = treatmentPlanModel.Select(x => x.ToTreatmentPlanDto()).ToList();
+            return Ok(BaseRespone<List<TreatmentPlanDto>>.SuccessResponse(treatmentPlanDto, "Lấy thông tin phác đồ điều trị thành công", HttpStatusCode.OK));
+        }
+        [Authorize(Roles = "Doctor, Customer, Receptionist")]
+        [HttpGet("GetTreatmentPlanByDoctorId/{docId}")]
+        public async Task<IActionResult> GetTreatmentPlanByDocId([FromRoute] int docId)
+        {
+            
+            var treatmentPlanModel = await _treatmentPlanRepo.GetTreatmentPlanByDoctorId(docId);
+            if (treatmentPlanModel == null)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Không tìm thấy phác đồ điều trị qua bác sĩ", $"Doctor Id: {docId}", HttpStatusCode.BadRequest));
+            }
+            var treatmentPlanDto = treatmentPlanModel.Select(x => x.ToTreatmentPlanDto()).ToList();
+            return Ok(BaseRespone<List<TreatmentPlanDto>>.SuccessResponse(treatmentPlanDto, "Lấy thông tin phác đồ điều trị thành công", HttpStatusCode.OK));
         }
 
         [Authorize(Roles = "Doctor")]
@@ -138,7 +182,7 @@ namespace SWP.Controllers
             var response = BaseRespone<TreatmentStepDto>.SuccessResponse(treatmentStepDto, "Lấy thông tin bước điều trị thành công", HttpStatusCode.OK);
             return Ok(response);
         }
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "Doctor, Receptionist")]
         [HttpPut("UpdateTreatmentPlan/{id}")]
         public async Task<IActionResult> UpdateTreatmentPlan([FromRoute] int id, UpdateTreatmentPlanDto request)
         {
