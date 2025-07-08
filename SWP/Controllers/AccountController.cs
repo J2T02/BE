@@ -273,5 +273,70 @@ namespace SWP.Controllers
 
 
         }
+
+        [HttpPost("forgot-password/request")]
+        public async Task<IActionResult> ForgotPasswordRequest([FromBody] ForgotPasswordRequestDto dto)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(dto.EmailOrPhone))
+                {
+                    return BadRequest(new BaseRespone<string>(HttpStatusCode.BadRequest, "Email hoặc số điện thoại không được để trống."));
+                }
+                var account = await _accountRepo.GetAccountByEmailAsync(dto.EmailOrPhone);
+                if (account == null)
+                {
+                    return NotFound(new BaseRespone<string>(HttpStatusCode.NotFound, "Tài khoản không tồn tại."));
+                }
+                // Tạo mã xác nhận và gửi email hoặc SMS (giả lập)
+                var verificationCode = new Random().Next(100000, 999999).ToString();
+                // Gửi mã xác nhận qua email hoặc SMS (bạn cần implement phần này)
+                // Lưu mã xác nhận vào cơ sở dữ liệu hoặc bộ nhớ tạm thời
+                return Ok(new BaseRespone<string>(
+                    data: verificationCode,
+                    message: "Mã xác nhận đã được gửi đến email hoặc số điện thoại của bạn.",
+                    statusCode: HttpStatusCode.OK
+                    ));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new BaseRespone<string>(HttpStatusCode.InternalServerError, $"Lỗi hệ thống: {e.Message}"));
+            }
+        }
+
+        [HttpPost("forgot-password/reset")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(dto.EmailOrPhone) || string.IsNullOrEmpty(dto.NewPassword) )
+                {
+                    return BadRequest(new BaseRespone<string>(HttpStatusCode.BadRequest, "Thông tin không được để trống."));
+                }
+                var account = await _accountRepo.GetAccountByEmailAsync(dto.EmailOrPhone);
+                if (account == null)
+                {
+                    return NotFound(new BaseRespone<string>(HttpStatusCode.NotFound, "Tài khoản không tồn tại."));
+                }
+                // Kiểm tra mã xác nhận (giả lập)
+                // Bạn cần implement phần này để kiểm tra mã xác nhận
+                // Cập nhật mật khẩu
+                account.Password = _passwordHasher.HashPassword(account, dto.NewPassword);
+
+                // Lưu tài khoản với mật khẩu mới
+                await _accountRepo.UpdatePasswordAsync(account, account.Password);
+
+
+                return Ok(BaseRespone<string>.SuccessResponse(
+                    data: null,
+                    message: "Mật khẩu đã được cập nhật thành công.",
+                    statusCode: HttpStatusCode.OK
+                    ));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new BaseRespone<string>(HttpStatusCode.InternalServerError, $"Lỗi hệ thống: {e.Message}"));
+            }
+        }
     }
 }
