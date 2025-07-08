@@ -4,6 +4,7 @@ namespace SWP.Dtos.TreatmentPlan
 {
     public class CreateTreatmentPlanDto
     {
+        public int DocId { get; set; }
 
         public DateOnly? EndDate { get; set; }
 
