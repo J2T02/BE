@@ -14,6 +14,7 @@ namespace SWP.Mapper
         {
             return new TreatmentPlan
             {
+                DocId = dto.DocId,
                 EndDate = dto.EndDate,
                 SerId = dto.SerId,
                 CusId = dto.CusId,
@@ -25,6 +26,7 @@ namespace SWP.Mapper
             var account = doctor?.Acc;
             var cusInfo = treatmentPlan.Cus;
             var status = treatmentPlan.StatusNavigation;
+            var stepDetails = treatmentPlan.StepDetails;
             return new TreatmentPlanDto
             {
                 TpId = treatmentPlan.TpId,
@@ -47,6 +49,7 @@ namespace SWP.Mapper
                     DocId = (int)treatmentPlan.DocId,
                     AccountInfo = new AccountDetailResponeDto
                     {
+                        AccId = account?.AccId ?? 0,
                         FullName = account?.FullName ?? "N/A",
                         Mail = account?.Mail ??"N/A",
                         Phone = account?.Phone ?? "N/A"
@@ -56,7 +59,9 @@ namespace SWP.Mapper
                 {
                     StatusId = status.StatusId,
                     StatusName = status.StatusName
-                }
+                },
+                StepDetails = stepDetails.Select(x => x.ToStepDetailDto()).ToList()
+
             };
 
         }
