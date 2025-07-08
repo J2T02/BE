@@ -30,9 +30,34 @@ namespace SWP.Repository
             return result;
         }
 
-        public async Task<TreatmentPlan?> GetTreatmentPlanByCustomerId(int customerId)
+        public Task<List<TreatmentPlan>?> GetAllTreatmentPlans()
         {
-            return await _context.TreatmentPlans.Include(x => x.Doc).ThenInclude(x => x.Acc).Include(x => x.Ser).Include(x => x.Cus).Include(x => x.StatusNavigation).FirstOrDefaultAsync(x => x.CusId == customerId);
+            return _context.TreatmentPlans.Include(x => x.Doc).ThenInclude(x => x.Acc)
+                .Include(x => x.Ser)
+                .Include(x => x.Cus)
+                .Include(x => x.StatusNavigation).ToListAsync();
+        }
+
+        public async Task<List<TreatmentPlan>?> GetTreatmentPlanByCustomerId(int customerId)
+        {
+            return await _context.TreatmentPlans
+                .Where(x => x.CusId == customerId)
+                .Include(x => x.Doc).ThenInclude(x => x.Acc)
+                .Include(x => x.Ser)
+                .Include(x => x.Cus)
+                .Include(x => x.StatusNavigation)
+                .ToListAsync();
+
+        }
+        public async Task<List<TreatmentPlan>?> GetTreatmentPlanByDoctorId(int doctorId)
+        {
+            return await _context.TreatmentPlans
+                .Where(x => x.DocId == doctorId)
+                .Include(x => x.Doc).ThenInclude(x => x.Acc)
+                .Include(x => x.Ser)
+                .Include(x => x.Cus)
+                .Include(x => x.StatusNavigation)
+                .ToListAsync();
 
         }
 
