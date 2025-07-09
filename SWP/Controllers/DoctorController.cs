@@ -214,7 +214,7 @@ namespace SWP.Controllers
         [HttpGet("GetAllDoctorScheduleIsTrue/{id}")]
         public async Task<IActionResult> GetDoctorScheduleIsTrue([FromRoute] int id)
         {
-            
+
             var doctorModel = await _doctorRepo.GetDoctorByIdAsync(id);
             if (doctorModel is null)
             {
@@ -240,15 +240,15 @@ namespace SWP.Controllers
             }
             var resultList = await _doctorRepo.GetAllDoctorSchedule(doctorModel.DocId);
             var resultListDto = resultList.Select(x => x.ToDoctorScheduleDto()).ToList();
-            if(resultListDto is null)
+            if (resultListDto is null)
             {
-                return Ok(BaseRespone<List<DoctorScheduleDto>>.SuccessResponse(resultListDto,"Danh sách lịch làm việc rỗng", HttpStatusCode.OK));
+                return Ok(BaseRespone<List<DoctorScheduleDto>>.SuccessResponse(resultListDto, "Danh sách lịch làm việc rỗng", HttpStatusCode.OK));
             }
 
             return Ok(BaseRespone<List<DoctorScheduleDto>>.SuccessResponse(resultListDto, "Lấy danh sách lịch làm việc thành công", HttpStatusCode.OK));
         }
         [HttpGet("GetAllDoctorScheduleByWorkDate/{workDate}")]
-        public async Task<IActionResult> GetAllDoctorSchedule([FromRoute] string workDate)
+        public async Task<IActionResult> GetAllDoctorScheduleByWorkDate([FromRoute] string workDate)
         {
             bool isValid = DateOnly.TryParseExact(workDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateOnly result);
 
