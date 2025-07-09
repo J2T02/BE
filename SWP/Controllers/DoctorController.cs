@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.SqlServer.Server;
 using SWP.Data;
 using SWP.Dtos.Account;
 using SWP.Dtos.Customer;
@@ -10,6 +11,7 @@ using SWP.Interfaces;
 using SWP.Mapper;
 using SWP.Models;
 using SWP.Repository;
+using System.Globalization;
 using System.Net;
 using System.Security.Claims;
 namespace SWP.Controllers
@@ -169,8 +171,8 @@ namespace SWP.Controllers
             return Ok(response);
         }
         [Authorize(Roles = "Admin,Manager")]
-        [HttpPost("RegisterSchedule/{id}")]
-        public async Task<IActionResult> RegisterSchedule([FromBody] CreateDoctorScheduleDto doctorScheduleRequest, [FromRoute] int id)
+        [HttpPost("RegisterSchedule/{docId}")]
+        public async Task<IActionResult> RegisterSchedule([FromBody] CreateDoctorScheduleDto doctorScheduleRequest, [FromRoute] int docId)
         {
             if (!ModelState.IsValid)
             {
@@ -187,7 +189,7 @@ namespace SWP.Controllers
             {
                 return BadRequest(BaseRespone<string>.ErrorResponse("Khung giờ được chọn không hợp lệ", $"Slot id: {doctorScheduleRequest.SlotId}"));
             }
-            var doctor = await _doctorRepo.GetDoctorByIdAsync(id);
+            var doctor = await _doctorRepo.GetDoctorByIdAsync(docId);
             if (doctor == null)
             {
                 var error = BaseRespone<DoctorDto>.ErrorResponse("Bác sĩ không tồn tại", HttpStatusCode.NotFound);
@@ -220,6 +222,10 @@ namespace SWP.Controllers
             }
             var resultList = await _doctorRepo.GetDoctorScheduleIsTrue(doctorModel.DocId);
             var resultListDto = resultList.Select(x => x.ToDoctorScheduleDto()).ToList();
+            if(resultListDto is null || !resultListDto.Any())
+            {
+                return Ok(BaseRespone<List<DoctorScheduleDto>>.SuccessResponse(resultListDto, "Danh sách lịch làm việc rỗng", HttpStatusCode.OK));
+            }
             return Ok(BaseRespone<List<DoctorScheduleDto>>.SuccessResponse(resultListDto, "Lấy lịch làm việc thành công", HttpStatusCode.OK));
         }
 
@@ -237,6 +243,25 @@ namespace SWP.Controllers
             if(resultListDto is null)
             {
                 return Ok(BaseRespone<List<DoctorScheduleDto>>.SuccessResponse(resultListDto,"Danh sách lịch làm việc rỗng", HttpStatusCode.OK));
+            }
+
+            return Ok(BaseRespone<List<DoctorScheduleDto>>.SuccessResponse(resultListDto, "Lấy danh sách lịch làm việc thành công", HttpStatusCode.OK));
+        }
+        [HttpGet("GetAllDoctorScheduleByWorkDate/{workDate}")]
+        public async Task<IActionResult> GetAllDoctorSchedule([FromRoute] string workDate)
+        {
+            bool isValid = DateOnly.TryParseExact(workDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateOnly result);
+
+            if (!isValid)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Ngày không đúng định dạng yyyy-MM-dd", workDate));
+            }
+
+            var resultList = await _doctorRepo.GetDoctorScheduleByDate(result);
+            var resultListDto = resultList.Select(x => x.ToDoctorScheduleDto()).ToList();
+            if (resultListDto is null || resultListDto.Count == 0)
+            {
+                return Ok(BaseRespone<List<DoctorScheduleDto>>.SuccessResponse(resultListDto, "Danh sách lịch làm việc rỗng", HttpStatusCode.OK));
             }
 
             return Ok(BaseRespone<List<DoctorScheduleDto>>.SuccessResponse(resultListDto, "Lấy danh sách lịch làm việc thành công", HttpStatusCode.OK));

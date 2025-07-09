@@ -46,6 +46,10 @@ namespace SWP.Controllers
             
             int accountId = int.Parse(accountIdClaim);
             var doctorModel = await _doctorRepo.GetDoctorByAccountId(accountId);
+            if (doctorModel == null)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Không tìm thấy bác sĩ", $"Acount: {accountId}", HttpStatusCode.BadRequest));
+            }
             var stepDetailModel = request.ToStepDetailFromCreate();
             stepDetailModel.DocId = doctorModel.DocId;
             var result = await _stepDetailRepo.CreateStepDetail(stepDetailModel);
@@ -115,6 +119,27 @@ namespace SWP.Controllers
             var stepDetailModelDto = result.ToStepDetailDto();
             var response = BaseRespone<StepDetailDto>.SuccessResponse(stepDetailModelDto, "Cập nhật thành công", HttpStatusCode.OK);
             
+            return Ok(response);
+        }
+        [Authorize(Roles = "Doctor")]
+        [HttpPut("UpdateStepDetailStatus{id}")]
+        public async Task<IActionResult> UpdateStepDetailStatus([FromRoute] int id, UpdateStatusDto request)
+        {
+
+            var checkStatusId = await _stepDetailRepo.GetStepDetailStatus(request.StatusId);
+            if (checkStatusId == null)
+            {
+                return BadRequest(BaseRespone<StepDetailDto>.ErrorResponse("Trạng thái được chọn không hợp lệ", null, HttpStatusCode.BadRequest));
+            }
+
+            var result = await _stepDetailRepo.UpdateStepDetailStatus(id, request);
+            if (result == null)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Cập nhật thất bại", "", HttpStatusCode.BadRequest));
+            }
+            var stepDetailModelDto = result.ToStepDetailDto();
+            var response = BaseRespone<StepDetailDto>.SuccessResponse(stepDetailModelDto, "Cập nhật thành công", HttpStatusCode.OK);
+
             return Ok(response);
         }
     }

@@ -11,12 +11,10 @@ namespace SWP.Dtos.Test
         [Required]
         public int SdId { get; set; }
         [Required]
-        public string Result { get; set; }
+        //public string Result { get; set; } update sau khi test xong
         //TestDate phải lấy từ ngày hiện tại
         public string? Note { get; set; }
         [Required]
         public string FilePath { get; set; }
-        [Required]
-        public int Status { get; set; }
     }
 }

@@ -19,7 +19,7 @@ namespace SWP.Mapper
                 //Result = request.Result,
                 Note = request.Note,
                 FilePath = request.FilePath,
-                Status = request.Status,
+                Status = 1
             };
         }
 
@@ -57,7 +57,7 @@ namespace SWP.Mapper
                     Note = stepDetail.Note
                 },
                 TestDate = request.TestDate,
-                //Result = request.Result,
+                ResultDate = request.ResultDay,
                 Note = request.Note,
                 Status = new TestStatus
                 {

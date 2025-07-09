@@ -18,5 +18,7 @@ namespace SWP.Interfaces
         Task<List<DoctorSchedule>> GetAllDoctorSchedule(int doctorId);
 
         Task<SlotSchedule?> GetSlotById(int id);
+
+        Task<List<DoctorSchedule>?> GetDoctorScheduleByDate(DateOnly request);
     }
 }

@@ -8,5 +8,7 @@ namespace SWP.Interfaces
         Task<Test?> GetTestById(int id);
         Task<Test?> CreateTest(Test test);
         Task<Test?> UpdateTest (int id, UpdateTestDto request);
+
+        Task<List<Test>?> GetTestByStepDetailId(int stepDetailId);
     }
 }
