@@ -45,6 +45,12 @@ namespace SWP.Repository
            return await _context.Customers.Include(c => c.Acc).ToListAsync();
         }
 
+        public async Task<Customer?> GetCustomerByAccountId(int accountId)
+        {
+            return await _context.Customers.Include(c => c.Acc)
+                .FirstOrDefaultAsync(c => c.AccId == accountId);
+        }
+
         public async Task<Customer?> GetCustomerByCusIdAsync(int id)
         {
             // Ưu tiên tìm theo CusId trước

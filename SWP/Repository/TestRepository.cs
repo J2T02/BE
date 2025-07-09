@@ -31,6 +31,16 @@ namespace SWP.Repository
                 .Include(x => x.StatusNavigation).FirstOrDefaultAsync(x => x.TestId == id);
         }
 
+        public async Task<List<Test>?> GetTestByStepDetailId(int stepDetailId)
+        {
+            return await _context.Tests
+                .Include(x => x.Cus)
+                .Include(x => x.TestType)
+                .Include(x => x.Sd).ThenInclude(x => x.StatusNavigation)
+                .Include(x => x.StatusNavigation)
+                .Where(x => x.SdId == stepDetailId).ToListAsync();
+        }
+
         public async Task<Test?> UpdateTest(int id, UpdateTestDto request)
         {
             var exist = await GetTestById(id);
@@ -38,7 +48,7 @@ namespace SWP.Repository
             {
                 throw new Exception("Không tìm thấy thông tin xét nghiệm");
             }
-            //exist.Result = request.Result;
+            exist.ResultDay = DateOnly.Parse(request.ResultDate);
             exist.Note = request.Note;
             exist.FilePath = request.FilePath;
             exist.Status = request.Status;

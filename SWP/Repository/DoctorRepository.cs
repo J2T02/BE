@@ -119,5 +119,12 @@ namespace SWP.Repository
         {
             return await _context.SlotSchedules.FindAsync(id);
         }
+
+        public Task<List<DoctorSchedule>?> GetDoctorScheduleByDate(DateOnly request)
+        {
+            return _context.DoctorSchedules
+                .Include(ds => ds.Slot).Include(ds => ds.Doc).ThenInclude(doc => doc.Acc)
+                .Where(x => x.WorkDate == request && x.IsAvailable == true).ToListAsync();
+        }
     }
 }

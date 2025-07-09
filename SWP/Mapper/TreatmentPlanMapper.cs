@@ -15,9 +15,8 @@ namespace SWP.Mapper
             return new TreatmentPlan
             {
                 DocId = dto.DocId,
-                EndDate = dto.EndDate,
                 SerId = dto.SerId,
-                CusId = dto.CusId,
+                CusId = dto.CusId
             };
         }
         public static TreatmentPlanDto ToTreatmentPlanDto(this TreatmentPlan treatmentPlan)
