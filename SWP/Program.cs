@@ -10,6 +10,7 @@ using SWP.Interfaces;
 using SWP.Models;
 using SWP.Repository;
 using SWP.Service;
+using SWP.Service.Email;
 using SWP.Service.Vnpay;
 using System.Net;
 using static SWP.Repository.CancelBookingRepo;
@@ -136,6 +137,9 @@ builder.Services.AddAuthentication(options =>
 });
 //API Vnpay
 builder.Services.AddScoped<IVnPayService, VnPayService>();
+//Email
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<EmailService>();
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
