@@ -99,9 +99,11 @@ namespace SWP.Repository
             return doctorModel.Entity;
         }
 
-        public async Task<Doctor> GetDoctorByAccountId(int accountId)
+        public async Task<Doctor?> GetDoctorByAccountId(int accountId)
         {
-            var doctorModel = await _context.Doctors.FirstOrDefaultAsync(x => x.AccId == accountId);
+            var doctorModel = await _context.Doctors
+                .Include(d => d.Acc).ThenInclude(a => a.Role)
+                .FirstOrDefaultAsync(x => x.AccId == accountId);
             return doctorModel;
         }
 
