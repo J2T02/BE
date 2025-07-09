@@ -119,5 +119,13 @@ namespace SWP.Repository
         {
             return await _context.SlotSchedules.FindAsync(id);
         }
+
+        public Task<Doctor> GetDoctorByAccountIdAsync(int accountId)
+        {
+            return _context.Doctors
+                .Include(d => d.Acc)
+                .ThenInclude(a => a.Role)
+                .FirstOrDefaultAsync(d => d.AccId == accountId);
+        }
     }
 }

@@ -212,7 +212,7 @@ namespace SWP.Controllers
         [HttpGet("GetAllDoctorScheduleIsTrue/{id}")]
         public async Task<IActionResult> GetDoctorScheduleIsTrue([FromRoute] int id)
         {
-            
+
             var doctorModel = await _doctorRepo.GetDoctorByIdAsync(id);
             if (doctorModel is null)
             {
@@ -234,12 +234,26 @@ namespace SWP.Controllers
             }
             var resultList = await _doctorRepo.GetAllDoctorSchedule(doctorModel.DocId);
             var resultListDto = resultList.Select(x => x.ToDoctorScheduleDto()).ToList();
-            if(resultListDto is null)
+            if (resultListDto is null)
             {
-                return Ok(BaseRespone<List<DoctorScheduleDto>>.SuccessResponse(resultListDto,"Danh sách lịch làm việc rỗng", HttpStatusCode.OK));
+                return Ok(BaseRespone<List<DoctorScheduleDto>>.SuccessResponse(resultListDto, "Danh sách lịch làm việc rỗng", HttpStatusCode.OK));
             }
 
             return Ok(BaseRespone<List<DoctorScheduleDto>>.SuccessResponse(resultListDto, "Lấy danh sách lịch làm việc thành công", HttpStatusCode.OK));
+        }
+
+        [HttpGet("GetSlotByAccId/{id}")]
+        public async Task<IActionResult> GetSlotByAccId([FromRoute] int id)
+        {
+            var doctor = await _doctorRepo.GetDoctorByAccountId(id);
+
+
+            if (doctor == null)
+            {
+                return NotFound(BaseRespone<DoctorDto>.ErrorResponse("Không tìm thấy bác sĩ với tài khoản này", HttpStatusCode.NotFound));
+            }
+
+            return Ok(BaseRespone<Doctor>.SuccessResponse(doctor, "Lấy danh sách khung giờ thành công", HttpStatusCode.OK));
         }
     }
 }
