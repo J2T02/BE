@@ -14,11 +14,11 @@
 
         public string? Note { get; set; }
 
-        public int Status { get; set; }
+        //public int Status { get; set; } mac dinh la 1
 
         public DateOnly? PlanDate { get; set; }
 
-        public DateOnly? DoneDate { get; set; }
+        //public DateOnly? DoneDate { get; set; } ngay thanh cong se update sau khi hoan thanh
 
         public string? DrugName { get; set; }
 

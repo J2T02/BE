@@ -25,10 +25,16 @@ namespace SWP.Repository
                 .FirstOrDefaultAsync(a => a.Mail == emailOrPhone || a.Phone == emailOrPhone);
         }
 
+        public Task<Account?> GetAccountByMailOrPhone(string mailOrPhone)
+        {
+            return _context.Accounts
+                .Include(a => a.Role)
+                .FirstOrDefaultAsync(a => a.Mail == mailOrPhone || a.Phone == mailOrPhone);
+        }
+
         public async Task<List<Account?>> GetAllAccoun()
         {
             return await _context.Accounts.Where(a => a.RoleId == 4).ToListAsync();
-                ;
         }
 
         public async Task UpdatePasswordAsync(Account account, string hashedNewPassword)

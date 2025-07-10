@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.EntityFrameworkCore;
 using SWP.Controllers;
 using SWP.Dtos.StepDetail;
 using SWP.Interfaces;
@@ -68,6 +69,19 @@ namespace SWP.Repository
             exist.Dosage = request.Dosage;
             await _context.SaveChangesAsync();
             return exist;
+        }
+
+        public async Task<StepDetail> UpdateStepDetailStatus(int id, UpdateStatusDto request)
+        {
+            var existStepDetail = await GetStepDetailById(id);
+            if (existStepDetail == null)
+            {
+                throw new Exception("Không tìm thấy chi tiết bước điều trị");
+            }
+            existStepDetail.Status = request.StatusId;
+            _context.StepDetails.Update(existStepDetail);
+            await _context.SaveChangesAsync();
+            return existStepDetail;
         }
     }
 }

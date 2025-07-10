@@ -99,9 +99,11 @@ namespace SWP.Repository
             return doctorModel.Entity;
         }
 
-        public async Task<Doctor> GetDoctorByAccountId(int accountId)
+        public async Task<Doctor?> GetDoctorByAccountId(int accountId)
         {
-            var doctorModel = await _context.Doctors.FirstOrDefaultAsync(x => x.AccId == accountId);
+            var doctorModel = await _context.Doctors
+                .Include(d => d.Acc).ThenInclude(a => a.Role)
+                .FirstOrDefaultAsync(x => x.AccId == accountId);
             return doctorModel;
         }
 
@@ -120,12 +122,11 @@ namespace SWP.Repository
             return await _context.SlotSchedules.FindAsync(id);
         }
 
-        public Task<Doctor> GetDoctorByAccountIdAsync(int accountId)
+        public Task<List<DoctorSchedule>?> GetDoctorScheduleByDate(DateOnly request)
         {
-            return _context.Doctors
-                .Include(d => d.Acc)
-                .ThenInclude(a => a.Role)
-                .FirstOrDefaultAsync(d => d.AccId == accountId);
+            return _context.DoctorSchedules
+                .Include(ds => ds.Slot).Include(ds => ds.Doc).ThenInclude(doc => doc.Acc)
+                .Where(x => x.WorkDate == request && x.IsAvailable == true).ToListAsync();
         }
     }
 }

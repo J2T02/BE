@@ -10,5 +10,6 @@ namespace SWP.Interfaces
         Task<List<StepDetail>> GetAllStepDetailByTreatmentPlanId(int treatmentPlanId);
         Task<StepDetail> UpdateStepDetail(int id, UpdateStepDetailDto request);
         Task<StepDetailStatus> GetStepDetailStatus(int id);
+        Task<StepDetail> UpdateStepDetailStatus(int id, UpdateStatusDto request);
     }
 }

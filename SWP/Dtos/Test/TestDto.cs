@@ -16,7 +16,7 @@ namespace SWP.Dtos.Test
 
         public DateOnly? TestDate { get; set; }
 
-        public string Result { get; set; }
+        public DateOnly? ResultDate { get; set; }
 
         public string Note { get; set; }
 

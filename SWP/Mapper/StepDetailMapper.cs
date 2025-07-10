@@ -19,9 +19,8 @@ namespace SWP.Mapper
                 TsId = request.TsId,
                 StepName = request.StepName,
                 Note = request.Note,
-                Status = request.Status,
+                Status = 1,
                 PlanDate = request.PlanDate,
-                DoneDate = request.DoneDate,
                 DrugName = request.DrugName,
                 Dosage = request.Dosage
             };

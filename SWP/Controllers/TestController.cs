@@ -1,6 +1,7 @@
 ﻿using Azure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.SqlServer.Server;
 using SWP.Data;
 using SWP.Dtos.Customer;
 using SWP.Dtos.Doctor;
@@ -9,6 +10,7 @@ using SWP.Dtos.Test;
 using SWP.Interfaces;
 using SWP.Mapper;
 using SWP.Models;
+using System.Globalization;
 using System.Net;
 
 namespace SWP.Controllers
@@ -22,13 +24,15 @@ namespace SWP.Controllers
         private readonly ICustomerRepository _customerRepo;
         private readonly IStepDetail _stepDetailRepo;
         private readonly HIEM_MUONContext _context;
+        private readonly ITreatmentPlan _treatmentPlanRepo;
 
-        public TestController(ITest testRepo, ICustomerRepository customerRepo, IStepDetail stepDetailRepo, HIEM_MUONContext context)
+        public TestController(ITest testRepo, ICustomerRepository customerRepo, IStepDetail stepDetailRepo, HIEM_MUONContext context, ITreatmentPlan treatmentPlan)
         {
             _testRepo = testRepo;
             _customerRepo = customerRepo;
             _stepDetailRepo = stepDetailRepo;
             _context = context;
+            _treatmentPlanRepo = treatmentPlan;
         }
 
         [Authorize(Roles = "Doctor, Customer")]
@@ -61,12 +65,7 @@ namespace SWP.Controllers
             var checkStepDetail = await _stepDetailRepo.GetStepDetailById(request.SdId);
             if (checkCus == null || checkStepDetail == null)
             {
-                return NotFound(BaseRespone<Test>.ErrorResponse("Dữ liệu không hợp lệ.", null, HttpStatusCode.NotFound));
-            }
-            var checkStatus = await _context.TestStatuses.FindAsync(request.Status);
-            if (checkStatus == null)
-            {
-                return BadRequest(BaseRespone<string>.ErrorResponse("Trạng thái được chọn không hợp lệ", $"Status: {request.Status}", HttpStatusCode.BadRequest));
+                return NotFound(BaseRespone<Test>.ErrorResponse("Dữ liệu khách hàng hoặc chi tiết bước điều trị không tồn tại.", null, HttpStatusCode.NotFound));
             }
             var checkTestType = await _context.TestTypes.FindAsync(request.TestTypeId);
             if (checkTestType == null)
@@ -96,6 +95,17 @@ namespace SWP.Controllers
         [HttpPut("UpdateTest/{id}")]
         public async Task<IActionResult> UpdateTest([FromRoute] int id,[FromBody] UpdateTestDto request)
         {
+            bool isValid = DateOnly.TryParseExact(request.ResultDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateOnly resultDate);
+
+            if (!isValid)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Ngày không đúng định dạng yyyy-MM-dd", $"Date: {request.ResultDate}"));
+            }
+            var timeNow = DateOnly.FromDateTime(DateTime.Now);
+            if (resultDate < timeNow)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Ngày kết quả không được là ngày trong quá khứ", $"ResultDate: {request.ResultDate}", HttpStatusCode.BadRequest));
+            }
             var checkStatus = await _context.TestStatuses.FindAsync(request.Status);
             if (checkStatus == null)
             {
@@ -117,7 +127,46 @@ namespace SWP.Controllers
 
             return Ok(response);
         }
-
+        [Authorize(Roles = "Doctor")]
+        [HttpGet("GetTestByTreatmentPlanId/{treatmentPlanId}")]
+        public async Task<IActionResult> GetTestByTreatmentPlanId([FromRoute] int treatmentPlanId)
+        {
+            var result = await _stepDetailRepo.GetAllStepDetailByTreatmentPlanId(treatmentPlanId);
+            if (result == null || !result.Any())
+            {
+                return NotFound(BaseRespone<string>.ErrorResponse("Không tìm thấy thông tin phác đồ điều trị và các xét nghiệm.", $"TreatmentPlanId: {treatmentPlanId}", HttpStatusCode.NotFound));
+            }
+            var testList = new List<Test>();
+            foreach (var stepDetail in result)
+            {
+                var tests = await _testRepo.GetTestByStepDetailId(stepDetail.SdId);
+                if(tests != null && tests.Count != 0)
+                {
+                    foreach (var test in tests)
+                    {
+                        testList.Add(test);
+                    }
+                }
+            }
+            if(testList == null || !testList.Any())
+            {
+                return NotFound(BaseRespone<string>.ErrorResponse("Không tìm thấy thông tin xét nghiệm.", $"TreatmentPlanId: {treatmentPlanId}", HttpStatusCode.NotFound));
+            }
+            var testListDtos = testList.Select(x => x.ToTestDto()).ToList();
+            return Ok(BaseRespone<List<TestDto>>.SuccessResponse(testListDtos, "Lấy thông tin xét nghiệm thành công", HttpStatusCode.OK));
+        }
+        [Authorize(Roles = "Doctor")]
+        [HttpGet("GetTestByStepDetailId/{stepDetailId}")]
+        public async Task<IActionResult> GetTestByStepDetailId([FromRoute] int stepDetailId)
+        {
+            var result = await _testRepo.GetTestByStepDetailId(stepDetailId);
+            if (result == null || !result.Any())
+            {
+                return NotFound(BaseRespone<string>.ErrorResponse("Không tìm thấy thông tin chi tiết bước điều trị và các xét nghiệm.", $"StepDetailId: {stepDetailId}", HttpStatusCode.NotFound));
+            }
+            var testListDtos = result.Select(x => x.ToTestDto()).ToList();
+            return Ok(BaseRespone<List<TestDto>>.SuccessResponse(testListDtos, "Lấy thông tin xét nghiệm thành công", HttpStatusCode.OK));
+        }
 
     }
 

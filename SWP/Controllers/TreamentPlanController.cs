@@ -1,8 +1,10 @@
 ﻿using Azure.Core;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SWP.Data;
+using SWP.Dtos.Account;
 using SWP.Dtos.Customer;
 using SWP.Dtos.Doctor;
 using SWP.Dtos.TreatmentPlan;
@@ -10,6 +12,7 @@ using SWP.Dtos.TreatmentStep;
 using SWP.Interfaces;
 using SWP.Mapper;
 using SWP.Models;
+using SWP.Service;
 using System.Net;
 using System.Security.Claims;
 
@@ -24,14 +27,18 @@ namespace SWP.Controllers
         private readonly IDoctor _doctorRepo;
         private readonly IServices _servicesRepo;
         private readonly ICustomerRepository _customerRepo;
+        private readonly PasswordHasher<Account> _passwordHasher;
+        private readonly ITokenService _tokenService;
 
-        public TreamentPlanController(HIEM_MUONContext context, ITreatmentPlan treatmentPlanRepo, IDoctor doctorRepo, IServices services, ICustomerRepository customerRepo)
+        public TreamentPlanController(HIEM_MUONContext context, ITreatmentPlan treatmentPlanRepo, IDoctor doctorRepo, IServices services, ICustomerRepository customerRepo, ITokenService tokenService)
         {
             _context = context;
             _treatmentPlanRepo = treatmentPlanRepo;
             _doctorRepo = doctorRepo;
             _servicesRepo = services;
             _customerRepo = customerRepo;
+            _passwordHasher = new PasswordHasher<Account>();
+            _tokenService = tokenService;
         }
 
         [Authorize(Roles = "Doctor, Receptionist")]
@@ -88,7 +95,8 @@ namespace SWP.Controllers
             treatmentPlanModel.Result = "Đang tiến hành";
 
             var result = await _treatmentPlanRepo.CreateTreatmentPlan(treatmentPlanModel);
-            if (result == null) {
+            if (result == null)
+            {
                 return BadRequest(BaseRespone<TreatmentPlanDto>.ErrorResponse("Không thể tạo phác đồ điều trị", treatmentPlanModel.ToTreatmentPlanDto(), HttpStatusCode.BadRequest));
             }
             var responseDto = BaseRespone<TreatmentPlanDto>.SuccessResponse(result.ToTreatmentPlanDto(), "Tạo phác đồ điều trị thành công", HttpStatusCode.OK);
@@ -127,7 +135,7 @@ namespace SWP.Controllers
         [HttpGet("GetTreatmentPlanByDoctorId/{docId}")]
         public async Task<IActionResult> GetTreatmentPlanByDocId([FromRoute] int docId)
         {
-            
+
             var treatmentPlanModel = await _treatmentPlanRepo.GetTreatmentPlanByDoctorId(docId);
             if (treatmentPlanModel == null)
             {
@@ -153,7 +161,7 @@ namespace SWP.Controllers
             }
             var treatmentStepModel = request.ToTreatmentStepFromCreate();
             var result = await _treatmentPlanRepo.CreateTreatmentStep(treatmentStepModel);
-            if(result == null)
+            if (result == null)
             {
                 return BadRequest(BaseRespone<TreatmentStep>.ErrorResponse("Tạo bước điều trị thất bại", result, HttpStatusCode.BadRequest));
             }
@@ -162,7 +170,7 @@ namespace SWP.Controllers
             {
                 return BadRequest(BaseRespone<TreatmentStep>.ErrorResponse("Không tìm thấy thông tin bước điều trị", treatmentStepDto, HttpStatusCode.BadRequest));
             }
-            var response = BaseRespone<TreatmentStepDto>.SuccessResponse(treatmentStepDto,"Lấy thông tin bước điều trị thành công",HttpStatusCode.OK);
+            var response = BaseRespone<TreatmentStepDto>.SuccessResponse(treatmentStepDto, "Lấy thông tin bước điều trị thành công", HttpStatusCode.OK);
             return CreatedAtAction(nameof(GetTreatmentStepById), new { id = result.TsId }, treatmentStepDto);
         }
         [Authorize(Roles = "Doctor,Customer")]
@@ -170,7 +178,7 @@ namespace SWP.Controllers
         public async Task<IActionResult> GetTreatmentStepById([FromRoute] int id)
         {
             var treatmentStepModel = await _treatmentPlanRepo.GetTreatmentStepById(id);
-            if(treatmentStepModel == null)
+            if (treatmentStepModel == null)
             {
                 return BadRequest(BaseRespone<TreatmentStep>.ErrorResponse("Không tìm thấy thông tin bước điều trị", treatmentStepModel, HttpStatusCode.BadRequest));
             }
@@ -197,12 +205,110 @@ namespace SWP.Controllers
                 return BadRequest(BaseRespone<string>.ErrorResponse("Trạng thái được chọn không hợp lệ", $"Status Id: {request.Status}", HttpStatusCode.BadRequest));
             }
             var result = await _treatmentPlanRepo.UpdateTreatmentPlan(id, request);
-            if(result == null)
+            if (result == null)
             {
                 return BadRequest(BaseRespone<TreatmentPlanDto>.ErrorResponse("Cập nhật thất bại", null, HttpStatusCode.BadRequest));
             }
             var response = BaseRespone<TreatmentPlanDto>.SuccessResponse(result.ToTreatmentPlanDto(), "Cập nhật thành công");
             return Ok(response);
+        }
+
+        [Authorize(Roles = "Doctor, Receptionist")]
+        [HttpPost("CreateTreatmentPlanForGuest")]
+
+        public async Task<IActionResult> CreateTreatmentPlanForGuest([FromBody] CreateTreatmentPlanForGuestDto dataRequest)
+        {
+            var checkService = await _servicesRepo.GetServiceById(dataRequest.SerId);
+            if (checkService == null)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Dịch vụ được chọn không hợp lệ", $"Service Id: {dataRequest.SerId}", HttpStatusCode.BadRequest));
+            }
+
+            var doctorModel = await _doctorRepo.GetDoctorByIdAsync(dataRequest.DocId);
+            if (doctorModel == null)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Không tìm thấy bác sĩ", $"Account Id: {dataRequest.DocId}", HttpStatusCode.BadRequest));
+            }
+            var registerDto = new RegisterDto()
+            {
+                FullName = dataRequest.HusName,
+                Password = dataRequest.Phone,
+                Mail = dataRequest.Mail,
+                Phone = dataRequest.Phone
+            };
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+            .Where(x => x.Value.Errors.Count > 0)
+            .ToDictionary(
+                kvp => kvp.Key,
+                kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+            );
+
+                var firstError = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .FirstOrDefault()?.ErrorMessage ?? "Dữ liệu không hợp lệ";
+
+                return BadRequest(BaseRespone<NewUserDto>.ErrorResponse("Dữ liệu không hợp lệ", firstError));
+            }
+            if (await _context.Accounts.AnyAsync(a => a.Mail == registerDto.Mail || a.Phone == registerDto.Phone))
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Tên tài khoản đã tồn tại", $"Email/Phone {dataRequest.Mail}, {dataRequest.Phone}"));
+
+            }
+            var account = new Account
+            {
+                Mail = registerDto.Mail,
+                Password = registerDto.Password,
+                FullName = registerDto.FullName,
+                Phone = registerDto.Phone,
+                RoleId = 4, // RoleId 4 là cho Customer
+                IsActive = true,
+                CreateAt = DateTime.Now,
+                Img = "https://cdn-icons-png.flaticon.com/512/149/149071.png" // Đặt ảnh đại diện mặc định
+            };
+            account.Password = _passwordHasher.HashPassword(account, registerDto.Password);
+            _context.Accounts.Add(account);
+            await _context.SaveChangesAsync();
+
+            var customer = new Customer
+            {
+                AccId = account.AccId,
+                HusName = dataRequest.HusName,
+                WifeName = dataRequest.WifeName,
+                HusYob = dataRequest.HusYob,
+                WifeYob = dataRequest.WifeYob,
+            };
+            _context.Customers.Add(customer);
+            await _context.SaveChangesAsync();
+            var role = await _context.Roles.FindAsync(account.RoleId);
+
+            var token = _tokenService.CreateToken(account.FullName!, account.AccId, role?.RoleName ?? "Customer");
+
+            var customerModel = await _customerRepo.GetCustomerByAccountId(account.AccId);
+            if (customerModel == null)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Không tìm thấy khách hàng", $"Account Id: {account.AccId}", HttpStatusCode.BadRequest));
+            }
+            var createTreatmentPlanRequest = new CreateTreatmentPlanDto()
+            {
+                DocId = dataRequest.DocId,
+                SerId = dataRequest.SerId,
+                CusId = customerModel.CusId
+            };
+
+            var treatmentPlanModel = createTreatmentPlanRequest.ToTreatmentPlanFromCreate();
+            treatmentPlanModel.Status = 1;
+            treatmentPlanModel.StartDate = DateOnly.FromDateTime(DateTime.Now);
+            treatmentPlanModel.Result = "Đang tiến hành";
+
+            var result = await _treatmentPlanRepo.CreateTreatmentPlan(treatmentPlanModel);
+            if (result == null)
+            {
+                return BadRequest(BaseRespone<TreatmentPlanDto>.ErrorResponse("Không thể tạo phác đồ điều trị", treatmentPlanModel.ToTreatmentPlanDto(), HttpStatusCode.BadRequest));
+            }
+            var responseDto = BaseRespone<TreatmentPlanDto>.SuccessResponse(result.ToTreatmentPlanDto(), "Tạo phác đồ điều trị thành công", HttpStatusCode.OK);
+            return CreatedAtAction(nameof(GetTreatmentPlanById), new { id = result.TpId }, responseDto);
         }
     }
 }

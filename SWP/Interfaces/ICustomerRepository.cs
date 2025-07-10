@@ -9,5 +9,7 @@ namespace SWP.Interfaces
         Task<Customer?> GetCustomerByCusIdAsync(int id);
         
         Task<UpdateCustomerResponseDto> CreateCustomerAsync(UpdateCustomerRequestDto request, int accountId);
+
+        Task<Customer?> GetCustomerByAccountId(int accountId);
     }
 }
