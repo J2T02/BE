@@ -25,6 +25,13 @@ namespace SWP.Repository
                 .FirstOrDefaultAsync(a => a.Mail == emailOrPhone || a.Phone == emailOrPhone);
         }
 
+        public async Task<Account?> GetAccountByIdAsync(int accId)
+        {
+            return await _context.Accounts
+                .Include(a => a.Role)
+                .FirstOrDefaultAsync(a => a.AccId == accId);
+        }
+
         public Task<Account?> GetAccountByMailOrPhone(string mailOrPhone)
         {
             return _context.Accounts

@@ -10,5 +10,6 @@ namespace SWP.Interfaces
         Task UpdatePasswordAsync(Account account, string hashedNewPassword);
 
         Task<Account?> GetAccountByMailOrPhone(string mailOrPhone);
+        Task<Account?> GetAccountByIdAsync(int accId);
     }
 }

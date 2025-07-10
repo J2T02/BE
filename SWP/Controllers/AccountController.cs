@@ -404,5 +404,50 @@ namespace SWP.Controllers
                     new BaseRespone<string>(HttpStatusCode.InternalServerError, $"Lỗi hệ thống: {e.Message}"));
             }
         }
+
+        [HttpPost("change-password")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePassworđto dto)
+        {
+            try
+            {
+                if (dto == null)
+                {
+                    return BadRequest(new BaseRespone<string>(HttpStatusCode.BadRequest, "Dữ liệu không hợp lệ (null)."));
+                }
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList();
+                    return BadRequest(new BaseRespone<List<string>>(HttpStatusCode.BadRequest, "Dữ liệu không hợp lệ.", errors));
+                }
+                var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (accountIdClaim == null)
+                {
+                    return BadRequest(new BaseRespone<string>(HttpStatusCode.BadRequest, "Không tìm thấy thông tin tài khoản."));
+                }
+                int accountId = int.Parse(accountIdClaim);
+                var account = await _accountRepo.GetAccountByIdAsync(accountId);
+                if (account == null)
+                {
+                    return NotFound(new BaseRespone<string>(HttpStatusCode.NotFound, "Tài khoản không tồn tại."));
+                }
+                // Kiểm tra mật khẩu cũ
+                var passwordVerificationResult = _passwordHasher.VerifyHashedPassword(account, account.Password, dto.CurrentPassword);
+                if (passwordVerificationResult == PasswordVerificationResult.Failed)
+                {
+                    return BadRequest(new BaseRespone<string>(HttpStatusCode.BadRequest, "Mật khẩu cũ không đúng."));
+                }
+                // Cập nhật mật khẩu mới
+                account.Password = _passwordHasher.HashPassword(account, dto.NewPassword);
+                await _accountRepo.UpdatePasswordAsync(account, account.Password);
+                return Ok(BaseRespone<string>.SuccessResponse(null, "Đổi mật khẩu thành công", HttpStatusCode.OK));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new BaseRespone<string>(HttpStatusCode.InternalServerError, $"Lỗi hệ thống: {e.Message}"));
+            }
+        }
     }
 }
