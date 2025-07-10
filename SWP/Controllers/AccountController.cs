@@ -91,6 +91,7 @@ namespace SWP.Controllers
                     CreateAt = DateTime.Now,
                     Img = "https://cdn-icons-png.flaticon.com/512/149/149071.png" // Đặt ảnh đại diện mặc định
                 };
+                //test
                 account.Password = _passwordHasher.HashPassword(account, registerDto.Password);
                 _context.Accounts.Add(account);
                 await _context.SaveChangesAsync();
