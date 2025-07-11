@@ -25,7 +25,7 @@ namespace SWP.Repository
         public async Task<Test?> GetTestById(int id)
         {
             return await _context.Tests
-                .Include(x => x.Cus)
+                //.Include(x => x.Cus)
                 .Include(x => x.TestType)
                 .Include(x => x.Sd).ThenInclude(x => x.StatusNavigation)
                 .Include(x => x.StatusNavigation).FirstOrDefaultAsync(x => x.TestId == id);
@@ -34,7 +34,7 @@ namespace SWP.Repository
         public async Task<List<Test>?> GetTestByStepDetailId(int stepDetailId)
         {
             return await _context.Tests
-                .Include(x => x.Cus)
+                //.Include(x => x.Cus)
                 .Include(x => x.TestType)
                 .Include(x => x.Sd).ThenInclude(x => x.StatusNavigation)
                 .Include(x => x.StatusNavigation)

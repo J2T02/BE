@@ -12,7 +12,7 @@ namespace SWP.Mapper
 
             return new Test
             {
-                CusId = request.CusId,
+                //CusId = request.CusId,
                 TestTypeId = request.TestTypeId,
                 SdId = request.SdId,
                 //TestDate = request.TestDate, //Lấy từ ngày hiện tại 
@@ -25,7 +25,7 @@ namespace SWP.Mapper
 
         public static TestDto ToTestDto(this Test request)
         {
-            var customer = request.Cus;
+            //var customer = request.Cus;
             var testType = request.TestType;
             var stepDetail = request.Sd;
             var testStatus = request.StatusNavigation;
@@ -34,10 +34,10 @@ namespace SWP.Mapper
                 TestId = request.TestId,
                 CusInfo = new CustomerInfoDto
                 {
-                    HusName = customer.HusName,
-                    HusYob = customer.HusYob,
-                    WifeName = customer.WifeName,
-                    WifeYob = customer.WifeYob,
+                    //HusName = customer.HusName,
+                    //HusYob = customer.HusYob,
+                    //WifeName = customer.WifeName,
+                    //WifeYob = customer.WifeYob,
                 },
                 TestType = new TestTypeInfo
                 {
@@ -68,7 +68,7 @@ namespace SWP.Mapper
         }
         public static HusTestDto HusTestDto(this Test request)
         {
-            var customer = request.Cus;
+            //var customer = request.Cus;
             var testType = request.TestType;
             var stepDetail = request.Sd;
             var testStatus = request.StatusNavigation;
@@ -77,8 +77,8 @@ namespace SWP.Mapper
                 TestId = request.TestId,
                 CustomerInfo = new HusbandInfoDto
                 {
-                    HusName = customer.HusName,
-                    HusYob = customer.HusYob,
+                    //HusName = customer.HusName,
+                    //HusYob = customer.HusYob,
                 },
                 TestType = new TestTypeInfo
                 {
@@ -109,7 +109,7 @@ namespace SWP.Mapper
         }
         public static WifeTestDto WifeTestDto(this Test request)
         {
-            var customer = request.Cus;
+            //var customer = request.Cus;
             var testType = request.TestType;
             var stepDetail = request.Sd;
             var testStatus = request.StatusNavigation;
@@ -118,8 +118,8 @@ namespace SWP.Mapper
                 TestId = request.TestId,
                 CustomerInfo = new WifeInfoDto
                 {
-                    WifeName = customer.WifeName,
-                    WifeYob = customer.WifeYob,
+                    //WifeName = customer.WifeName,
+                    //WifeYob = customer.WifeYob,
                 },
                 TestType = new TestTypeInfo
                 {

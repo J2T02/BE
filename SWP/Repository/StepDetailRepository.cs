@@ -63,8 +63,8 @@ namespace SWP.Repository
             exist.StepName = request.StepName;
             exist.Note = request.Note;
             exist.Status = request.Status;
-            exist.PlanDate = request.PlanDate;
-            exist.DoneDate = request.DoneDate;
+            //exist.PlanDate = request.PlanDate;
+            //exist.DoneDate = request.DoneDate;
             exist.DrugName = request.DrugName;
             exist.Dosage = request.Dosage;
             await _context.SaveChangesAsync();

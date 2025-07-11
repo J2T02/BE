@@ -9,9 +9,9 @@ public partial class TreatmentPlan
 {
     public int TpId { get; set; }
 
-    public DateOnly? StartDate { get; set; }
+    public DateTime? StartDate { get; set; }
 
-    public DateOnly? EndDate { get; set; }
+    public DateTime? EndDate { get; set; }
 
     public string Result { get; set; }
 
@@ -38,4 +38,6 @@ public partial class TreatmentPlan
     public virtual TreatmentPlanStatus StatusNavigation { get; set; }
 
     public virtual ICollection<StepDetail> StepDetails { get; set; } = new List<StepDetail>();
+
+    public virtual ICollection<Test> Tests { get; set; } = new List<Test>();
 }

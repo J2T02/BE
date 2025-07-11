@@ -13,6 +13,8 @@ public partial class BioSample
 
     public int? BtId { get; set; }
 
+    public int? SdId { get; set; }
+
     public string BsName { get; set; }
 
     public int? Status { get; set; }
@@ -28,6 +30,8 @@ public partial class BioSample
     public virtual BioQualityStatus Bqs { get; set; }
 
     public virtual BioType Bt { get; set; }
+
+    public virtual StepDetail Sd { get; set; }
 
     public virtual BioSampleStatus StatusNavigation { get; set; }
 

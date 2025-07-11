@@ -24,4 +24,6 @@ public partial class DoctorSchedule
     public virtual Doctor Doc { get; set; }
 
     public virtual SlotSchedule Slot { get; set; }
+
+    public virtual ICollection<StepDetail> StepDetails { get; set; } = new List<StepDetail>();
 }

@@ -131,11 +131,11 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[TreatmentPlan_Status]",
+         "Name": "[dbo].[TreatmentPlan]",
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[TreatmentPlans]",
+         "Name": "[dbo].[TreatmentPlan_Status]",
          "ObjectType": 0
       },
       {

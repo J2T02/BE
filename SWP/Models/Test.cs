@@ -9,7 +9,7 @@ public partial class Test
 {
     public int TestId { get; set; }
 
-    public int? CusId { get; set; }
+    public int? TpId { get; set; }
 
     public int? TestTypeId { get; set; }
 
@@ -27,13 +27,13 @@ public partial class Test
 
     public int? Status { get; set; }
 
-    public virtual Customer Cus { get; set; }
-
     public virtual StepDetail Sd { get; set; }
 
     public virtual TestStatus StatusNavigation { get; set; }
 
     public virtual TestType TestType { get; set; }
+
+    public virtual TreatmentPlan Tp { get; set; }
 
     public virtual TestQualityStatus Tqs { get; set; }
 }

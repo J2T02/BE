@@ -21,15 +21,17 @@ public partial class StepDetail
 
     public int? Status { get; set; }
 
-    public DateOnly? PlanDate { get; set; }
-
-    public DateOnly? DoneDate { get; set; }
+    public int? DsId { get; set; }
 
     public string DrugName { get; set; }
 
     public string Dosage { get; set; }
 
+    public virtual ICollection<BioSample> BioSamples { get; set; } = new List<BioSample>();
+
     public virtual Doctor Doc { get; set; }
+
+    public virtual DoctorSchedule Ds { get; set; }
 
     public virtual ICollection<Remind> Reminds { get; set; } = new List<Remind>();
 

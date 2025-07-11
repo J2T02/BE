@@ -91,7 +91,7 @@ namespace SWP.Controllers
             }
             var treatmentPlanModel = dataRequest.ToTreatmentPlanFromCreate();
             treatmentPlanModel.Status = 1;
-            treatmentPlanModel.StartDate = DateOnly.FromDateTime(DateTime.Now);
+            //treatmentPlanModel.StartDate = DateOnly.FromDateTime(DateTime.Now);
             treatmentPlanModel.Result = "Đang tiến hành";
 
             var result = await _treatmentPlanRepo.CreateTreatmentPlan(treatmentPlanModel);
@@ -299,7 +299,7 @@ namespace SWP.Controllers
 
             var treatmentPlanModel = createTreatmentPlanRequest.ToTreatmentPlanFromCreate();
             treatmentPlanModel.Status = 1;
-            treatmentPlanModel.StartDate = DateOnly.FromDateTime(DateTime.Now);
+            //treatmentPlanModel.StartDate = DateOnly.FromDateTime(DateTime.Now);
             treatmentPlanModel.Result = "Đang tiến hành";
 
             var result = await _treatmentPlanRepo.CreateTreatmentPlan(treatmentPlanModel);

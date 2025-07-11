@@ -20,7 +20,7 @@ namespace SWP.Mapper
                 StepName = request.StepName,
                 Note = request.Note,
                 Status = 1,
-                PlanDate = request.PlanDate,
+                //PlanDate = request.PlanDate,
                 DrugName = request.DrugName,
                 Dosage = request.Dosage
             };
@@ -42,8 +42,8 @@ namespace SWP.Mapper
                 TreatmentPlanInfo = treatmentPlan == null ? null : new TreatmentPlanInStepDetailDto
                 {
                     TpId = treatmentPlan.TpId,
-                    StartDate = treatmentPlan.StartDate,
-                    EndDate = treatmentPlan.EndDate,
+                    //StartDate = treatmentPlan.StartDate,
+                    //EndDate = treatmentPlan.EndDate,
                     CusInfo = customer == null ? null : new CustomerInfoDto
                     {
                         HusName = customer.HusName ?? "N/A",
@@ -85,8 +85,8 @@ namespace SWP.Mapper
                     StatusId = statusStepDetail.StatusId,
                     StatusName = statusStepDetail.StatusName
                 },
-                PlanDate = stepDetail.PlanDate,
-                DoneDate = stepDetail.DoneDate,
+                //PlanDate = stepDetail.PlanDate,
+                //DoneDate = stepDetail.DoneDate,
                 DrugName = stepDetail.DrugName,
                 Dosage = stepDetail.Dosage
             };

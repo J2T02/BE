@@ -29,8 +29,8 @@ namespace SWP.Mapper
             return new TreatmentPlanDto
             {
                 TpId = treatmentPlan.TpId,
-                StartDate = treatmentPlan.StartDate,
-                EndDate = treatmentPlan.EndDate,
+                //StartDate = treatmentPlan.StartDate,
+                //EndDate = treatmentPlan.EndDate,
                 ServiceInfo = new ServiceInfoDto
                 {
                     SerId = (int)treatmentPlan.SerId,

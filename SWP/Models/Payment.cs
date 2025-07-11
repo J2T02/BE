@@ -9,6 +9,8 @@ public partial class Payment
 {
     public int PaymentId { get; set; }
 
+    public string TransactionId { get; set; }
+
     public int? PaymentTypeId { get; set; }
 
     public int? BookingId { get; set; }
@@ -22,8 +24,6 @@ public partial class Payment
     public int? MethodId { get; set; }
 
     public int? StatusId { get; set; }
-
-    public string TransactionId { get; set; }
 
     public virtual Booking Booking { get; set; }
 
