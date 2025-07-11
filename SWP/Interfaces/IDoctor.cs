@@ -20,5 +20,7 @@ namespace SWP.Interfaces
         Task<SlotSchedule?> GetSlotById(int id);
 
         Task<List<DoctorSchedule>?> GetDoctorScheduleByDate(DateOnly request);
+
+        Task<Doctor> GetDoctorByAccountIdAsync(int accountId);
     }
 }

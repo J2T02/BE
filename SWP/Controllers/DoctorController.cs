@@ -266,5 +266,19 @@ namespace SWP.Controllers
 
             return Ok(BaseRespone<List<DoctorScheduleDto>>.SuccessResponse(resultListDto, "Lấy danh sách lịch làm việc thành công", HttpStatusCode.OK));
         }
+
+        [HttpGet("GetSlotByAccId/{id}")]
+        public async Task<IActionResult> GetSlotByAccId([FromRoute] int id)
+        {
+            var doctor = await _doctorRepo.GetDoctorByAccountId(id);
+
+
+            if (doctor == null)
+            {
+                return NotFound(BaseRespone<DoctorDto>.ErrorResponse("Không tìm thấy bác sĩ với tài khoản này", HttpStatusCode.NotFound));
+            }
+
+            return Ok(BaseRespone<Doctor>.SuccessResponse(doctor, "Lấy danh sách thành công", HttpStatusCode.OK));
+        }
     }
 }

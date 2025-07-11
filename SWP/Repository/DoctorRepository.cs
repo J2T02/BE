@@ -128,5 +128,13 @@ namespace SWP.Repository
                 .Include(ds => ds.Slot).Include(ds => ds.Doc).ThenInclude(doc => doc.Acc)
                 .Where(x => x.WorkDate == request && x.IsAvailable == true).ToListAsync();
         }
+
+        public Task<Doctor> GetDoctorByAccountIdAsync(int accountId)
+        {
+            return _context.Doctors
+                .Include(d => d.Acc)
+                .ThenInclude(a => a.Role)
+                .FirstOrDefaultAsync(d => d.AccId == accountId);
+        }
     }
 }
