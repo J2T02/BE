@@ -136,5 +136,23 @@ namespace SWP.Repository
                 .ThenInclude(a => a.Role)
                 .FirstOrDefaultAsync(d => d.AccId == accountId);
         }
+
+        public Task<DoctorStatus> GetDoctorStatusById(int id)
+        {
+            return _context.DoctorStatuses.FirstOrDefaultAsync(x => x.StatusId == id);
+        }
+
+        public async Task<Doctor> UpdateDoctorStatus(int id, UpdateDoctorStatusDto request)
+        {
+            var exist = await GetDoctorByIdAsync(id);
+            if (exist == null)
+            {
+                throw new Exception("Không tìm thấy bác sĩ");
+            }
+            exist.Status = request.StatusId;
+            _context.Doctors.Update(exist);
+            await _context.SaveChangesAsync();
+            return exist;
+        }
     }
 }

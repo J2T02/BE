@@ -22,5 +22,8 @@ namespace SWP.Interfaces
         Task<List<DoctorSchedule>?> GetDoctorScheduleByDate(DateOnly request);
 
         Task<Doctor> GetDoctorByAccountIdAsync(int accountId);
+
+        Task<DoctorStatus> GetDoctorStatusById(int id);
+        Task<Doctor> UpdateDoctorStatus(int id, UpdateDoctorStatusDto request);
     }
 }

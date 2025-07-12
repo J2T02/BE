@@ -222,7 +222,7 @@ namespace SWP.Controllers
             }
             var resultList = await _doctorRepo.GetDoctorScheduleIsTrue(doctorModel.DocId);
             var resultListDto = resultList.Select(x => x.ToDoctorScheduleDto()).ToList();
-            if(resultListDto is null || !resultListDto.Any())
+            if (resultListDto is null || !resultListDto.Any())
             {
                 return Ok(BaseRespone<List<DoctorScheduleDto>>.SuccessResponse(resultListDto, "Danh sách lịch làm việc rỗng", HttpStatusCode.OK));
             }
@@ -279,6 +279,28 @@ namespace SWP.Controllers
             }
 
             return Ok(BaseRespone<Doctor>.SuccessResponse(doctor, "Lấy danh sách thành công", HttpStatusCode.OK));
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPut("UpdateDoctorStatus/{doctorId}")]
+        public async Task<IActionResult> UpdateDoctorStatus([FromRoute] int doctorId, [FromBody] UpdateDoctorStatusDto request)
+        {
+            var checkStatus = await _doctorRepo.GetDoctorStatusById(request.StatusId);
+            if (checkStatus == null)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Trạng thái bác sĩ không hợp lệ", $"StatusId: {request.StatusId}", HttpStatusCode.BadRequest));
+            }
+            var checkDoctor = await _doctorRepo.GetDoctorByIdAsync(doctorId);
+            if (checkDoctor == null)
+            {
+                return NotFound(BaseRespone<string>.ErrorResponse("Không tìm thấy bác sĩ", $"DoctorId: {doctorId}", HttpStatusCode.NotFound));
+            }
+            var updatedDoctor = await _doctorRepo.UpdateDoctorStatus(doctorId, request);
+            if (updatedDoctor == null)
+            {
+                return BadRequest(BaseRespone<string>.ErrorResponse("Cập nhật trạng thái bác sĩ thất bại", $"DoctorId: {doctorId}", HttpStatusCode.BadRequest));
+            }
+            return Ok(BaseRespone<DoctorDto>.SuccessResponse(updatedDoctor.ToDoctorDto(), "Cập nhật trạng thái bác sĩ thành công", HttpStatusCode.OK));
         }
     }
 }
