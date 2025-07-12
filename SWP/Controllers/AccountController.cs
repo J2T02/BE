@@ -1,4 +1,5 @@
 ﻿using Azure.Core;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -180,6 +181,43 @@ namespace SWP.Controllers
                 return new BaseRespone<NewUserDto>(HttpStatusCode.InternalServerError, $"Lỗi hệ thống: {e.Message}");
             }
 
+        }
+
+        [Authorize(Roles = "Customer")]
+        [HttpPut]
+        public async Task<IActionResult> UpdateAccount([FromBody] AccountUpdateRequestDto updateAccountDto)
+        {
+            try
+            {
+                if (updateAccountDto == null)
+                {
+                    return BadRequest(new BaseRespone<string>(HttpStatusCode.BadRequest, "Dữ liệu không hợp lệ (null)."));
+                }
+                var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (accountIdClaim == null)
+                {
+                    return BadRequest(new BaseRespone<string>(HttpStatusCode.BadRequest, "Không tìm thấy thông tin tài khoản."));
+                }
+                int accountId = int.Parse(accountIdClaim);
+                var account = await _accountRepo.GetAccountAsync(accountId);
+                if (account == null)
+                {
+                    return NotFound(new BaseRespone<string>(HttpStatusCode.NotFound, "Tài khoản không tồn tại."));
+                }
+                // Cập nhật thông tin tài khoản
+                var updatedAccount = await _accountRepo.UpdateAccount(accountId, updateAccountDto);
+                if (updatedAccount == null)
+                {
+                    return NotFound(new BaseRespone<string>(HttpStatusCode.NotFound, "Không tìm thấy tài khoản để cập nhật."));
+                }
+                var responeDto = updatedAccount.ToAccountDetailResponeDto();
+                return Ok(BaseRespone<AccountDetailResponeDto>.SuccessResponse(responeDto, "Cập nhật tài khoản thành công"));
+
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new BaseRespone<string>(HttpStatusCode.InternalServerError, $"Lỗi hệ thống: {e.Message}"));
+            }
         }
 
         [HttpPost("loginDoctor")]

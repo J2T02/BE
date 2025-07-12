@@ -1,4 +1,5 @@
-﻿using SWP.Models;
+﻿using SWP.Dtos.Account;
+using SWP.Models;
 
 namespace SWP.Interfaces
 {
@@ -11,5 +12,6 @@ namespace SWP.Interfaces
 
         Task<Account?> GetAccountByMailOrPhone(string mailOrPhone);
         Task<Account?> GetAccountByIdAsync(int accId);
+        Task<Account> UpdateAccount(int accId, AccountUpdateRequestDto dto);
     }
 }

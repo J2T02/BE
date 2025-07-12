@@ -9,9 +9,11 @@ namespace SWP.Mapper
         {
             return new AccountDetailResponeDto
             {
+                AccId = account.AccId,
                 Mail = account.Mail,
                 FullName = account.FullName,
-                Phone = account.Phone
+                Phone = account.Phone,
+                img = account.Img
             };
         }
 

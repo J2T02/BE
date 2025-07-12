@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using SWP.Dtos.Account;
 using SWP.Interfaces;
 using SWP.Models;
 
@@ -42,6 +43,21 @@ namespace SWP.Repository
         public async Task<List<Account?>> GetAllAccoun()
         {
             return await _context.Accounts.Where(a => a.RoleId == 4).ToListAsync();
+        }
+
+        public async Task<Account> UpdateAccount(int accId, AccountUpdateRequestDto dto)
+        {
+            var account = await _context.Accounts.FirstOrDefaultAsync(a => a.AccId == accId);
+            if (account == null)
+            {
+                throw new Exception("Account not found");
+            }
+            account.FullName = dto.FullName;
+            account.Img = dto.img;
+
+            await _context.SaveChangesAsync();
+            return account;
+
         }
 
         public async Task UpdatePasswordAsync(Account account, string hashedNewPassword)
