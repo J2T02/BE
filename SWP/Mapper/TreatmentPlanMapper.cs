@@ -26,6 +26,7 @@ namespace SWP.Mapper
             var cusInfo = treatmentPlan.Cus;
             var status = treatmentPlan.StatusNavigation;
             var stepDetails = treatmentPlan.StepDetails;
+            var doctorStatus = doctor?.StatusNavigation;
             return new TreatmentPlanDto
             {
                 TpId = treatmentPlan.TpId,
@@ -53,6 +54,11 @@ namespace SWP.Mapper
                 DoctorInfo = new DoctorAccountDto
                 {
                     DocId = (int)treatmentPlan.DocId,
+                    DoctorStatus = new StatusInfoDto
+                    {
+                        StatusId = doctorStatus?.StatusId ?? 0,
+                        StatusName = doctorStatus?.StatusName ?? "N/A"
+                    },
                     AccountInfo = new AccountDetailResponeDto
                     {
                         AccId = account?.AccId ?? 0,

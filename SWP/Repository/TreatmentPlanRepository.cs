@@ -34,6 +34,7 @@ namespace SWP.Repository
         {
             return _context.TreatmentPlans
                 .Include(x => x.Doc).ThenInclude(x => x.Acc)
+                .Include(x=> x.Doc).ThenInclude(x=>x.StatusNavigation)
                 .Include(x => x.Ser)
                 .Include(x => x.Cus).ThenInclude(x => x.Acc)
                 .Include(x => x.StatusNavigation).ToListAsync();
