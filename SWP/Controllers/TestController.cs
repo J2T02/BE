@@ -12,6 +12,7 @@ using SWP.Mapper;
 using SWP.Models;
 using System.Globalization;
 using System.Net;
+using static Google.Apis.Requests.BatchRequest;
 
 namespace SWP.Controllers
 {
@@ -45,15 +46,7 @@ namespace SWP.Controllers
                 return NotFound(BaseRespone<string>.ErrorResponse("Không tìm thấy thông tin xét nghiệm.", $"TestId: {id}", HttpStatusCode.NotFound));
             }
 
-            if (result.TestType.TestName.Equals("wife")){
-                var wifiTestDto = result.WifeTestDto();
-                return Ok(BaseRespone<WifeTestDto>.SuccessResponse(wifiTestDto, "Lấy thông tin xét nghiệm thành công"));
-            }
-            else
-            {
-                var husTestDto = result.HusTestDto();
-                return Ok(BaseRespone<HusTestDto>.SuccessResponse(husTestDto, "Lấy thông tin xét nghiệm thành công"));
-            }
+            return Ok(BaseRespone<TestDto>.SuccessResponse(result.ToTestDto(), "Lấy thông tin xét nghiệm thành công", HttpStatusCode.OK));
 
         }
         [Authorize(Roles = "Doctor")]
@@ -61,11 +54,11 @@ namespace SWP.Controllers
         public async Task<IActionResult> CreateTest([FromBody] CreateTestDto request)
         {
             
-            var checkCus = await _customerRepo.GetCustomerByCusIdAsync(request.CusId);
+            var checkTreatmentPlan = await _treatmentPlanRepo.GetTreatmentPlanById(request.TpId);
             var checkStepDetail = await _stepDetailRepo.GetStepDetailById(request.SdId);
-            if (checkCus == null || checkStepDetail == null)
+            if (checkTreatmentPlan == null || checkStepDetail == null)
             {
-                return NotFound(BaseRespone<Test>.ErrorResponse("Dữ liệu khách hàng hoặc chi tiết bước điều trị không tồn tại.", null, HttpStatusCode.NotFound));
+                return NotFound(BaseRespone<Test>.ErrorResponse("Dữ liệu phác đồ điều trị hoặc chi tiết bước điều trị không tồn tại.", null, HttpStatusCode.NotFound));
             }
             var checkTestType = await _context.TestTypes.FindAsync(request.TestTypeId);
             if (checkTestType == null)
@@ -75,27 +68,21 @@ namespace SWP.Controllers
             var testModel = request.ToTestFromCreate();
             testModel.TestDate = DateOnly.FromDateTime(DateTime.Now);
             var result = await _testRepo.CreateTest(testModel);
-            if (result == null)
-            {
-                return NotFound(BaseRespone<Test>.ErrorResponse("Tạo xét nghiệm thất bại", testModel, HttpStatusCode.NotFound));
-            }
-            if (result.TestType.TestName.Equals("wife")){ 
-                var wifiTestDto = result.WifeTestDto();
-                var response = BaseRespone<WifeTestDto>.SuccessResponse(wifiTestDto, "Lấy thông tin xét nghiệm thành công");
-                return CreatedAtAction(nameof(GetTestById), new { id = result.TestId }, response);
-            }
-            else
-            {
-                var husTestDto = result.HusTestDto();
-                var response = BaseRespone<HusTestDto>.SuccessResponse(husTestDto, "Lấy thông tin xét nghiệm thành công");
-                return CreatedAtAction(nameof(GetTestById), new { id = result.TestId }, response);
-            }
+            var response = BaseRespone<TestDto>.SuccessResponse(result.ToTestDto(), "Tạo xét nghiệm thành công", HttpStatusCode.Created);
+            return CreatedAtAction(nameof(GetTestById), new { id = result.TestId }, response);
         }
         [Authorize(Roles = "Doctor")]
         [HttpPut("UpdateTest/{id}")]
         public async Task<IActionResult> UpdateTest([FromRoute] int id,[FromBody] UpdateTestDto request)
         {
-            bool isValid = DateOnly.TryParseExact(request.ResultDate, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateOnly resultDate);
+            var formats = new[] { "yyyy-MM-dd", "dd/MM/yyyy", "yyyy/MM/dd" };
+            bool isValid = DateOnly.TryParseExact(
+                request.ResultDate,
+                formats,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out DateOnly resultDate);
+
 
             if (!isValid)
             {

@@ -25,7 +25,7 @@ namespace SWP.Controllers
             _treatmentPlanRepo = treatmentPlan;
         }
 
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "Doctor, Receptionist")]
         [HttpPost("CreateStepDetail")]
         public async Task<IActionResult> CreateStepDetail([FromBody] CreateStepDetailDto request)
         {
@@ -38,20 +38,14 @@ namespace SWP.Controllers
             {
                 return BadRequest(BaseRespone<string>.ErrorResponse("Phác đồ điều trị đã hoàn thành không được chỉnh sửa", $"TreatmentPlanId: {request.TpId}"));
             }
-            var accountIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            if (accountIdClaim == null)
+           var checkDsId = await _doctorRepo.GetDoctorScheduleByIdAsync(request.DsId);
+            if (checkDsId == null)
             {
-                return BadRequest(BaseRespone<TreatmentPlan>.ErrorResponse("Không tìm thấy thông tin tài khoản", null, HttpStatusCode.BadRequest));
-            }
-            
-            int accountId = int.Parse(accountIdClaim);
-            var doctorModel = await _doctorRepo.GetDoctorByAccountId(accountId);
-            if (doctorModel == null)
-            {
-                return BadRequest(BaseRespone<string>.ErrorResponse("Không tìm thấy bác sĩ", $"Acount: {accountId}", HttpStatusCode.BadRequest));
+                return BadRequest(BaseRespone<string>.ErrorResponse("Lịch khám không hợp lệ", $"DsId: {request.DsId}"));
             }
             var stepDetailModel = request.ToStepDetailFromCreate();
-            stepDetailModel.DocId = doctorModel.DocId;
+     
+
             var result = await _stepDetailRepo.CreateStepDetail(stepDetailModel);
             if (result == null)
             {
@@ -66,7 +60,7 @@ namespace SWP.Controllers
 
             return CreatedAtAction(nameof(GetStepDetailById), new { id = result.SdId }, responseDto);
         }
-        [Authorize(Roles = "Doctor, Customer")]
+        [Authorize(Roles = "Doctor, Customer, Receptionist")]
         [HttpGet("GetStepDetailById/{id}")]
         public async Task<IActionResult> GetStepDetailById([FromRoute] int id)
         {
@@ -83,7 +77,7 @@ namespace SWP.Controllers
             var responseDto = BaseRespone<StepDetailDto>.SuccessResponse(stepDetail, "Lấy thông tin chi tiết bước điều trị thành công", HttpStatusCode.OK);
             return Ok(responseDto);
         }
-        [Authorize(Roles = "Doctor, Customer")]
+        [Authorize(Roles = "Doctor, Customer, Receptionist")]
         [HttpGet("GetAllStepDetailByTreatmentPlanId/{treatmentPlanId}")]
         public async Task<IActionResult> GetAllStepDetailByTreatmentPlanId([FromRoute] int treatmentPlanId)
         {
@@ -96,7 +90,7 @@ namespace SWP.Controllers
             var response = BaseRespone<List<StepDetailDto>>.SuccessResponse(resultListDto, "Lấy danh sách thông tin chi tiết bước điều trị trong phác đồ thành công", HttpStatusCode.OK);
             return Ok(response);
         }
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "Doctor, Receptionist")]
         [HttpPut("UpdateStepDetail/{id}")]
         public async Task<IActionResult> UpdateStepDetail([FromRoute] int id, UpdateStepDetailDto request)
         {
@@ -121,7 +115,7 @@ namespace SWP.Controllers
             
             return Ok(response);
         }
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "Doctor, Receptionist")]
         [HttpPut("UpdateStepDetailStatus{id}")]
         public async Task<IActionResult> UpdateStepDetailStatus([FromRoute] int id, UpdateStatusDto request)
         {

@@ -87,9 +87,9 @@ namespace SWP.Repository
             return accountDoctor.FullName;
         }
 
-        public async Task<DoctorSchedule> GetDoctorScheduleByIdAsync(DoctorSchedule doctorSchedule)
+        public async Task<DoctorSchedule> GetDoctorScheduleByIdAsync(int DsId)
         {
-            return await _context.DoctorSchedules.FirstOrDefaultAsync(x => x.DocId == doctorSchedule.DocId && x.WorkDate == doctorSchedule.WorkDate && x.SlotId == doctorSchedule.SlotId);
+            return await _context.DoctorSchedules.Include(ds => ds.Slot).Include(ds => ds.Doc).ThenInclude(doc => doc.Acc).FirstOrDefaultAsync(x => DsId == x.DsId);
         }
 
         public async Task<DoctorSchedule> RegisterDoctorSchedule(DoctorSchedule doctorSchedule)

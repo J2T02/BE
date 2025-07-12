@@ -1,4 +1,6 @@
-﻿namespace SWP.Dtos.Customer
+﻿using SWP.Dtos.Account;
+
+namespace SWP.Dtos.Customer
 {
     public class CustomerInfoDto
     {
@@ -9,5 +11,7 @@
         public string WifeName { get; set; }
 
         public DateOnly? WifeYob { get; set; }
+
+        public AccountDetailResponeDto AccInfo { get; set; }
     }
 }

@@ -25,19 +25,28 @@ namespace SWP.Repository
         public async Task<Test?> GetTestById(int id)
         {
             return await _context.Tests
-                //.Include(x => x.Cus)
-                .Include(x => x.TestType)
-                .Include(x => x.Sd).ThenInclude(x => x.StatusNavigation)
-                .Include(x => x.StatusNavigation).FirstOrDefaultAsync(x => x.TestId == id);
+                .Include(t => t.Tp).ThenInclude(tp => tp.Cus).ThenInclude(c => c.Acc)
+                .Include(t => t.Tp).ThenInclude(tp => tp.Ser)
+                .Include(t => t.Tp).ThenInclude(tp => tp.StatusNavigation)
+                .Include(t => t.Sd).ThenInclude(sd => sd.Doc).ThenInclude(d => d.Acc)
+                .Include(t => t.Sd).ThenInclude(sd => sd.StatusNavigation)
+                .Include(t => t.TestType)
+                .Include(t => t.StatusNavigation)
+                .Include(t => t.Tqs)
+                .FirstOrDefaultAsync(t => t.TestId == id);
         }
 
         public async Task<List<Test>?> GetTestByStepDetailId(int stepDetailId)
         {
             return await _context.Tests
-                //.Include(x => x.Cus)
-                .Include(x => x.TestType)
-                .Include(x => x.Sd).ThenInclude(x => x.StatusNavigation)
-                .Include(x => x.StatusNavigation)
+                .Include(t => t.Tp).ThenInclude(tp => tp.Cus).ThenInclude(c => c.Acc)
+                .Include(t => t.Tp).ThenInclude(tp => tp.Ser)
+                .Include(t => t.Tp).ThenInclude(tp => tp.StatusNavigation)
+                .Include(t => t.Sd).ThenInclude(sd => sd.Doc).ThenInclude(d => d.Acc)
+                .Include(t => t.Sd).ThenInclude(sd => sd.StatusNavigation)
+                .Include(t => t.TestType)
+                .Include(t => t.StatusNavigation)
+                .Include(t => t.Tqs)
                 .Where(x => x.SdId == stepDetailId).ToListAsync();
         }
 
@@ -53,6 +62,7 @@ namespace SWP.Repository
             exist.FilePath = request.FilePath;
             exist.Status = request.Status;
             exist.TestTypeId = request.TestType;
+            exist.TqsId = request.TestQualityStatus;
             await _context.SaveChangesAsync();
             return exist;
         }

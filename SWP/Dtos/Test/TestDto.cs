@@ -1,5 +1,6 @@
 ﻿using SWP.Dtos.Customer;
 using SWP.Dtos.StepDetail;
+using SWP.Dtos.TreatmentPlan;
 using SWP.Models;
 
 namespace SWP.Dtos.Test
@@ -8,7 +9,7 @@ namespace SWP.Dtos.Test
     {
         public int TestId { get; set; }
 
-        public CustomerInfoDto CusInfo { get; set; }
+        public TreatmentPlanInStepDetailDto TreatmenPlanInfo { get; set; }
 
         public TestTypeInfo TestType { get; set; }
 
@@ -17,9 +18,10 @@ namespace SWP.Dtos.Test
         public DateOnly? TestDate { get; set; }
 
         public DateOnly? ResultDate { get; set; }
+        public TestQualityStatusDto TestQualityStatus { get; set; }
 
-        public string Note { get; set; }
+        public string? Note { get; set; }
 
-        public TestStatus Status { get; set; }
+        public TestStatusDto Status { get; set; }
     }
 }

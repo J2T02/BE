@@ -20,9 +20,10 @@ namespace SWP.Mapper
                 StepName = request.StepName,
                 Note = request.Note,
                 Status = 1,
-                //PlanDate = request.PlanDate,
+                DsId = request.DsId,
                 DrugName = request.DrugName,
-                Dosage = request.Dosage
+                Dosage = request.Dosage,
+                DocId = request.DocId,
             };
         }
         public static StepDetailDto ToStepDetailDto(this StepDetail stepDetail)
@@ -35,21 +36,29 @@ namespace SWP.Mapper
             var doctor = stepDetail.Doc;
             var account = doctor?.Acc;
             var statusStepDetail = stepDetail.StatusNavigation;
-
+            var docSchedule = stepDetail.Ds;
+            var cusAccount = customer?.Acc;
             return new StepDetailDto
             {
                 SdId = stepDetail.SdId,
                 TreatmentPlanInfo = treatmentPlan == null ? null : new TreatmentPlanInStepDetailDto
                 {
                     TpId = treatmentPlan.TpId,
-                    //StartDate = treatmentPlan.StartDate,
-                    //EndDate = treatmentPlan.EndDate,
+                    StartDate = treatmentPlan.StartDate,
+                    EndDate = treatmentPlan.EndDate,
                     CusInfo = customer == null ? null : new CustomerInfoDto
                     {
                         HusName = customer.HusName ?? "N/A",
                         HusYob = customer.HusYob,
                         WifeName = customer.WifeName ?? "N/A",
-                        WifeYob = customer.WifeYob
+                        WifeYob = customer.WifeYob,
+                        AccInfo = new AccountDetailResponeDto
+                        {
+                            AccId = cusAccount?.AccId ?? 0,
+                            FullName = cusAccount?.FullName ?? "N/A",
+                            Mail = cusAccount?.Mail ?? "N/A",
+                            Phone = cusAccount?.Phone ?? "N/A"
+                        }
                     },
                     ServiceInfo = service == null ? null : new ServiceInfoDto
                     {
@@ -85,8 +94,12 @@ namespace SWP.Mapper
                     StatusId = statusStepDetail.StatusId,
                     StatusName = statusStepDetail.StatusName
                 },
-                //PlanDate = stepDetail.PlanDate,
-                //DoneDate = stepDetail.DoneDate,
+                DocSchedule = new DocScheduleDto
+                {
+                    SlotId = docSchedule.SlotId,
+                    WorkDate = docSchedule.WorkDate,
+                },
+            
                 DrugName = stepDetail.DrugName,
                 Dosage = stepDetail.Dosage
             };

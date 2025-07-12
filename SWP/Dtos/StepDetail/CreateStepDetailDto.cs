@@ -8,7 +8,7 @@
 
         public int TsId { get; set; }
 
-        //public int? DocId { get; set; } get from Token
+        public int DocId { get; set; }
 
         public string StepName { get; set; }
 
@@ -16,7 +16,7 @@
 
         //public int Status { get; set; } mac dinh la 1
 
-        public DateOnly? PlanDate { get; set; }
+        public int DsId { get; set; }
 
         //public DateOnly? DoneDate { get; set; } ngay thanh cong se update sau khi hoan thanh
 

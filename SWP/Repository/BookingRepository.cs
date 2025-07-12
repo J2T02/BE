@@ -138,7 +138,7 @@ namespace SWP.Repository
             var checkSlot = await query
                 .Select(ds => new CheckSlotDoctorResponseDto
                 {
-                    DocId = ds.DocId.Value,
+                    DocId = ds.DocId,
                     DoctorName = ds.Doc.Acc.FullName,
                     slotId = ds.SlotId.Value,
                     WorkDate = ds.WorkDate.Value,
@@ -160,7 +160,7 @@ namespace SWP.Repository
         )
         .Select(ds => new CheckSlotDoctorResponseDto
         {
-            DocId = ds.DocId ?? 0,
+            DocId = ds.DocId,
             DoctorName = ds.Doc.Acc.FullName,
             slotId = ds.SlotId ?? 0,
             WorkDate = ds.WorkDate ?? DateOnly.MinValue

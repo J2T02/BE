@@ -26,11 +26,12 @@ namespace SWP.Mapper
             var cusInfo = treatmentPlan.Cus;
             var status = treatmentPlan.StatusNavigation;
             var stepDetails = treatmentPlan.StepDetails;
+            var doctorStatus = doctor?.StatusNavigation;
             return new TreatmentPlanDto
             {
                 TpId = treatmentPlan.TpId,
-                //StartDate = treatmentPlan.StartDate,
-                //EndDate = treatmentPlan.EndDate,
+                StartDate = treatmentPlan.StartDate,
+                EndDate = treatmentPlan.EndDate,
                 ServiceInfo = new ServiceInfoDto
                 {
                     SerId = (int)treatmentPlan.SerId,
@@ -42,15 +43,27 @@ namespace SWP.Mapper
                     HusYob = cusInfo.HusYob ?? null,
                     WifeName = cusInfo.WifeName ?? "N/A",
                     WifeYob = cusInfo.WifeYob ?? null,
+                    AccInfo = new AccountDetailResponeDto
+                    {
+                        AccId = cusInfo.AccId ?? 0,
+                        FullName = cusInfo.Acc.FullName ?? "N/A",
+                        Mail = cusInfo.Acc.Mail ?? "N/A",
+                        Phone = cusInfo.Acc.Phone ?? "N/A"
+                    }
                 },
                 DoctorInfo = new DoctorAccountDto
                 {
                     DocId = (int)treatmentPlan.DocId,
+                    DoctorStatus = new StatusInfoDto
+                    {
+                        StatusId = doctorStatus?.StatusId ?? 0,
+                        StatusName = doctorStatus?.StatusName ?? "N/A"
+                    },
                     AccountInfo = new AccountDetailResponeDto
                     {
                         AccId = account?.AccId ?? 0,
                         FullName = account?.FullName ?? "N/A",
-                        Mail = account?.Mail ??"N/A",
+                        Mail = account?.Mail ?? "N/A",
                         Phone = account?.Phone ?? "N/A"
                     }
                 },

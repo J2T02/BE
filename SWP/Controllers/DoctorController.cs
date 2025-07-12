@@ -199,7 +199,7 @@ namespace SWP.Controllers
             var doctorSchedule = doctorScheduleRequest.ToDoctorScheduleFromCreateDTO(doctor.DocId);
             doctorSchedule.Doc = doctor;
             doctorSchedule.DsId = 0;
-            var checkExist = await _doctorRepo.GetDoctorScheduleByIdAsync(doctorSchedule);
+            var checkExist = await _doctorRepo.GetDoctorScheduleByIdAsync(doctorSchedule.DocId);
             if (checkExist != null)
             {
                 return Conflict(BaseRespone<DoctorScheduleDto>.ErrorResponse("Bác sĩ đã có lịch hẹn", checkExist.ToDoctorScheduleDto(), HttpStatusCode.Conflict));

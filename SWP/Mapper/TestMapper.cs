@@ -1,6 +1,10 @@
-﻿using SWP.Dtos.Customer;
+﻿using SWP.Dtos.Account;
+using SWP.Dtos.Customer;
+using SWP.Dtos.Doctor;
+using SWP.Dtos.Services;
 using SWP.Dtos.StepDetail;
 using SWP.Dtos.Test;
+using SWP.Dtos.TreatmentPlan;
 using SWP.Models;
 
 namespace SWP.Mapper
@@ -12,10 +16,11 @@ namespace SWP.Mapper
 
             return new Test
             {
-                //CusId = request.CusId,
+                TpId = request.TpId,
                 TestTypeId = request.TestTypeId,
                 SdId = request.SdId,
                 //TestDate = request.TestDate, //Lấy từ ngày hiện tại 
+                TqsId = request.TqsId,
                 //Result = request.Result,
                 Note = request.Note,
                 FilePath = request.FilePath,
@@ -25,128 +30,95 @@ namespace SWP.Mapper
 
         public static TestDto ToTestDto(this Test request)
         {
-            //var customer = request.Cus;
             var testType = request.TestType;
             var stepDetail = request.Sd;
             var testStatus = request.StatusNavigation;
+            var treatmentPlan = request.Tp;
+            var customer = treatmentPlan?.Cus;
+            var cusAccount = customer?.Acc;
+            var service = treatmentPlan?.Ser;
+            var tpStatus = treatmentPlan?.StatusNavigation;
+            var doc = stepDetail?.Doc;
+            var docAccount = doc?.Acc;
+            var sdStatus = stepDetail?.StatusNavigation;
+            var tqs = request.Tqs;
+
             return new TestDto
             {
                 TestId = request.TestId,
-                CusInfo = new CustomerInfoDto
+                TreatmenPlanInfo = treatmentPlan == null ? null : new TreatmentPlanInStepDetailDto
                 {
-                    //HusName = customer.HusName,
-                    //HusYob = customer.HusYob,
-                    //WifeName = customer.WifeName,
-                    //WifeYob = customer.WifeYob,
+                    TpId = treatmentPlan.TpId,
+                    ServiceInfo = service == null ? null : new ServiceInfoDto
+                    {
+                        SerId = service.SerId,
+                        SerName = service.SerName ?? "N/A"
+                    },
+                    CusInfo = customer == null ? null : new CustomerInfoDto
+                    {
+                        HusName = customer.HusName ?? "N/A",
+                        HusYob = customer.HusYob,
+                        WifeName = customer.WifeName ?? "N/A",
+                        WifeYob = customer.WifeYob,
+                        AccInfo = new AccountDetailResponeDto
+                        {
+                            AccId = cusAccount?.AccId ?? 0,
+                            FullName = cusAccount?.FullName ?? "N/A",
+                            Mail = cusAccount?.Mail ?? "N/A",
+                            Phone = cusAccount?.Phone ?? "N/A"
+                        }
+                    },
+                    StartDate = treatmentPlan.StartDate,
+                    EndDate = treatmentPlan.EndDate,
+                    Status = tpStatus == null ? null : new TreatmentPlanStatusDto
+                    {
+                        StatusId = tpStatus.StatusId,
+                        StatusName = tpStatus.StatusName
+                    }
                 },
-                TestType = new TestTypeInfo
+                TestType = testType == null ? null : new TestTypeInfo
                 {
                     Id = testType.TestTypeId,
                     Person = testType.Person,
                     TestName = testType.TestName,
                 },
-                StepDetail = new StepDetailInfoDto
+                StepDetail = stepDetail == null ? null : new StepDetailInfoDto
                 {
                     SdId = stepDetail.SdId,
                     StepName = stepDetail.StepName,
-                    Status = new StepDetailStatusDto
+                    Status = sdStatus == null ? null : new StepDetailStatusDto
                     {
-                        StatusId = stepDetail.StatusNavigation.StatusId,
-                        StatusName = stepDetail.StatusNavigation.StatusName
+                        StatusId = sdStatus.StatusId,
+                        StatusName = sdStatus.StatusName
                     },
-                    Note = stepDetail.Note
+                    Note = stepDetail.Note,
+                    DocInfo = doc == null ? null : new DoctorAccountDto
+                    {
+                        DocId = doc.DocId,
+                        AccountInfo = docAccount == null ? null : new AccountDetailResponeDto
+                        {
+                            AccId = docAccount.AccId,
+                            FullName = docAccount.FullName ?? "N/A",
+                            Mail = docAccount.Mail ?? "N/A",
+                            Phone = docAccount.Phone ?? "N/A"
+                        }
+                    }
                 },
                 TestDate = request.TestDate,
                 ResultDate = request.ResultDay,
                 Note = request.Note,
-                Status = new TestStatus
+                Status = testStatus == null ? null : new TestStatusDto
                 {
-                    StatusId = testStatus.StatusId,
-                    StatusName = testStatus.StatusName
+                    Id = testStatus.StatusId,
+                    Name = testStatus.StatusName
+                },
+                TestQualityStatus = tqs == null ? null : new TestQualityStatusDto
+                {
+                    Id = tqs.TqsId,
+                    Name = tqs.TqsName ?? "N/A",
                 }
             };
         }
-        public static HusTestDto HusTestDto(this Test request)
-        {
-            //var customer = request.Cus;
-            var testType = request.TestType;
-            var stepDetail = request.Sd;
-            var testStatus = request.StatusNavigation;
-            return new HusTestDto
-            {
-                TestId = request.TestId,
-                CustomerInfo = new HusbandInfoDto
-                {
-                    //HusName = customer.HusName,
-                    //HusYob = customer.HusYob,
-                },
-                TestType = new TestTypeInfo
-                {
-                    Id = testType.TestTypeId,
-                    Person = testType.Person,
-                    TestName = testType.TestName,
-                },
-                StepDetail = new StepDetailInfoDto
-                {
-                    SdId = stepDetail.SdId,
-                    StepName = stepDetail.StepName,
-                    Status = new StepDetailStatusDto
-                    {
-                        StatusId = stepDetail.StatusNavigation.StatusId,
-                        StatusName = stepDetail.StatusNavigation.StatusName
-                    },
-                    Note = stepDetail.Note
-                },
-                TestDate = request.TestDate,
-                //Result = request.Result,
-                Note = request.Note,
-                Status = new TestStatus
-                {
-                    StatusId = testStatus.StatusId,
-                    StatusName = testStatus.StatusName
-                }
-            };
-        }
-        public static WifeTestDto WifeTestDto(this Test request)
-        {
-            //var customer = request.Cus;
-            var testType = request.TestType;
-            var stepDetail = request.Sd;
-            var testStatus = request.StatusNavigation;
-            return new WifeTestDto
-            {
-                TestId = request.TestId,
-                CustomerInfo = new WifeInfoDto
-                {
-                    //WifeName = customer.WifeName,
-                    //WifeYob = customer.WifeYob,
-                },
-                TestType = new TestTypeInfo
-                {
-                    Id = testType.TestTypeId,
-                    Person = testType.Person,
-                    TestName = testType.TestName,
-                },
-                StepDetail = new StepDetailInfoDto
-                {
-                    SdId = stepDetail.SdId,
-                    StepName = stepDetail.StepName,
-                    Status = new StepDetailStatusDto
-                    {
-                        StatusId = stepDetail.StatusNavigation.StatusId,
-                        StatusName = stepDetail.StatusNavigation.StatusName
-                    },
-                    Note = stepDetail.Note
-                },
-                TestDate = request.TestDate,
-                //Result = request.Result,
-                Note = request.Note,
-                Status = new TestStatus
-                {
-                    StatusId = testStatus.StatusId,
-                    StatusName = testStatus.StatusName
-                }
-            };
-        }
+
     }
 }
