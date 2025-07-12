@@ -33,6 +33,7 @@ namespace SWP.Mapper
                     WifeYob = customer.WifeYob,
                     AccCus = new AccountDetailResponeDto
                     {
+                        AccId = booking.Acc?.AccId ?? 0,
                         FullName = booking.Acc?.FullName,
                         Phone = booking.Acc?.Phone,
                         Mail = booking.Acc?.Mail
@@ -46,11 +47,10 @@ namespace SWP.Mapper
                     DocId = booking?.Doc?.DocId.ToString(),
                     AccDoc = new AccountDetailResponeDto
                     {
-                        
+                        AccId = booking.Doc?.Acc?.AccId ?? 0,
                         FullName = booking.Doc?.Acc?.FullName,
                         Phone = booking.Doc?.Acc?.Phone,
                         Mail = booking.Doc?.Acc?.Mail,
-
                     }
                 },
                 Schedule = new DocScheduleDto

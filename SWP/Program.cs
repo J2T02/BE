@@ -156,6 +156,8 @@ builder.Services.AddScoped<IServices, ServicesRepositories>();
 builder.Services.AddScoped<ITest, TestRepository>();
 builder.Services.AddScoped<IUpdateBooking, UpdateBookingRepo>();
 builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
+builder.Services.AddScoped<DashboardRepository>();
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 
 
 

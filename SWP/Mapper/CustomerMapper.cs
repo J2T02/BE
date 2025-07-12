@@ -10,6 +10,7 @@ namespace SWP.Mapper
         {
             return new CustomerDto
             {
+                //AccId = customer.Acc?.AccId,
                 CusId = customer.CusId,
                 HusName = customer.HusName,
                 HusYob = customer.HusYob,
