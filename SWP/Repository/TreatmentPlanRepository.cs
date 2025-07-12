@@ -87,6 +87,9 @@ namespace SWP.Repository
             }
             checkTreatmentPlan.SerId = request.SerId;
             checkTreatmentPlan.Status = request.Status;
+            checkTreatmentPlan.Result = request.Result;
+            checkTreatmentPlan.StartDate = request.StartDate;
+            checkTreatmentPlan.EndDate = request.EndDate;
             await _context.SaveChangesAsync();
             return checkTreatmentPlan;
         }
