@@ -75,7 +75,10 @@ namespace SWP.Controllers
             _context.Payments.Add(payment);
             await _context.SaveChangesAsync();
 
-            return Redirect($"https://localhost:5173/bookingdetail/{booking.BookingId}?success={(response.Success ? "true" : "false")}");
+            // Redirect từ backend về:
+            return Redirect($"http://localhost:5173/payment-result/{booking.BookingId}?success={(response.Success ? "true" : "false")}");
+
+
         }
 
 
