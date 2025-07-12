@@ -63,6 +63,17 @@ namespace SWP.Service.Vnpay
             var vnPay = new VnpayLibrary();
             var response = vnPay.GetFullResponseData(collections, _configuration["Vnpay:HashSecret"]);
 
+            // ✅ Gán OrderId từ vnp_TxnRef
+            if (collections.TryGetValue("vnp_TxnRef", out var txnRefStr)
+                && int.TryParse(txnRefStr, out var orderId))
+            {
+                response.OrderId = orderId;
+            }
+            else
+            {
+                response.OrderId = 0; // nếu không parse được thì mặc định là 0
+            }
+
             if (!response.Success)
             {
                 response.OrderDescription = "Xác thực chữ ký thất bại hoặc giao dịch không hợp lệ.";
@@ -70,5 +81,6 @@ namespace SWP.Service.Vnpay
 
             return response;
         }
+
     }
 }
