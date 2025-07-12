@@ -58,12 +58,15 @@ namespace SWP.Controllers
 
                 var customerDto = new CustomerDto
                 {
+                    CusId = customer.CusId,
+                    //AccId = customer.Acc?.AccId ?? 0,
                     HusName = customer.HusName,
                     HusYob = customer.HusYob,
                     WifeName = customer.WifeName,
                     WifeYob = customer.WifeYob,
                     AccCus = new Dtos.Account.AccountDetailResponeDto
                     {
+                        AccId = customer.Acc.AccId,
                         FullName = customer.Acc.FullName,
                         Mail = customer.Acc.Mail,
                         Phone = customer.Acc.Phone,
