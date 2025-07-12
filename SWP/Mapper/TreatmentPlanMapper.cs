@@ -29,8 +29,8 @@ namespace SWP.Mapper
             return new TreatmentPlanDto
             {
                 TpId = treatmentPlan.TpId,
-                //StartDate = treatmentPlan.StartDate,
-                //EndDate = treatmentPlan.EndDate,
+                StartDate = treatmentPlan.StartDate,
+                EndDate = treatmentPlan.EndDate,
                 ServiceInfo = new ServiceInfoDto
                 {
                     SerId = (int)treatmentPlan.SerId,
@@ -42,6 +42,13 @@ namespace SWP.Mapper
                     HusYob = cusInfo.HusYob ?? null,
                     WifeName = cusInfo.WifeName ?? "N/A",
                     WifeYob = cusInfo.WifeYob ?? null,
+                    AccInfo = new AccountDetailResponeDto
+                    {
+                        AccId = cusInfo.AccId ?? 0,
+                        FullName = cusInfo.Acc.FullName ?? "N/A",
+                        Mail = cusInfo.Acc.Mail ?? "N/A",
+                        Phone = cusInfo.Acc.Phone ?? "N/A"
+                    }
                 },
                 DoctorInfo = new DoctorAccountDto
                 {
@@ -50,7 +57,7 @@ namespace SWP.Mapper
                     {
                         AccId = account?.AccId ?? 0,
                         FullName = account?.FullName ?? "N/A",
-                        Mail = account?.Mail ??"N/A",
+                        Mail = account?.Mail ?? "N/A",
                         Phone = account?.Phone ?? "N/A"
                     }
                 },

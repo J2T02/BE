@@ -91,7 +91,7 @@ namespace SWP.Controllers
             }
             var treatmentPlanModel = dataRequest.ToTreatmentPlanFromCreate();
             treatmentPlanModel.Status = 1;
-            //treatmentPlanModel.StartDate = DateOnly.FromDateTime(DateTime.Now);
+            treatmentPlanModel.StartDate = DateTime.Parse(DateTime.Now.ToString("yyyy-MM-dd"));
             treatmentPlanModel.Result = "Đang tiến hành";
 
             var result = await _treatmentPlanRepo.CreateTreatmentPlan(treatmentPlanModel);
@@ -145,7 +145,7 @@ namespace SWP.Controllers
             return Ok(BaseRespone<List<TreatmentPlanDto>>.SuccessResponse(treatmentPlanDto, "Lấy thông tin phác đồ điều trị thành công", HttpStatusCode.OK));
         }
 
-        [Authorize(Roles = "Doctor")]
+        [Authorize(Roles = "Doctor, Receptionist")]
         [HttpPost("CreateTreatmentStep")]
         public async Task<IActionResult> CreateTreatmentStep([FromBody] CreateTreatmentStepDto request)
         {

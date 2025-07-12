@@ -15,9 +15,7 @@ namespace SWP.Dtos.StepDetail
 
         public StepDetailStatusDto Status { get; set; }
 
-        public DateOnly? PlanDate { get; set; }
-
-        public DateOnly? DoneDate { get; set; }
+        public DocScheduleDto DocSchedule { get; set; }
 
         public string DrugName { get; set; }
 

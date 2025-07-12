@@ -28,20 +28,22 @@ namespace SWP.Repository
         public async Task<List<StepDetail>?> GetAllStepDetailByTreatmentPlanId(int treatmentPlanId)
         {
             return await _context.StepDetails
-                .Include(x => x.Tp).ThenInclude(x => x.Cus)
+                .Include(x => x.Tp).ThenInclude(x => x.Cus).ThenInclude(x => x.Acc)
                 .Include(x => x.Tp).ThenInclude(x => x.Ser)
                 .Include(x => x.Tp).ThenInclude(x => x.StatusNavigation)
                 .Include(x => x.Ts).Include(x => x.Doc).ThenInclude(x => x.Acc)
+                .Include(x => x.Ds).ThenInclude(x => x.Slot)
                 .Include(x => x.StatusNavigation).Where(x => x.TpId == treatmentPlanId).ToListAsync();
         }
 
         public async Task<StepDetail?> GetStepDetailById(int id)
         {
             return await _context.StepDetails
-                .Include(x => x.Tp).ThenInclude(x => x.Cus)
+                .Include(x => x.Tp).ThenInclude(x => x.Cus).ThenInclude(x => x.Acc)
                 .Include(x => x.Tp).ThenInclude(x => x.Ser)
                 .Include(x => x.Tp).ThenInclude(x => x.StatusNavigation)
                 .Include(x => x.Ts).Include(x => x.Doc).ThenInclude(x => x.Acc)
+                .Include(x => x.Ds).ThenInclude(x => x.Slot)
                 .Include(x => x.StatusNavigation).FirstOrDefaultAsync(x => x.SdId == id);
         }
 

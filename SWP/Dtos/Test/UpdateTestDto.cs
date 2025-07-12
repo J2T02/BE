@@ -10,5 +10,6 @@ namespace SWP.Dtos.Test
         public int Status { get; set; }
 
         public int TestType { get; set; }
+        public int TestQualityStatus { get; set; }
     }
 }

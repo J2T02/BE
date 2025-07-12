@@ -12,7 +12,7 @@ namespace SWP.Interfaces
         Task<Doctor> CreateDoctorAsync(Doctor doctor);
         Task<Doctor> UpdateDoctorAsync(int id, UpdateDoctorRequestDto doctor);
         Task<string> DeleteDoctorAsync(int id);
-        Task<DoctorSchedule> GetDoctorScheduleByIdAsync(DoctorSchedule doctorSchedule);
+        Task<DoctorSchedule> GetDoctorScheduleByIdAsync(int dsId);
         Task<DoctorSchedule> RegisterDoctorSchedule(DoctorSchedule doctorSchedule);
         Task<List<DoctorSchedule>> GetDoctorScheduleIsTrue(int doctorId);
         Task<List<DoctorSchedule>> GetAllDoctorSchedule(int doctorId);

@@ -13,7 +13,7 @@ public partial class StepDetail
 
     public int? TsId { get; set; }
 
-    public int? DocId { get; set; }
+    public int DocId { get; set; }
 
     public string StepName { get; set; }
 

@@ -13,6 +13,7 @@ namespace SWP.Dtos.StepDetail
         public string Note { get; set; }
 
         public StepDetailStatusDto Status { get; set; }
+        public DoctorAccountDto DocInfo { get; set; }
 
         //public DateOnly? PlanDate { get; set; }
 
